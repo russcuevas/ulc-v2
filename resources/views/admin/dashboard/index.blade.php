@@ -12,11 +12,6 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('assets/admin/css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <style>
-        .card-left-orange {
-            border-left: 5px solid #ff6b35 !important;
-        }
-    </style>
 </head>
 
 <body>
@@ -25,6 +20,7 @@
     <div class="main-content">
         <div class="row g-4 mb-4">
             <h4>Dashboard</h4>
+            
             <div class="col-12 col-md-6 col-xl-4">
                 <div class="card border-2 shadow-lg h-100 card-left-orange">
                     <div class="card-body">

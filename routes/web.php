@@ -1,9 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminDashboardController;
-
-
-
+use App\Http\Controllers\admin\AdminSecretaryController;
 use App\Http\Controllers\auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +23,4 @@ Route::get('/login', [AuthController::class, 'LoginPage'])->name('auth.login.pag
 
 // Admin Routes
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'AdminDashboardPage'])->name('admin.dashboard.page');
+Route::get('/admin/secretary', [AdminSecretaryController::class, 'AdminSecretaryPage'])->name('admin.secretary.page');

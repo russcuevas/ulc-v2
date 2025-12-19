@@ -2,6 +2,7 @@
     <i class="fa-solid fa-angle-left"></i>
 </button>
 
+
 {{-- MOBILE SHOW --}}
 <nav class="navbar navbar-expand-lg bg-body shadow-sm d-lg-none mb-3 sticky-top">
     <div class="container-fluid">
@@ -62,26 +63,61 @@
         Ultraritz Lending<br>Corporation <i class="fa-solid fa-coins"></i>
     </div>
     <div class="nav flex-column nav-pills px-3 mt-2">
-        <a href=""
-            class="nav-link {{ request()->routeIs('admin.dashboard.page') ? 'active' : '' }}">
+        <a href="{{ route('admin.dashboard.page') }}"
+        class="nav-link {{ request()->routeIs('admin.dashboard.page') ? 'active' : '' }}">
             <i class="fa-solid fa-house"></i>
             Dashboard
         </a>
 
-        <a href="" class="nav-link ">
+        <a href="{{ route('admin.secretary.page') }}"
+        class="nav-link {{ request()->routeIs('admin.secretary.page') ? 'active' : '' }}">
             <i class="fa-solid fa-user-lock"></i>
-            Admins Information
+            Secretary
         </a>
 
+        <a href="" class="nav-link">
+            <i class="fa-solid fa-hand-holding-dollar"></i>            
+            Collector
+        </a>
+        
         <a href="" class="nav-link">
             <i class="fa-solid fa-users"></i>
-            Clients Information
+            Clients
         </a>
 
-        <a href="" class="nav-link">
-            <i class="fa-solid fa-hand-holding-dollar"></i>
-            Financial Counselor Area (FC)
+        <a class="nav-link d-flex justify-content-between align-items-center"
+        data-bs-toggle="collapse"
+        href="#areasMenu"
+        role="button"
+        aria-expanded="false"
+        aria-controls="areasMenu">
+            <span>
+                <i class="fa-solid fa-map me-2"></i>
+                Areas
+            </span>
+            <i class="fa-solid fa-chevron-left small"></i>
         </a>
+
+        <div class="collapse ps-4" id="areasMenu">
+            <a href="" class="nav-link small">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                Manila
+            </a>
+
+            <a href="" class="nav-link small">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                Valenzuela
+            </a>
+
+            <a href="" class="nav-link small">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                Caloocan
+            </a>
+            <a href="" class="nav-link small">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                FC
+            </a>
+        </div>
     </div>
 </div>
 
