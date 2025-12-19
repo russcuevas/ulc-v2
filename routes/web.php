@@ -24,3 +24,7 @@ Route::get('/login', [AuthController::class, 'LoginPage'])->name('auth.login.pag
 // Admin Routes
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'AdminDashboardPage'])->name('admin.dashboard.page');
 Route::get('/admin/secretary', [AdminSecretaryController::class, 'AdminSecretaryPage'])->name('admin.secretary.page');
+Route::put(
+    '/admin/secretary/{id}',
+    [AdminSecretaryController::class, 'AdminUpdateSecretaryRequest']
+)->name('admin.secretary.update');

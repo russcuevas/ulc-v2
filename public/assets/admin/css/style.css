@@ -220,6 +220,10 @@ body {
     border-color: #ff6b35 !important;
 }
 
+.text-primary {
+    color: #ff6b35 !important;
+}
+
 .btn-primary:hover {
     background-color: #e85d2f !important;
     border-color: #e85d2f !important;
