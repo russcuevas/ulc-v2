@@ -1,0 +1,52 @@
+.bg-ulc-primary {
+    background-image: url("https://t4.ftcdn.net/jpg/04/32/76/65/360_F_432766524_GEG8dDw2lRcwsthAOFP57fFhQ3R2cDki.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.text-ulc-accent {
+    color: #C5CAE9;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
+
+.logo-placeholder {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(45deg, #4CAF50, #9C27B0, #FFEB3B);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.btn-primary {
+    background-color: #ff6b35 !important;
+    border-color: #ff6b35 !important;
+}
+
+.btn-primary:hover {
+    background-color: #e85d2f !important;
+    border-color: #e85d2f !important;
+}
+
+.text-primary {
+    color: #ff6b35 !important;
+}
+
+.error-message {
+    background-color: rgba(255, 0, 0, 0.1);
+    border-left: 5px solid #e74c3c;
+    color: #c0392b;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
