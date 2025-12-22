@@ -1,4 +1,4 @@
-<button id="sidebarToggle" class="sidebar-toggle-btn d-none d-lg-flex">
+<button style="background-color: #ff6b35; color: white;" id="sidebarToggle" class="sidebar-toggle-btn d-none d-lg-flex">
     <i class="fa-solid fa-angle-left"></i>
 </button>
 
@@ -64,33 +64,35 @@
     </div>
     <div class="nav flex-column nav-pills px-3 mt-2">
         <a href="{{ route('admin.dashboard.page') }}"
-        class="nav-link {{ request()->routeIs('admin.dashboard.page') ? 'active' : '' }}">
+            class="nav-link {{ request()->routeIs('admin.dashboard.page') ? 'active' : '' }}">
             <i class="fa-solid fa-house"></i>
             Dashboard
         </a>
 
         <a href="{{ route('admin.secretary.page') }}"
-        class="nav-link {{ request()->routeIs('admin.secretary.page') ? 'active' : '' }}">
+            class="nav-link {{ request()->routeIs('admin.secretary.page') ? 'active' : '' }}">
             <i class="fa-solid fa-user-lock"></i>
             Secretary
         </a>
 
-        <a href="" class="nav-link">
-            <i class="fa-solid fa-hand-holding-dollar"></i>            
+        <a href="{{ route('admin.collector.page') }}"
+            class="nav-link {{ request()->routeIs('admin.collector.page') ? 'active' : '' }}">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
             Collector
         </a>
-        
-        <a href="" class="nav-link">
+
+        <a href="{{ route('admin.client.page') }}"
+            class="nav-link 
+            {{ request()->routeIs('admin.client.page', 'admin.edit.client.page') ? 'active' : '' }}">
             <i class="fa-solid fa-users"></i>
             Clients
         </a>
 
-        <a class="nav-link d-flex justify-content-between align-items-center"
-        data-bs-toggle="collapse"
-        href="#areasMenu"
-        role="button"
-        aria-expanded="false"
-        aria-controls="areasMenu">
+
+        <a class="nav-link d-flex justify-content-between align-items-center
+        {{ request()->routeIs('admin.area.*') ? 'active' : '' }}"
+            data-bs-toggle="collapse" href="#areasMenu" role="button"
+            aria-expanded="{{ request()->routeIs('admin.area.*') ? 'true' : 'false' }}" aria-controls="areasMenu">
             <span>
                 <i class="fa-solid fa-map me-2"></i>
                 Areas
@@ -98,8 +100,10 @@
             <i class="fa-solid fa-chevron-left small"></i>
         </a>
 
-        <div class="collapse ps-4" id="areasMenu">
-            <a href="" class="nav-link small">
+
+        <div class="collapse ps-4 {{ request()->routeIs('admin.area.*') ? 'show' : '' }}" id="areasMenu">
+            <a href="{{ route('admin.area.manila.page') }}"
+                class="nav-link small {{ request()->routeIs('admin.area.manila.page') ? 'active' : '' }}">
                 <i class="fa-solid fa-location-dot me-2"></i>
                 Manila
             </a>
@@ -149,8 +153,7 @@
         <div class="dropdown">
             <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">RV</div>
             <ul class="dropdown-menu dropdown-menu-end shadow">
-                <li><a class="dropdown-item d-flex gap-2 align-items-center"
-                        href="">Profile</a></li>
+                <li><a class="dropdown-item d-flex gap-2 align-items-center" href="">Profile</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>

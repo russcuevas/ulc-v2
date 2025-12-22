@@ -16,13 +16,15 @@ return new class extends Migration
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             $table->string('pn_number')->unique();
+            $table->string('release_number')->unique();
             $table->date('loan_from');
             $table->date('loan_to');
             $table->decimal('loan_amount', 12, 2);
             $table->decimal('balance', 12, 2)->nullable();
             $table->decimal('principal', 12, 2);
             $table->string('loan_terms');
-            $table->string('status');
+            $table->string('loan_status');
+            $table->string('payment_status');
             $table->string('created_by')->nullable();
             $table->timestamps();
         });

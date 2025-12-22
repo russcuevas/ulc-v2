@@ -12,13 +12,15 @@ class ClientsLoans extends Model
     protected $fillable = [
         'client_id',
         'pn_number',
+        'release_number',
         'loan_from',
         'loan_to',
         'loan_amount',
         'balance',
         'principal',
         'loan_terms',
-        'status',
+        'loan_status',
+        'payment_status',
         'created_by'
     ];
 }
