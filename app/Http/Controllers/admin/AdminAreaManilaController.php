@@ -12,7 +12,7 @@ class AdminAreaManilaController extends Controller
     {
         $areas = DB::table('areas')
             ->leftJoin('clients', 'clients.area_id', '=', 'areas.id')
-            ->where('areas.location_name', 'Manila Area') // FIXED
+            ->where('areas.location_name', 'Manila Area')
             ->select(
                 'areas.id',
                 'areas.areas_name',
@@ -22,5 +22,10 @@ class AdminAreaManilaController extends Controller
             ->get();
 
         return view('admin.areas.manila.index', compact('areas'));
+    }
+
+    public function AdminAreaManilaPaymentsPage()
+    {
+        return view('admin.areas.manila.payments');
     }
 }

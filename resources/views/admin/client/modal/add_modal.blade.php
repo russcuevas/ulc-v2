@@ -145,6 +145,15 @@
                                         Please enter amount.
                                     </div>
                                 </div>
+                                <div class="col-lg-6 mb-3">
+                                    <label for="daily" class="form-label">Daily
+                                        Payment <span style="color: rgb(126, 30, 30)">*</span></label>
+                                    <input type="number" class="form-control" id="daily" name="daily"
+                                        required min="0" step="0.01">
+                                    <div class="invalid-feedback">
+                                        Please enter payment.
+                                    </div>
+                                </div>
                                 <!-- Loan Terms -->
                                 <div class="col-lg-6 mb-3">
                                     <label for="loan_terms" class="form-label">Loan

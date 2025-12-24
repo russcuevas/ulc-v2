@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\AdminAreaManilaController;
 use App\Http\Controllers\admin\AdminClientController;
+use App\Http\Controllers\admin\AdminClientRenewalController;
 use App\Http\Controllers\admin\AdminCollectorController;
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\AdminSecretaryController;
@@ -42,6 +43,8 @@ Route::post('/admin/add/client', [AdminClientController::class, 'AdminAddClientR
 Route::get('/admin/edit/client/{id}', [AdminClientController::class, 'AdminEditClientPage'])->name('admin.edit.client.page');
 Route::put('/admin/update/client/{id}', [AdminClientController::class, 'AdminUpdateClientRequest'])->name('admin.update.client.request');
 Route::delete('/admin/delete/client/{id}', [AdminClientController::class, 'AdminDeleteClientRequest'])->name('admin.delete.client.request');
+
+Route::post('/admin/add/renewal', [AdminClientRenewalController::class, 'AdminClientAddRenewalRequest'])->name('admin.add.renewal.client.request');
 
 
 // Admin Areas Management Route

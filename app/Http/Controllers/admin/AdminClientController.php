@@ -50,6 +50,7 @@ class AdminClientController extends Controller
             'loan_from'     => 'required|date',
             'loan_to'       => 'required|date|after_or_equal:loan_from',
             'loan_amount'   => 'required|numeric|min:1',
+            'daily'         => 'numeric',
             'loan_terms'    => 'required|numeric',
             'pn_number'     => 'required|string|unique:clients_loans,pn_number',
             'release_number' => 'required|string|unique:clients_loans,release_number'
@@ -76,6 +77,7 @@ class AdminClientController extends Controller
                 'loan_to'        => $request->loan_to,
                 'loan_amount'    => $request->loan_amount,
                 'balance'        => $request->loan_amount,
+                'daily'          => $request->daily,
                 'principal'      => $request->loan_amount,
                 'loan_terms'     => $request->loan_terms,
                 'loan_status'    => 'new',
@@ -118,7 +120,13 @@ class AdminClientController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('admin.client.edit', compact('client', 'locations', 'areas', 'loans'));
+
+        $last_loans = DB::table('clients_loans')
+            ->where('client_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return view('admin.client.edit', compact('client', 'locations', 'areas', 'loans', 'last_loans'));
     }
 
 

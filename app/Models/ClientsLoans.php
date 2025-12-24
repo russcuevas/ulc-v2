@@ -17,6 +17,7 @@ class ClientsLoans extends Model
         'loan_to',
         'loan_amount',
         'balance',
+        'daily',
         'principal',
         'loan_terms',
         'loan_status',

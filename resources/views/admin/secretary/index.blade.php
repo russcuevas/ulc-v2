@@ -59,7 +59,6 @@
                                                     </button>
                                                 </td>
                                             </tr>
-                                            @include('admin.secretary.modal.edit_modal')
                                         @endforeach
                                     </tbody>
 
@@ -68,6 +67,10 @@
                         </div>
                     </div>
                 </div>
+
+                @foreach ($secretaries as $secretary)
+                    @include('admin.secretary.modal.edit_modal')
+                @endforeach
 
                 <div class="col-12 col-md-12 col-lg-7">
                     <div class="card shadow-sm border-1">
@@ -101,12 +104,14 @@
 
                                     </tbody>
                                 </table>
-                                @include('admin.secretary.modal.view_modal')
                             </div>
                         </div>
                     </div>
                 </div>
 
+                @foreach ($secretaries as $secretary)
+                    @include('admin.secretary.modal.view_modal')
+                @endforeach
             </div>
         </div>
     </div>

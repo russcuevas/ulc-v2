@@ -97,16 +97,6 @@
                                         {{-- RIGHT COLUMN --}}
                                         <div class="col-md-6">
 
-                                            {{-- UNIT --}}
-                                            <div class="mb-3">
-                                                <label class="form-label">
-                                                    Unit <span class="text-danger">*</span>
-                                                </label>
-                                                <input type="text" class="form-control text-white"
-                                                    style="background-color: gray;" name="unit"
-                                                    value="ULTRARITZ LENDING CORPORATION" readonly>
-                                            </div>
-
                                             {{-- AREA --}}
                                             <div class="mb-3">
                                                 <label class="form-label">
@@ -161,12 +151,13 @@
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h6 class="mb-3 text-primary">PN List</h6>
                                 <button class="btn btn-outline-primary btn-sm d-flex align-items-center"
-                                    data-bs-toggle="modal" data-bs-target="#addClientModal">
+                                    data-bs-toggle="modal" data-bs-target="#renewalClientModal">
                                     <i class="fas fa-plus-circle me-2"></i> RENEWAL
                                 </button>
                                 <i class="fas fa-plus-circle d-none"></i>
                             </div>
-
+                            <!-- ADD MODAL -->
+                            @include('admin.client.modal.renewal_modal')
                             <div class="table-responsive">
                                 <table
                                     class="table table-hover table-striped js-basic-example dataTable text-wrap w-100"
@@ -276,30 +267,6 @@
                 toastr.error("{{ $error }}");
             @endforeach
         @endif
-    </script>
-    <script>
-        $(document).ready(function() {
-            $('.delete-btn').click(function(e) {
-                e.preventDefault();
-
-                var form = $(this).closest('form');
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
-        });
     </script>
 </body>
 

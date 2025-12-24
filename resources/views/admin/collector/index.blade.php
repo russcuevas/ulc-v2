@@ -60,16 +60,17 @@
                                                     </button>
                                                 </td>
                                             </tr>
-                                            @include('admin.collector.modal.edit_modal')
                                         @endforeach
                                     </tbody>
-
-
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                @foreach ($collectors as $collector)
+                    @include('admin.collector.modal.edit_modal')
+                @endforeach
 
                 <div class="col-12 col-md-12 col-lg-7">
                     <div class="card shadow-sm border-1">
@@ -168,6 +169,7 @@
             })
         })();
     </script>
+
 
 </body>
 

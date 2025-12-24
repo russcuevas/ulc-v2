@@ -304,3 +304,11 @@ table.dataTable tbody tr:hover {
     background-color: #ffffff;
     border-radius: 0.375rem;
 }
+
+.modal-dialog-scrollable .modal-content {
+    max-height: calc(100vh - 2rem);
+}
+
+.modal-dialog-scrollable .modal-body {
+    overflow-y: auto;
+}

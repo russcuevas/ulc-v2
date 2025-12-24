@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('loan_to');
             $table->decimal('loan_amount', 12, 2);
             $table->decimal('balance', 12, 2)->nullable();
+            $table->decimal('daily', 12, 2)->nullable();
             $table->decimal('principal', 12, 2);
             $table->string('loan_terms');
             $table->string('loan_status');
