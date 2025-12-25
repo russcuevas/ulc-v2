@@ -57,9 +57,11 @@
                                                         class="btn btn-sm btn-outline-info">
                                                         View Clients <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a href="" class="btn btn-sm btn-outline-primary">
-                                                        Payments <i class="fa-solid fa-coins"></i>
+                                                    <a href="{{ route('admin.area.manila.payments', $area->id) }}"
+                                                        class="btn btn-sm btn-outline-primary">
+                                                        Payments <i class="fa fa-coins"></i>
                                                     </a>
+
                                                 </td>
                                             </tr>
                                         @endforeach
