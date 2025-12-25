@@ -51,3 +51,5 @@ Route::post('/admin/add/renewal', [AdminClientRenewalController::class, 'AdminCl
 
 // Manila Route
 Route::get('/admin/areas/manila', [AdminAreaManilaController::class, 'AdminAreaManilaPage'])->name('admin.area.manila.page');
+Route::get('/admin/areas/manila/{area}/clients', [AdminAreaManilaController::class, 'AdminAreaManilaClientsPage'])->name('admin.area.manila.clients.page');
+Route::get('/admin/areas/manila/clients/{clientId}', [AdminAreaManilaController::class, 'AdminAreaManilaClientsProfilePage'])->name('admin.area.manila.clients.profile.page');

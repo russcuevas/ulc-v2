@@ -1,0 +1,13 @@
+clients_payment
+reference_number
+collected_by
+client_id -> foreign to clients id table
+clients_loans_id -> foreign to clients_loans id table
+clients_area -> foreign to areas id table
+daily
+collection
+type
+created_by
+
+
+

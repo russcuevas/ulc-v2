@@ -103,10 +103,11 @@
 
         <div class="collapse ps-4 {{ request()->routeIs('admin.area.*') ? 'show' : '' }}" id="areasMenu">
             <a href="{{ route('admin.area.manila.page') }}"
-                class="nav-link small {{ request()->routeIs('admin.area.manila.page') ? 'active' : '' }}">
+                class="nav-link small {{ request()->routeIs('admin.area.manila.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location-dot me-2"></i>
                 Manila
             </a>
+
 
             <a href="" class="nav-link small">
                 <i class="fa-solid fa-location-dot me-2"></i>

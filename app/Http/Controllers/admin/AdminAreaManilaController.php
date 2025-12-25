@@ -28,4 +28,36 @@ class AdminAreaManilaController extends Controller
     {
         return view('admin.areas.manila.payments');
     }
+
+    public function AdminAreaManilaClientsPage($areaId)
+    {
+        $area = DB::table('areas')->where('id', $areaId)->first();
+
+        $clients = DB::table('clients')
+            ->where('area_id', $areaId)
+            ->get();
+
+        return view('admin.areas.manila.view_clients', compact('clients', 'area'));
+    }
+
+    public function AdminAreaManilaClientsProfilePage($clientId)
+    {
+        // Get client information
+        $client = DB::table('clients')
+            ->where('id', $clientId)
+            ->first();
+
+        // Safety check (optional but recommended)
+        if (!$client) {
+            abort(404, 'Client not found');
+        }
+
+        // Get all loans (previous + renewals)
+        $loans = DB::table('clients_loans')
+            ->where('client_id', $clientId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.areas.manila.client_history', compact('client', 'loans'));
+    }
 }
