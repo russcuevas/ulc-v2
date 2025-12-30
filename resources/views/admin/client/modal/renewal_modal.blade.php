@@ -61,7 +61,11 @@
                                                 <td>{{ $last_loans->pn_number }}</td>
                                                 <td>{{ $last_loans->release_number }}</td>
                                                 <td>₱{{ number_format($last_loans->loan_amount, 2) }}</td>
-                                                <td>{{ $last_loans->loan_from }} → {{ $last_loans->loan_to }}</td>
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($last_loans->loan_from)->format('M d, Y') }}
+                                                    →
+                                                    {{ \Carbon\Carbon::parse($last_loans->loan_to)->format('M d, Y') }}
+                                                </td>
                                             </tr>
                                         @else
                                             <tr>

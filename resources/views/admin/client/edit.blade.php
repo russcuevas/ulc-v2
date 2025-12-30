@@ -171,6 +171,7 @@
                                             <th>From</th>
                                             <th>To</th>
                                             <th>Loan Amount</th>
+                                            <th>Daily</th>
                                             <th>Terms</th>
                                             <th>Principal</th>
                                             <th>Balance</th>
@@ -187,6 +188,7 @@
                                                 </td>
                                                 <td>{{ \Carbon\Carbon::parse($loan->loan_to)->format('M d, Y') }}</td>
                                                 <td>₱{{ number_format($loan->loan_amount, 2) }}</td>
+                                                <td>₱{{ number_format($loan->daily, 2) }}</td>
                                                 <td>{{ $loan->loan_terms }}</td>
                                                 <td>₱{{ number_format($loan->principal, 2) }}</td>
                                                 <td>₱{{ number_format($loan->balance, 2) }}</td>

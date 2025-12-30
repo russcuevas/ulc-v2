@@ -55,3 +55,4 @@ Route::get('/admin/areas/manila/{area}/clients', [AdminAreaManilaController::cla
 Route::get('/admin/areas/manila/clients/{clientId}', [AdminAreaManilaController::class, 'AdminAreaManilaClientsProfilePage'])->name('admin.area.manila.clients.profile.page');
 
 Route::get('/admin/areas/manila/{area}/payments', [AdminAreaManilaController::class, 'AdminAreaManilaClientPaymentsPage'])->name('admin.area.manila.payments');
+Route::post('admin/areas/{id}/create', [AdminAreaManilaController::class, 'AdminAreaManilaClientPaymentsRequest'])->name('areas.area.manila.payments.request');
