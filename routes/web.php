@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\admin\AdminAreaManilaController;
+use App\Http\Controllers\admin\manila\AdminAreaManilaController;
 use App\Http\Controllers\admin\AdminClientController;
 use App\Http\Controllers\admin\AdminClientRenewalController;
 use App\Http\Controllers\admin\AdminCollectorController;
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\AdminSecretaryController;
+use App\Http\Controllers\admin\manila\AdminAreaManilaClientsController;
+use App\Http\Controllers\admin\manila\AdminAreaManilaPaymentsController;
 use App\Http\Controllers\auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -51,8 +53,15 @@ Route::post('/admin/add/renewal', [AdminClientRenewalController::class, 'AdminCl
 
 // Manila Route
 Route::get('/admin/areas/manila', [AdminAreaManilaController::class, 'AdminAreaManilaPage'])->name('admin.area.manila.page');
-Route::get('/admin/areas/manila/{area}/clients', [AdminAreaManilaController::class, 'AdminAreaManilaClientsPage'])->name('admin.area.manila.clients.page');
-Route::get('/admin/areas/manila/clients/{clientId}', [AdminAreaManilaController::class, 'AdminAreaManilaClientsProfilePage'])->name('admin.area.manila.clients.profile.page');
 
-Route::get('/admin/areas/manila/{area}/payments', [AdminAreaManilaController::class, 'AdminAreaManilaClientPaymentsPage'])->name('admin.area.manila.payments');
-Route::post('admin/areas/{id}/create', [AdminAreaManilaController::class, 'AdminAreaManilaClientPaymentsRequest'])->name('areas.area.manila.payments.request');
+Route::get('/admin/areas/manila/{area}/clients', [AdminAreaManilaClientsController::class, 'AdminAreaManilaClientsPage'])->name('admin.area.manila.clients.page');
+Route::get('/admin/areas/manila/clients/{clientId}', [AdminAreaManilaClientsController::class, 'AdminAreaManilaClientsProfilePage'])->name('admin.area.manila.clients.profile.page');
+
+
+Route::get('/admin/areas/manila/{area}/payments', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPaymentsPage'])->name('admin.area.manila.payments');
+Route::post('admin/areas/{id}/create', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPaymentsRequest'])->name('areas.area.manila.payments.request');
+Route::get('/admin/areas/manila/payments/{referenceNumber}/clients', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientDailyPaymentsPage'])->name('admin.area.manila.payments.clients');
+Route::post('/admin/manila/collect-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientCollectPaymentRequest'])
+    ->name('admin.manila.payments.clients.collect');
+Route::post('/admin/manila/no-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientNoPaymentRequest'])
+    ->name('admin.manila.payments.clients.not.paid');

@@ -22,19 +22,29 @@ class AdminClientController extends Controller
 
         $clients = DB::table('clients')
             ->leftJoin('areas', 'clients.area_id', '=', 'areas.id')
-            ->leftJoin('clients_loans', 'clients.id', '=', 'clients_loans.client_id')
+            ->leftJoin('clients_loans as loans', function ($join) {
+                $join->on('clients.id', '=', 'loans.client_id')
+                    ->whereRaw('loans.id = (
+                 SELECT id 
+                 FROM clients_loans 
+                 WHERE client_id = clients.id 
+                 ORDER BY loan_from DESC 
+                 LIMIT 1
+             )');
+            })
             ->select(
                 'clients.*',
                 'areas.location_name',
                 'areas.areas_name',
-                'clients_loans.loan_from',
-                'clients_loans.loan_to',
-                'clients_loans.loan_amount',
-                'clients_loans.loan_terms',
-                'clients_loans.loan_status',
-                'clients_loans.payment_status'
+                'loans.loan_from',
+                'loans.loan_to',
+                'loans.loan_amount',
+                'loans.loan_terms',
+                'loans.loan_status',
+                'loans.payment_status'
             )
             ->get();
+
 
         return view('admin.client.index', compact('locations', 'areas', 'clients'));
     }

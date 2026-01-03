@@ -180,7 +180,7 @@
                                     </thead>
                                     <tbody style="font-size: 11px !important">
                                         @foreach ($loans as $loan)
-                                            <tr>
+                                            <tr class="{{ $loan->payment_status == 'paid' ? 'table-danger' : '' }}">
                                                 <td>{{ $loan->pn_number }}</td>
                                                 <td>{{ $loan->release_number }}</td>
                                                 <td>{{ ucfirst($loan->loan_status) }}</td>
@@ -195,14 +195,14 @@
 
                                                 <td>
                                                     <span
-                                                        class="badge 
-                                                        {{ $loan->payment_status == 'paid' ? 'bg-success' : 'bg-danger' }}">
+                                                        class="badge {{ $loan->payment_status == 'paid' ? 'bg-success' : 'bg-danger' }}">
                                                         {{ strtoupper($loan->payment_status) }}
                                                     </span>
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
+
 
 
                                 </table>

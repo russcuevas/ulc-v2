@@ -47,23 +47,42 @@
                             </form>
                         </div>
                         <div class="card-body table-responsive">
-                            <table id="loanHistory" class="table table-bordered table-striped js-basic-example">
-                                <thead class="table-light" style="font-size: 11px;">
+                            <table id="loanHistory" class="table table-hover table-striped js-basic-example dataTable"
+                                style="border: 2px solid rgba(0, 0, 0, 0.175) !important;;">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>PN #</th>
-                                        <th>Release #</th>
-                                        <th>From</th>
-                                        <th>To</th>
-                                        <th>Mode</th>
-                                        <th>Amount</th>
-                                        <th>Balance</th>
-                                        <th>Status</th>
+                                        <th>Reference #</th>
+                                        <th>Collector</th>
+                                        <th>Due Date</th>
+                                        <th>Total Collectibles</th>
+                                        <th>Total Collections</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody style="font-size: 11px;">
 
+
+                                <tbody>
+                                    @foreach ($payments as $payment)
+                                        <tr>
+                                            <td>{{ $payment->reference_number }}</td>
+                                            <td>{{ $payment->collected_by }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($payment->due_date)->format('F d, Y') }}
+                                            </td>
+                                            <td>₱{{ number_format($payment->daily, 2) }}</td>
+                                            <td>₱{{ number_format($payment->collection, 2) }}</td>
+                                            <td>
+                                                <a href="{{ route('admin.area.manila.payments.clients', $payment->reference_number) }}"
+                                                    class="btn btn-sm btn-outline-info">
+                                                    Collections <i class="fas fa-eye"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
+
+
+
                             </table>
                         </div>
                     </div>
@@ -132,16 +151,40 @@
     <script>
         document.getElementById('openDatePicker').addEventListener('click', function() {
             Swal.fire({
-                title: 'Select Date and Collector',
+                title: 'Choose date and Collector',
                 html: `
-            <input id="dueDateInput" class="swal2-input" placeholder="Choose date">
-            <select id="collectorSelect" class="swal2-input">
-                <option value="">Select Collector</option>
-                @foreach ($collectors as $collector)
-                    <option value="{{ $collector->id }}">{{ $collector->fullname }}</option>
-                @endforeach
-            </select>
-                `,
+                        <div class="text-start">
+                            <div class="row g-2">
+                                <!-- Due Date -->
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fa fa-calendar-day me-1 text-muted"></i> Due Date
+                                    </label>
+                                    <input
+                                        id="dueDateInput"
+                                        type="date"
+                                        class="form-control"
+                                        placeholder="Choose date"
+                                    >
+                                </div>
+
+                                <!-- Collector -->
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">
+                                        <i class="fa fa-user me-1 text-muted"></i> Collector
+                                    </label>
+                                    <select id="collectorSelect" class="form-select">
+                                        <option value="">Select collector</option>
+                                        @foreach ($collectors as $collector)
+                                            <option value="{{ $collector->id }}">
+                                                {{ $collector->fullname }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `,
                 didOpen: () => {
                     flatpickr("#dueDateInput", {
                         dateFormat: "Y-m-d",

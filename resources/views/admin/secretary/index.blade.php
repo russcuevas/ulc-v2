@@ -93,7 +93,7 @@
                                             <tr>
                                                 <td>{{ $secretary->fullname }}</td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-info" data-bs-toggle="modal"
+                                                    <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal"
                                                         data-bs-target="#areasModal{{ $secretary->id }}">
                                                         View Areas <i class="fas fa-eye"></i>
                                                     </button>

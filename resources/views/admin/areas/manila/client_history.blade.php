@@ -83,35 +83,27 @@
                                 </thead>
                                 <tbody style="font-size: 11px;">
                                     @foreach ($loans as $loan)
-                                        <tr>
+                                        <tr
+                                            class="{{ $loan->payment_status === 'paid' ? 'table-danger text-white' : '' }}">
                                             <td>{{ $loan->pn_number }}</td>
                                             <td>{{ $loan->release_number }}</td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($loan->loan_from)->format('M d, Y') }}
-                                            </td>
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($loan->loan_to)->format('M d, Y') }}
-                                            </td>
+                                            <td>{{ \Carbon\Carbon::parse($loan->loan_from)->format('M d, Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($loan->loan_to)->format('M d, Y') }}</td>
                                             <td>
                                                 <span
-                                                    class="badge 
-                                                {{ $loan->loan_status === 'new' ? 'bg-success' : 'bg-secondary' }}">
+                                                    class="badge {{ $loan->loan_status === 'new' ? 'bg-success' : 'bg-secondary' }}">
                                                     {{ ucfirst($loan->loan_status) }}
                                                 </span>
                                             </td>
-                                            <td>
-                                                ₱{{ number_format($loan->loan_amount, 2) }}
-                                            </td>
-                                            <td>
-                                                ₱{{ number_format($loan->balance, 2) }}
-                                            </td>
-                                            <td>
+                                            <td>₱{{ number_format($loan->loan_amount, 2) }}</td>
+                                            <td>₱{{ number_format($loan->balance, 2) }}</td>
+                                            <td data-order="{{ $loan->payment_status === 'unpaid' ? 0 : 1 }}">
                                                 <span
-                                                    class="badge 
-                                                {{ $loan->payment_status === 'paid' ? 'bg-success' : 'bg-danger' }}">
+                                                    class="badge {{ $loan->payment_status === 'paid' ? 'bg-success' : 'bg-danger' }}">
                                                     {{ ucfirst($loan->payment_status) }}
                                                 </span>
                                             </td>
+
                                             <td>
                                                 <a style="text-decoration: none" href="">Check payment
                                                     history</a>
@@ -143,6 +135,9 @@
                 pageLength: 10,
                 orderCellsTop: true,
                 fixedHeader: true,
+                order: [
+                    [7, 'asc']
+                ] // <-- Column index 7 is "Status"
             });
         });
     </script>
