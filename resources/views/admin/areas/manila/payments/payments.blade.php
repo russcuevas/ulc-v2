@@ -27,6 +27,8 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.page') }}"
                             class="text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.area.manila.page') }}"
+                            class="text-decoration-none"><i class="fas fa-location-dot me-1"></i> Manila</a></li>
                     <li class="breadcrumb-item active" aria-current="page"><i class="fa fa-coins me-1"></i>
                         Payments</li>
                 </ol>

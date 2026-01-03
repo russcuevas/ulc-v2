@@ -41,7 +41,7 @@
                                     #{{ $referenceNumber }}
                                 </h5>
 
-                                <span class="badge bg-primary">
+                                <span class="badge bg-primary text-uppercase">
                                     {{ $payments->first()->collected_by ?? 'N/A' }}
                                 </span>
                             </div>
@@ -50,8 +50,15 @@
                                 <span class="text-muted fw-semibold">
                                     {{ \Carbon\Carbon::parse($payments->first()->due_date)->format('M d, Y') }}
                                 </span>
+
+                                <div class="mt-2">
+                                    <a href="" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-print me-1"></i> PRINT
+                                    </a>
+                                </div>
                             </div>
                         </div>
+
 
 
 
@@ -69,7 +76,7 @@
 
                             <div class="row g-3 mb-4">
                                 <div class="col-md-3">
-                                    <div class="card shadow-sm h-100">
+                                    <div class="card shadow-sm h-100 card-left-orange">
                                         <div class="card-body">
                                             <small class="text-muted">TOTAL COLLECTIBLES</small>
                                             <h4 class="fw-bold text-danger mb-0">
@@ -80,7 +87,7 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <div class="card shadow-sm h-100">
+                                    <div class="card shadow-sm h-100 card-left-orange">
                                         <div class="card-body">
                                             <small class="text-muted">TOTAL COLLECTED</small>
                                             <h4 class="fw-bold text-success mb-0">
@@ -91,7 +98,7 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <div class="card shadow-sm h-100">
+                                    <div class="card shadow-sm h-100 card-left-orange">
                                         <div class="card-body">
                                             <small class="text-muted"># OF PAID</small>
                                             <h4 class="fw-bold text-success mb-0">
@@ -102,7 +109,7 @@
                                 </div>
 
                                 <div class="col-md-3">
-                                    <div class="card shadow-sm h-100">
+                                    <div class="card shadow-sm h-100 card-left-orange">
                                         <div class="card-body">
                                             <small class="text-muted"># OF NO PAYMENT</small>
                                             <h4 class="fw-bold text-danger mb-0">

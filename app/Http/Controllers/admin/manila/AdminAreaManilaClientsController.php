@@ -15,7 +15,7 @@ class AdminAreaManilaClientsController extends Controller
             ->where('area_id', $areaId)
             ->get();
 
-        return view('admin.areas.manila.view_clients', compact('clients', 'area'));
+        return view('admin.areas.manila.clients.view_clients', compact('clients', 'area'));
     }
 
     public function AdminAreaManilaClientsProfilePage($clientId)
@@ -32,6 +32,6 @@ class AdminAreaManilaClientsController extends Controller
             ->where('client_id', $clientId)
             ->get();
 
-        return view('admin.areas.manila.client_history', compact('client', 'loans'));
+        return view('admin.areas.manila.clients.client_history', compact('client', 'loans'));
     }
 }

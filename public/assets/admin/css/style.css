@@ -206,7 +206,7 @@ body {
 }
 
 
-/* bootstrap */
+/* bootstrap custom */
 .breadcrumb .breadcrumb-item a {
     color: #ff6b35 !important;
 }
@@ -239,18 +239,34 @@ body {
     color: #fff !important;
 }
 
-/* Match dashboard font */
+.badge.bg-primary {
+    background-color: #ff6b35 !important;
+}
+
+.card-left-orange {
+    border-left: 5px solid #ff6b35 !important;
+}
+
+.modal-dialog-scrollable .modal-content {
+    max-height: calc(100vh - 2rem);
+}
+
+.modal-dialog-scrollable .modal-body {
+    overflow-y: auto;
+}
+
+/* end bootstrap */
+
+/* datatables */
 .dataTables_wrapper {
     font-family: 'Inter', sans-serif;
     font-size: 0.9rem;
 }
 
-/* Hover effect */
 table.dataTable tbody tr:hover {
     background-color: #f9f9f9;
 }
 
-/* Pagination buttons */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     border-radius: 5px;
     padding: 5px 10px;
@@ -264,9 +280,8 @@ table.dataTable tbody tr:hover {
     background-color: #ff6b35 !important;
 }
 
-.card-left-orange {
-    border-left: 5px solid #ff6b35 !important;
-}
+/* END DATATABLES */
+
 
 .nav-link .fa-chevron-left {
     transition: transform 0.25s ease;
@@ -286,7 +301,6 @@ table.dataTable tbody tr:hover {
 #areasMenu .nav-link {
     background-color: #ffffff;
     color: #212529;
-    /* Bootstrap text-dark */
 }
 
 #areasMenu .nav-link:hover,
@@ -297,12 +311,4 @@ table.dataTable tbody tr:hover {
 
 #areasMenu {
     border-radius: 0.375rem;
-}
-
-.modal-dialog-scrollable .modal-content {
-    max-height: calc(100vh - 2rem);
-}
-
-.modal-dialog-scrollable .modal-body {
-    overflow-y: auto;
 }

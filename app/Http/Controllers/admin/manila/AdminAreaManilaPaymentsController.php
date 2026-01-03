@@ -40,7 +40,7 @@ class AdminAreaManilaPaymentsController extends Controller
             ->orderBy('due_date', 'desc')
             ->get();
 
-        return view('admin.areas.manila.payments', compact('area', 'collectors', 'payments'));
+        return view('admin.areas.manila.payments.payments', compact('area', 'collectors', 'payments'));
     }
 
     public function AdminAreaManilaClientPaymentsRequest(Request $request, $id)
@@ -110,7 +110,7 @@ class AdminAreaManilaPaymentsController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Payments entry successfully created for clients with balance > 0.');
+        return redirect()->back()->with('success', 'Payments entry successfully.');
     }
 
 
@@ -121,7 +121,7 @@ class AdminAreaManilaPaymentsController extends Controller
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
             ->where('clients_payments.reference_number', $referenceNumber)
             ->select(
-                'clients_payments.id',       // ✅ add this
+                'clients_payments.id',
                 'clients.fullname',
                 'clients_payments.daily',
                 'clients_payments.collection',
@@ -139,7 +139,7 @@ class AdminAreaManilaPaymentsController extends Controller
         }
 
         return view(
-            'admin.areas.manila.daily_payments',
+            'admin.areas.manila.payments.daily_payments',
             compact('payments', 'referenceNumber')
         );
     }
