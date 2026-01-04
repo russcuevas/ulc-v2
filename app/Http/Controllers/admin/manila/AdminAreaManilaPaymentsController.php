@@ -43,6 +43,47 @@ class AdminAreaManilaPaymentsController extends Controller
         return view('admin.areas.manila.payments.payments', compact('area', 'collectors', 'payments'));
     }
 
+    public function AdminAreaManilaPrintSummaryCollections(Request $request, $areaId)
+    {
+        $from = $request->from_date;
+        $to = $request->to_date;
+
+        $area = DB::table('areas')
+            ->where('id', $areaId)
+            ->select('id', 'areas_name as area_name')
+            ->first();
+
+        $payments = DB::table('clients_payments')
+            ->where('client_area', $areaId)
+            ->whereBetween('due_date', [$from, $to])
+            ->select(
+                'reference_number',
+                'collected_by',
+
+                DB::raw('COUNT(id) as total_accounts'),
+                DB::raw('SUM(daily) as active_amount'),
+                DB::raw('SUM(collection) as total_collection'),
+
+                DB::raw("SUM(CASE WHEN type = 'CASH' THEN collection ELSE 0 END) as cash_amount"),
+                DB::raw("SUM(CASE WHEN type = 'ADVANCE' THEN collection ELSE 0 END) as advance_amount"),
+                DB::raw("SUM(CASE WHEN type = 'GCASH' THEN collection ELSE 0 END) as gcash_amount"),
+                DB::raw("SUM(CASE WHEN type = 'CHEQUE' THEN collection ELSE 0 END) as cheque_amount"),
+
+                DB::raw("COUNT(CASE WHEN type = 'NO PAYMENT' THEN 1 END) as no_payment_count")
+            )
+            ->groupBy('reference_number', 'collected_by')
+            ->orderBy('reference_number')
+            ->get();
+
+        return view(
+            'admin.areas.manila.payments.print.print_payments',
+            compact('area', 'payments', 'from', 'to')
+        );
+    }
+
+
+
+
     public function AdminAreaManilaClientPaymentsRequest(Request $request, $id)
     {
         $due_date = $request->due_date;

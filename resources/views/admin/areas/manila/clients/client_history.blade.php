@@ -105,8 +105,8 @@
                                             </td>
 
                                             <td>
-                                                <a style="text-decoration: none" href="">Check payment
-                                                    history</a>
+                                                <a style="text-decoration: none" href="">CHECK PAYMENT
+                                                    HISTORY</a>
                                             </td>
                                         </tr>
                                     @endforeach

@@ -51,11 +51,11 @@
                                     {{ \Carbon\Carbon::parse($payments->first()->due_date)->format('M d, Y') }}
                                 </span>
 
-                                <div class="mt-2">
+                                {{-- <div class="mt-2">
                                     <a href="" class="btn btn-sm btn-primary">
                                         <i class="fas fa-print me-1"></i> PRINT
                                     </a>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
 

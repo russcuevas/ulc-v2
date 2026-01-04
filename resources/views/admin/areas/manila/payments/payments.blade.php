@@ -37,17 +37,34 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card shadow-sm border-1">
-                        <div class="d-flex justify-content-between align-items-center m-4">
-                            <h5 class="card-title mb-0">Payments Summary - <span style="color: #ff6b35">Manila
-                                    [{{ $area->area_name }}]</span></h5>
-                            <form action="{{ route('areas.area.manila.payments.request', $area->id) }}" method="POST">
-                                @csrf
-                                <button type="button" id="openDatePicker"
-                                    class="btn btn-outline-primary btn-sm d-flex align-items-center">
-                                    <i class="fas fa-plus-circle"></i>&nbsp;Create Payments
-                                </button>
-                            </form>
+                        <div class="d-flex justify-content-between align-items-start m-4">
+                            <!-- LEFT: Title -->
+                            <h5 class="card-title mb-0">
+                                Payments Summary -
+                                <span style="color: #ff6b35">
+                                    Manila [{{ $area->area_name }}]
+                                </span>
+                            </h5>
+
+                            <!-- RIGHT: Buttons -->
+                            <div class="d-flex flex-column align-items-end">
+                                <form action="{{ route('areas.area.manila.payments.request', $area->id) }}"
+                                    method="POST">
+                                    @csrf
+                                    <button type="button" id="openDatePicker"
+                                        class="btn btn-outline-primary btn-sm d-flex align-items-center mb-2">
+                                        <i class="fas fa-plus-circle"></i>&nbsp;Create Payments
+                                    </button>
+                                </form>
+
+                                <a href="javascript:void(0)" id="printSummaryCollections"
+                                    class="btn btn-sm btn-primary">
+                                    <i class="fas fa-print me-1"></i> PRINT SUMMARY
+                                </a>
+
+                            </div>
                         </div>
+
                         <div class="card-body table-responsive">
                             <table id="loanHistory" class="table table-hover table-striped js-basic-example dataTable"
                                 style="border: 2px solid rgba(0, 0, 0, 0.175) !important;;">
@@ -160,7 +177,7 @@
                                 <!-- Due Date -->
                                 <div class="col-12">
                                     <label class="form-label fw-semibold">
-                                        <i class="fa fa-calendar-day me-1 text-muted"></i> Due Date
+                                        <i class="fa fa-calendar-day me-1 text-muted"></i>DUE DATE
                                     </label>
                                     <input
                                         id="dueDateInput"
@@ -173,7 +190,7 @@
                                 <!-- Collector -->
                                 <div class="col-12">
                                     <label class="form-label fw-semibold">
-                                        <i class="fa fa-user me-1 text-muted"></i> Collector
+                                        <i class="fa fa-user me-1 text-muted"></i>COLLECTOR
                                     </label>
                                     <select id="collectorSelect" class="form-select">
                                         <option value="">Select collector</option>
@@ -238,6 +255,67 @@
                     collectorInput.name = 'collector';
                     collectorInput.value = result.value.collector;
                     form.appendChild(collectorInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    </script>
+    <script>
+        document.getElementById('printSummaryCollections').addEventListener('click', function() {
+            Swal.fire({
+                title: '<i class="fas fa-print me-1"> </i>Print Summary Collection',
+                html: `
+            <div class="row g-2 text-start">
+                <div class="col-12">
+                <label class="form-label fw-semibold">
+                    <i class="fa fa-calendar-day me-1 text-muted"></i>FROM DATE
+                </label>   
+                <input type="date" id="fromDate" class="form-control">
+                </div>
+                <div class="col-12">
+                <label class="form-label fw-semibold">
+                    <i class="fa fa-calendar-day me-1 text-muted"></i>TO DATE
+                </label>
+                <input type="date" id="toDate" class="form-control">
+                </div>
+            </div>
+        `,
+                showCancelButton: true,
+                confirmButtonText: 'Print',
+                cancelButtonText: 'Cancel',
+                preConfirm: () => {
+                    const from = document.getElementById('fromDate').value;
+                    const to = document.getElementById('toDate').value;
+
+                    if (!from || !to) {
+                        Swal.showValidationMessage('Both dates are required');
+                        return false;
+                    }
+
+                    if (from > to) {
+                        Swal.showValidationMessage('From date cannot be later than To date');
+                        return false;
+                    }
+
+                    return {
+                        from,
+                        to
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'GET';
+                    form.action =
+                        "{{ route('admin.area.manila.payments.print.summary.collections', $area->id) }}";
+                    form.target = '_blank'; // <-- this makes the form submit open in a new tab
+
+                    form.innerHTML = `
+            <input type="hidden" name="from_date" value="${result.value.from}">
+            <input type="hidden" name="to_date" value="${result.value.to}">
+        `;
 
                     document.body.appendChild(form);
                     form.submit();

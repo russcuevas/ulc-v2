@@ -27,24 +27,21 @@
                             class="text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('admin.area.manila.page') }}"
                             class="text-decoration-none"><i class="fas fa-location-dot me-1"></i> Manila</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><i class="fa-solid fa-users me-1"></i>
-                        Clients in area: {{ $area->areas_name }}</li>
+                    <li class="breadcrumb-item active">
+                        <i class="fas fa-exclamation-triangle"></i> Lapsed Accounts
+                    </li>
+
                 </ol>
             </nav>
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card shadow-sm border-1">
-                        <div class="d-flex justify-content-between align-items-start m-4">
+                        <div class="d-flex justify-content-between align-items-center m-4">
                             <h5 class="card-title mb-0">
-                                Clients in area: <strong>{{ $area->areas_name }}</strong>
+                                <span class="badge bg-danger">
+                                    [{{ $area->areas_name }}] - LAPSED CLIENTS ({{ count($clients) }})
+                                </span>
                             </h5>
-
-                            <!-- RIGHT: Buttons -->
-                            <div class="d-flex flex-column align-items-end">
-                                <a href="javascript:void(0)" id="printDataAccounts" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-print me-1"></i> PRINT DATA
-                                </a>
-                            </div>
                         </div>
 
                         <div class="card-body p-4">
@@ -63,9 +60,9 @@
                                 LAPSED ACCOUNTS [{{ $lapsedCount }}]
                             </a>
 
-
                             <div class="table-responsive">
-                                <table id="clientsTable" class="table table-hover dataTable js-basic-example"
+                                <table id="clientsTable"
+                                    class="table table-hover table-danger dataTable js-basic-example"
                                     style="min-width: 1000px; border: 2px solid rgba(0,0,0,0.175) !important;">
                                     <thead class="table-light">
                                         <tr>
@@ -79,7 +76,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($clients as $client)
-                                            <tr class="{{ $client->is_lapsed ? 'table-danger' : '' }}">
+                                            <tr>
                                                 <td>{{ $client->fullname }}</td>
                                                 <td>{{ $client->phone }}</td>
                                                 <td>{{ $client->address }}</td>
@@ -95,7 +92,6 @@
                                             </tr>
                                         @endforeach
                                     </tbody>
-
                                 </table>
                             </div>
                         </div>
@@ -151,90 +147,6 @@
 
         // TOASTR NOTIFICATIONS
     </script>
-
-    {{-- PRINT CLEINTS --}}
-    <script>
-        document.getElementById('printDataAccounts').addEventListener('click', function() {
-            Swal.fire({
-                title: '<i class="fas fa-print me-1"></i> Print Data',
-                html: `
-            <div class="row g-2 text-start">
-                <div class="col-12">
-                <label class="form-label fw-semibold">
-                    <i class="fa fa-calendar-day me-1 text-muted"></i>FROM DATE
-                </label>                    
-                    <input type="date" placeholder="Enter date" id="fromDate" class="form-control">
-                </div>
-                <div class="col-12">
-                <label class="form-label fw-semibold">
-                    <i class="fa fa-calendar-day me-1 text-muted"></i>TO DATE
-                </label>   
-                    <input type="date" placeholder="Enter date" id="toDate" class="form-control">
-                </div>
-            </div>
-            <div class="d-grid gap-2 mt-3">
-                <button id="print-all" class="btn btn-primary">PRINT ALL ACCOUNTS</button>
-                <button id="print-active" class="btn btn-success">PRINT ACTIVE ACCOUNTS</button>
-                <button id="print-lapsed" class="btn btn-danger">PRINT LAPSED ACCOUNTS</button>
-            </div>
-        `,
-                showConfirmButton: false,
-                showCancelButton: true,
-                cancelButtonText: 'Cancel',
-                didOpen: () => {
-                    // Attach Flatpickr
-                    flatpickr("#fromDate", {
-                        dateFormat: "Y-m-d"
-                    });
-                    flatpickr("#toDate", {
-                        dateFormat: "Y-m-d"
-                    });
-
-                    function validateDates() {
-                        const from = document.getElementById('fromDate').value;
-                        const to = document.getElementById('toDate').value;
-
-                        if (!from || !to) {
-                            Swal.showValidationMessage('Both dates are required');
-                            return false;
-                        }
-                        if (from > to) {
-                            Swal.showValidationMessage('From date cannot be later than To date');
-                            return false;
-                        }
-                        return true;
-                    }
-
-                    document.getElementById('print-all').addEventListener('click', function() {
-                        if (!validateDates()) return;
-                        const from = document.getElementById('fromDate').value;
-                        const to = document.getElementById('toDate').value;
-                        window.location.href =
-                            ``;
-                    });
-
-                    document.getElementById('print-active').addEventListener('click', function() {
-                        if (!validateDates()) return;
-                        const from = document.getElementById('fromDate').value;
-                        const to = document.getElementById('toDate').value;
-                        window.location.href =
-                            ``;
-                    });
-
-                    document.getElementById('print-lapsed').addEventListener('click', function() {
-                        if (!validateDates()) return;
-                        const from = document.getElementById('fromDate').value;
-                        const to = document.getElementById('toDate').value;
-                        window.location.href =
-                            ``;
-                    });
-                }
-            });
-        });
-    </script>
-
-
-
 
 </body>
 
