@@ -55,8 +55,15 @@ Route::post('/admin/add/renewal', [AdminClientRenewalController::class, 'AdminCl
 Route::get('/admin/areas/manila', [AdminAreaManilaController::class, 'AdminAreaManilaPage'])->name('admin.area.manila.page');
 
 Route::get('/admin/areas/manila/{area}/clients', [AdminAreaManilaClientsController::class, 'AdminAreaManilaClientsPage'])->name('admin.area.manila.clients.page');
+Route::get('/admin/areas/manila/{area}/clients/renewal', [AdminAreaManilaClientsController::class, 'AdminAreaManilaRenewalClientPage'])->name('admin.area.manila.clients.renewal');
 Route::get('/admin/areas/manila/{area}/clients/lapsed', [AdminAreaManilaClientsController::class, 'AdminAreaManilaLapsedClientsPage'])->name('admin.area.manila.clients.lapsed');
 Route::get('/admin/areas/manila/{area}/clients/active', [AdminAreaManilaClientsController::class, 'AdminAreaManilaActiveClientsPage'])->name('admin.area.manila.clients.active');
+
+Route::get(
+    '/admin/areas/manila/{area}/clients/lapsed/print',
+    [AdminAreaManilaClientsController::class, 'AdminAreaManilaLapsedClientsPrint']
+)->name('admin.area.manila.clients.lapsed.print');
+
 
 Route::get('/admin/areas/manila/clients/{clientId}', [AdminAreaManilaClientsController::class, 'AdminAreaManilaClientsProfilePage'])->name('admin.area.manila.clients.profile.page');
 

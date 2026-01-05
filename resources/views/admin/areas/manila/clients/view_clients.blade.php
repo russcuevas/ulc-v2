@@ -28,7 +28,7 @@
                     <li class="breadcrumb-item"><a href="{{ route('admin.area.manila.page') }}"
                             class="text-decoration-none"><i class="fas fa-location-dot me-1"></i> Manila</a></li>
                     <li class="breadcrumb-item active" aria-current="page"><i class="fa-solid fa-users me-1"></i>
-                        Clients in area: {{ $area->areas_name }}</li>
+                        All Accounts</li>
                 </ol>
             </nav>
             <div class="row">
@@ -36,21 +36,28 @@
                     <div class="card shadow-sm border-1">
                         <div class="d-flex justify-content-between align-items-start m-4">
                             <h5 class="card-title mb-0">
-                                Clients in area: <strong>{{ $area->areas_name }}</strong>
+                                <span class="badge bg-primary">
+                                    [{{ $area->areas_name }}] - ALL ACCOUNTS ({{ count($clients) }})
+                                </span>
                             </h5>
 
                             <!-- RIGHT: Buttons -->
                             <div class="d-flex flex-column align-items-end">
                                 <a href="javascript:void(0)" id="printDataAccounts" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-print me-1"></i> PRINT DATA
+                                    <i class="fas fa-print me-1"></i> PRINT SUMMARY DATA
                                 </a>
                             </div>
                         </div>
 
                         <div class="card-body p-4">
                             <a href="{{ route('admin.area.manila.clients.page', $area->id) }}"
-                                class="btn btn-sm btn-outline-primary mb-1">
+                                class="btn btn-sm btn-primary mb-1">
                                 ALL ACCOUNTS [{{ $totalCount }}]
+                            </a>
+
+                            <a href="{{ route('admin.area.manila.clients.renewal', $area->id) }}"
+                                class="btn btn-sm btn-outline-info mb-1">
+                                FOR RENEWAL [{{ $renewalCount }}]
                             </a>
 
                             <a href="{{ route('admin.area.manila.clients.active', $area->id) }}"
@@ -73,19 +80,36 @@
                                             <th>Phone</th>
                                             <th>Address</th>
                                             <th>Gender</th>
+                                            <th>Status</th>
                                             <th>Created At</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
                                         @foreach ($clients as $client)
-                                            <tr class="{{ $client->is_lapsed ? 'table-danger' : '' }}">
+                                            <tr
+                                                class="
+                                                    {{ $client->is_lapsed ? 'table-danger' : '' }}
+                                                    {{ !$client->is_lapsed && $client->is_renewal ? 'table-info' : '' }}
+                                                ">
                                                 <td>{{ $client->fullname }}</td>
                                                 <td>{{ $client->phone }}</td>
                                                 <td>{{ $client->address }}</td>
                                                 <td>{{ $client->gender }}</td>
+                                                <td>
+                                                    @if ($client->is_lapsed)
+                                                        <span class="badge bg-danger">LAPSED</span>
+                                                    @elseif ($client->is_renewal)
+                                                        <span class="badge bg-info">FOR RENEWAL</span>
+                                                    @else
+                                                        <span class="badge bg-success">ACTIVE</span>
+                                                    @endif
+                                                </td>
+
                                                 <td>{{ \Carbon\Carbon::parse($client->created_at)->format('F j, Y - h:i A') }}
                                                 </td>
+
                                                 <td>
                                                     <a href="{{ route('admin.area.manila.clients.profile.page', $client->id) }}"
                                                         class="btn btn-sm btn-outline-info">
@@ -95,7 +119,6 @@
                                             </tr>
                                         @endforeach
                                     </tbody>
-
                                 </table>
                             </div>
                         </div>
@@ -156,82 +179,49 @@
     <script>
         document.getElementById('printDataAccounts').addEventListener('click', function() {
             Swal.fire({
-                title: '<i class="fas fa-print me-1"></i> Print Data',
+                title: '<i class="fas fa-print me-1"></i> Print Summary Data',
                 html: `
-            <div class="row g-2 text-start">
-                <div class="col-12">
-                <label class="form-label fw-semibold">
-                    <i class="fa fa-calendar-day me-1 text-muted"></i>FROM DATE
-                </label>                    
-                    <input type="date" placeholder="Enter date" id="fromDate" class="form-control">
+                <div class="row g-2 text-start">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">
+                            <i class="fa fa-calendar me-1 text-muted"></i>SELECT MONTH
+                        </label>
+                        <input type="month" id="month" class="form-control">
+                    </div>
                 </div>
-                <div class="col-12">
-                <label class="form-label fw-semibold">
-                    <i class="fa fa-calendar-day me-1 text-muted"></i>TO DATE
-                </label>   
-                    <input type="date" placeholder="Enter date" id="toDate" class="form-control">
+
+                <div class="d-grid gap-2 mt-3">
+                    <button id="print-lapsed" class="btn btn-primary">PRINT LAPSED ACCOUNTS</button>
                 </div>
-            </div>
-            <div class="d-grid gap-2 mt-3">
-                <button id="print-all" class="btn btn-primary">PRINT ALL ACCOUNTS</button>
-                <button id="print-active" class="btn btn-success">PRINT ACTIVE ACCOUNTS</button>
-                <button id="print-lapsed" class="btn btn-danger">PRINT LAPSED ACCOUNTS</button>
-            </div>
-        `,
+            `,
                 showConfirmButton: false,
                 showCancelButton: true,
                 cancelButtonText: 'Cancel',
                 didOpen: () => {
-                    // Attach Flatpickr
-                    flatpickr("#fromDate", {
-                        dateFormat: "Y-m-d"
-                    });
-                    flatpickr("#toDate", {
-                        dateFormat: "Y-m-d"
-                    });
 
-                    function validateDates() {
-                        const from = document.getElementById('fromDate').value;
-                        const to = document.getElementById('toDate').value;
+                    const areaId = {{ $area->id }};
 
-                        if (!from || !to) {
-                            Swal.showValidationMessage('Both dates are required');
-                            return false;
-                        }
-                        if (from > to) {
-                            Swal.showValidationMessage('From date cannot be later than To date');
-                            return false;
-                        }
-                        return true;
-                    }
-
-                    document.getElementById('print-all').addEventListener('click', function() {
-                        if (!validateDates()) return;
-                        const from = document.getElementById('fromDate').value;
-                        const to = document.getElementById('toDate').value;
-                        window.location.href =
-                            ``;
-                    });
-
-                    document.getElementById('print-active').addEventListener('click', function() {
-                        if (!validateDates()) return;
-                        const from = document.getElementById('fromDate').value;
-                        const to = document.getElementById('toDate').value;
-                        window.location.href =
-                            ``;
-                    });
+                    document.getElementById('month').value =
+                        new Date().toISOString().slice(0, 7);
 
                     document.getElementById('print-lapsed').addEventListener('click', function() {
-                        if (!validateDates()) return;
-                        const from = document.getElementById('fromDate').value;
-                        const to = document.getElementById('toDate').value;
-                        window.location.href =
-                            ``;
+                        const month = document.getElementById('month').value;
+                        if (!month) {
+                            Swal.showValidationMessage('Please select a month');
+                            return;
+                        }
+
+                        window.open(
+                            `/admin/areas/manila/${areaId}/clients/lapsed/print?month=${month}`,
+                            '_blank'
+                        );
                     });
                 }
             });
         });
     </script>
+
+
 
 
 

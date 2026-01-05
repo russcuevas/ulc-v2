@@ -19,6 +19,7 @@ class ClientsPayment extends Model
         'daily',
         'collection',
         'type',
+        'is_lapsed',
         'created_by'
     ];
 }

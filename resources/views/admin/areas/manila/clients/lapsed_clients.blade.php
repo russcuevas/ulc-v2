@@ -50,13 +50,18 @@
                                 ALL ACCOUNTS [{{ $totalCount }}]
                             </a>
 
+                            <a href="{{ route('admin.area.manila.clients.renewal', $area->id) }}"
+                                class="btn btn-sm btn-outline-info mb-1">
+                                FOR RENEWAL [{{ $renewalCount }}]
+                            </a>
+
                             <a href="{{ route('admin.area.manila.clients.active', $area->id) }}"
                                 class="btn btn-sm btn-outline-success mb-1">
                                 ACTIVE ACCOUNTS [{{ $activeCount }}]
                             </a>
 
                             <a href="{{ route('admin.area.manila.clients.lapsed', $area->id) }}"
-                                class="btn btn-sm btn-outline-danger mb-1">
+                                class="btn btn-sm btn-danger mb-1">
                                 LAPSED ACCOUNTS [{{ $lapsedCount }}]
                             </a>
 
@@ -70,19 +75,22 @@
                                             <th>Phone</th>
                                             <th>Address</th>
                                             <th>Gender</th>
+                                            <th>Status</th>
                                             <th>Created At</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($clients as $client)
-                                            <tr>
+                                            <tr class="table-danger">
                                                 <td>{{ $client->fullname }}</td>
                                                 <td>{{ $client->phone }}</td>
                                                 <td>{{ $client->address }}</td>
                                                 <td>{{ $client->gender }}</td>
+                                                <td><span class="badge bg-danger">LAPSED</span></td>
                                                 <td>{{ \Carbon\Carbon::parse($client->created_at)->format('F j, Y - h:i A') }}
                                                 </td>
+
                                                 <td>
                                                     <a href="{{ route('admin.area.manila.clients.profile.page', $client->id) }}"
                                                         class="btn btn-sm btn-outline-info">

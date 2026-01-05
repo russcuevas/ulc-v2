@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('loan_terms');
             $table->string('loan_status');
             $table->string('payment_status');
+            $table->boolean('is_lapsed')->default(0);
             $table->string('created_by')->nullable();
             $table->timestamps();
         });

@@ -22,6 +22,7 @@ class ClientsLoans extends Model
         'loan_terms',
         'loan_status',
         'payment_status',
+        'is_lapsed',
         'created_by'
     ];
 }

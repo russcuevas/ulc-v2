@@ -5,6 +5,8 @@ namespace App\Http\Controllers\admin\manila;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 class AdminAreaManilaPaymentsController extends Controller
 {
@@ -83,14 +85,12 @@ class AdminAreaManilaPaymentsController extends Controller
 
 
 
-
     public function AdminAreaManilaClientPaymentsRequest(Request $request, $id)
     {
         $due_date = $request->due_date;
         $collector = DB::table('collectors')->where('id', $request->collector)->first();
         $collected_by = $collector ? $collector->fullname : null;
 
-        // Check if payments for this area and date already exist
         $exists = DB::table('clients_payments')
             ->where('client_area', $id)
             ->where('due_date', $due_date)
@@ -100,7 +100,6 @@ class AdminAreaManilaPaymentsController extends Controller
             return redirect()->back()->with('error', 'Payments for this date already created.');
         }
 
-        // Generate new reference number
         $maxRef = DB::table('clients_payments')
             ->where('due_date', $due_date)
             ->max('reference_number');
@@ -108,7 +107,6 @@ class AdminAreaManilaPaymentsController extends Controller
         $newNumber = $maxRef ? ((int)substr($maxRef, -3) + 1) : 1;
         $reference_number = $due_date . '-' . sprintf("%03d", $newNumber);
 
-        // Get clients with loans that have balance > 0
         $clients = DB::table('clients')
             ->leftJoin('clients_loans', 'clients.id', '=', 'clients_loans.client_id')
             ->where('clients.area_id', $id)
@@ -126,7 +124,9 @@ class AdminAreaManilaPaymentsController extends Controller
                 'clients.area_id as client_area',
                 'clients.fullname',
                 'clients_loans.payment_status',
-                'clients_loans.daily'
+                'clients_loans.daily',
+                'clients_loans.loan_from',
+                'clients_loans.loan_to'
             )
             ->get();
 
@@ -135,6 +135,14 @@ class AdminAreaManilaPaymentsController extends Controller
         }
 
         foreach ($clients as $client) {
+            $is_lapsed = Carbon::parse($client->loan_to)->lt(now()) ? 1 : 0;
+
+            if ($is_lapsed) {
+                DB::table('clients_loans')
+                    ->where('id', $client->client_loans_id)
+                    ->update(['is_lapsed' => 1]);
+            }
+
             DB::table('clients_payments')->insert([
                 'reference_number' => $reference_number,
                 'collected_by'     => $collected_by,
@@ -145,6 +153,7 @@ class AdminAreaManilaPaymentsController extends Controller
                 'daily'            => $client->daily,
                 'collection'       => null,
                 'type'             => null,
+                'is_lapsed'        => $is_lapsed,
                 'created_by'       => 'System',
                 'created_at'       => now(),
                 'updated_at'       => now(),
@@ -153,6 +162,8 @@ class AdminAreaManilaPaymentsController extends Controller
 
         return redirect()->back()->with('success', 'Payments entry successfully.');
     }
+
+
 
 
     public function AdminAreaManilaClientDailyPaymentsPage($referenceNumber)
@@ -216,7 +227,6 @@ class AdminAreaManilaPaymentsController extends Controller
             return redirect()->back()->with('error', 'Amount exceeds remaining balance!');
         }
 
-        // Update payment
         DB::table('clients_payments')
             ->where('id', $id)
             ->update([
@@ -225,18 +235,23 @@ class AdminAreaManilaPaymentsController extends Controller
                 'updated_at' => now(),
             ]);
 
-        // Update loan balance
         DB::table('clients_loans')
             ->where('id', $loan->id)
             ->update([
                 'balance' => $remainingBalance,
                 'updated_at' => now(),
-                // ✅ Mark as paid if balance is 0
                 'payment_status' => $remainingBalance <= 0 ? 'paid' : $loan->payment_status,
             ]);
 
+        if (Carbon::parse($loan->loan_to)->lt(now())) {
+            DB::table('clients_loans')
+                ->where('id', $loan->id)
+                ->update(['is_lapsed' => 1]);
+        }
+
         return redirect()->back()->with('success', "Payment collected successfully! Remaining balance: ₱" . number_format($remainingBalance, 2));
     }
+
 
 
     public function AdminAreaManilaClientNoPaymentRequest(Request $request, $id)
