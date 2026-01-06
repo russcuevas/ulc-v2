@@ -66,7 +66,6 @@ class AdminAreaManilaPaymentsController extends Controller
                 DB::raw('SUM(daily) as active_amount'),
                 DB::raw('SUM(collection) as total_collection'),
 
-                // ✅ COUNT per payment type
                 DB::raw("COUNT(CASE WHEN type = 'CASH' THEN 1 END) as cash_count"),
                 DB::raw("COUNT(CASE WHEN type = 'ADVANCE' THEN 1 END) as advance_count"),
                 DB::raw("COUNT(CASE WHEN type = 'GCASH' THEN 1 END) as gcash_count"),
@@ -164,9 +163,6 @@ class AdminAreaManilaPaymentsController extends Controller
         return redirect()->back()->with('success', 'Payments entry successfully.');
     }
 
-
-
-
     public function AdminAreaManilaClientDailyPaymentsPage($referenceNumber)
     {
         $payments = DB::table('clients_payments')
@@ -205,14 +201,12 @@ class AdminAreaManilaPaymentsController extends Controller
             'type' => 'required|string',
         ]);
 
-        // Get the payment record
         $payment = DB::table('clients_payments')->where('id', $id)->first();
 
         if (!$payment) {
             return redirect()->back()->with('error', 'Payment record not found!');
         }
 
-        // Get the associated loan
         $loan = DB::table('clients_loans')->where('id', $payment->client_loans_id)->first();
 
         if (!$loan) {

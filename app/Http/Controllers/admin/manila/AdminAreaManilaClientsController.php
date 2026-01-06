@@ -129,9 +129,6 @@ class AdminAreaManilaClientsController extends Controller
         );
     }
 
-
-
-
     public function AdminAreaManilaActiveClientsPage($areaId)
     {
         $area = DB::table('areas')->where('id', $areaId)->first();
@@ -160,51 +157,6 @@ class AdminAreaManilaClientsController extends Controller
         return view(
             'admin.areas.manila.clients.active_clients',
             array_merge(compact('clients', 'area'), $counts)
-        );
-    }
-
-
-    // ACCOUNT HISTORY
-    public function AdminAreaManilaClientsProfilePage($clientId)
-    {
-        $client = DB::table('clients')
-            ->where('id', $clientId)
-            ->first();
-
-        if (!$client) {
-            abort(404, 'Client not found');
-        }
-
-        $loans = DB::table('clients_loans')
-            ->where('client_id', $clientId)
-            ->get();
-
-        return view('admin.areas.manila.clients.client_history', compact('client', 'loans'));
-    }
-
-    public function AdminAreaManilaClientsPrintLoanHistory($clientId)
-    {
-        $client = DB::table('clients')
-            ->where('id', $clientId)
-            ->first();
-
-        if (!$client) {
-            abort(404, 'Client not found');
-        }
-
-        $loans = DB::table('clients_loans')
-            ->where('client_id', $clientId)
-            ->orderBy('loan_from', 'asc')
-            ->get();
-
-        $area = DB::table('areas')
-            ->where('id', $client->area_id)
-            ->select('id', 'areas_name as area_name')
-            ->first();
-
-        return view(
-            'admin.areas.manila.clients.print.print_loan_history',
-            compact('client', 'loans', 'area')
         );
     }
 

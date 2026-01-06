@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\AdminCollectorController;
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\AdminSecretaryController;
 use App\Http\Controllers\admin\manila\AdminAreaManilaClientsController;
+use App\Http\Controllers\admin\manila\AdminAreaManilaClientsHistoryController;
 use App\Http\Controllers\admin\manila\AdminAreaManilaPaymentsController;
 use App\Http\Controllers\auth\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +35,6 @@ Route::post('/admin/add/client', [AdminClientController::class, 'AdminAddClientR
 Route::get('/admin/edit/client/{id}', [AdminClientController::class, 'AdminEditClientPage'])->name('admin.edit.client.page');
 Route::put('/admin/update/client/{id}', [AdminClientController::class, 'AdminUpdateClientRequest'])->name('admin.update.client.request');
 Route::delete('/admin/delete/client/{id}', [AdminClientController::class, 'AdminDeleteClientRequest'])->name('admin.delete.client.request');
-
 Route::post('/admin/add/renewal', [AdminClientRenewalController::class, 'AdminClientAddRenewalRequest'])->name('admin.add.renewal.client.request');
 
 
@@ -42,26 +42,25 @@ Route::post('/admin/add/renewal', [AdminClientRenewalController::class, 'AdminCl
 
 // Manila Route
 Route::get('/admin/areas/manila', [AdminAreaManilaController::class, 'AdminAreaManilaPage'])->name('admin.area.manila.page');
-Route::get('/admin/areas/manila/print-sales', [AdminAreaManilaController::class, 'AdminAreaManilaPrintSalesReports'])->name('admin.area.manila.print.sales');
+Route::get('/admin/areas/manila/sales/print', [AdminAreaManilaController::class, 'AdminAreaManilaPrintSalesReports'])->name('admin.area.manila.print.sales');
 
 // Manila Clients Route
 Route::get('/admin/areas/manila/{area}/clients', [AdminAreaManilaClientsController::class, 'AdminAreaManilaClientsPage'])->name('admin.area.manila.clients.page');
 Route::get('/admin/areas/manila/{area}/clients/renewal', [AdminAreaManilaClientsController::class, 'AdminAreaManilaRenewalClientPage'])->name('admin.area.manila.clients.renewal.page');
 Route::get('/admin/areas/manila/{area}/clients/lapsed', [AdminAreaManilaClientsController::class, 'AdminAreaManilaLapsedClientsPage'])->name('admin.area.manila.clients.lapsed.page');
 Route::get('/admin/areas/manila/{area}/clients/active', [AdminAreaManilaClientsController::class, 'AdminAreaManilaActiveClientsPage'])->name('admin.area.manila.clients.active.page');
-// Manila Clients View History
-Route::get('/admin/areas/manila/clients/{clientId}', [AdminAreaManilaClientsController::class, 'AdminAreaManilaClientsProfilePage'])->name('admin.area.manila.clients.profile.page');
-// Manila Clients Prints History
-Route::get('/admin/areas/manila/clients/{clientId}/loans/print', [AdminAreaManilaClientsController::class, 'AdminAreaManilaClientsPrintLoanHistory'])->name('admin.area.manila.clients.print.history.page');
-
-// Manila Clients Prints Lapsed
 Route::get('/admin/areas/manila/{area}/clients/lapsed/print', [AdminAreaManilaClientsController::class, 'AdminAreaManilaLapsedClientsPrint'])->name('admin.area.manila.clients.lapsed.page.print');
+
+// Manila Clients View History
+Route::get('/admin/areas/manila/clients/{clientId}', [AdminAreaManilaClientsHistoryController::class, 'AdminAreaManilaClientsProfilePage'])->name('admin.area.manila.clients.profile.page');
+Route::get('/admin/areas/manila/clients/{clientId}/loans/print', [AdminAreaManilaClientsHistoryController::class, 'AdminAreaManilaClientsPrintLoanHistory'])->name('admin.area.manila.clients.print.history.page');
+
+
 
 // Manila Payments Route
 Route::get('/admin/areas/manila/{area}/payments', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPaymentsPage'])->name('admin.area.manila.payments');
-Route::post('admin/areas/{id}/create', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPaymentsRequest'])->name('areas.area.manila.payments.request');
+Route::post('/admin/areas/manila/{id}/create', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPaymentsRequest'])->name('areas.area.manila.payments.request');
 Route::get('/admin/areas/manila/payments/{referenceNumber}/clients', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientDailyPaymentsPage'])->name('admin.area.manila.payments.clients');
-Route::post('/admin/manila/collect-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientCollectPaymentRequest'])->name('admin.manila.payments.clients.collect');
-Route::post('/admin/manila/no-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientNoPaymentRequest'])->name('admin.manila.payments.clients.not.paid');
-// Manila Payments Prints Summary
-Route::get('/admin/areas/manila/payments/{area}/print/summary/collections', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaPrintSummaryCollections'])->name('admin.area.manila.payments.print.summary.collections');
+Route::post('/admin/areas/manila/collect-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientCollectPaymentRequest'])->name('admin.manila.payments.clients.collect');
+Route::post('/admin/areas/manila/no-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientNoPaymentRequest'])->name('admin.manila.payments.clients.not.paid');
+Route::get('/admin/areas/manila/payments/{area}/summary/collections/print', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaPrintSummaryCollections'])->name('admin.area.manila.payments.print.summary.collections');
