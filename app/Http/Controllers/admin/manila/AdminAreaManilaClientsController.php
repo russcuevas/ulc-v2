@@ -10,7 +10,7 @@ class AdminAreaManilaClientsController extends Controller
 {
     public function AdminAreaManilaClientsPage($areaId)
     {
-        $area = DB::table('areas')->where('id', $areaId)->first();
+        $area = $this->getRelatedArea($areaId);
 
         $clients = DB::table('clients')
             ->where('clients.area_id', $areaId)
@@ -63,7 +63,8 @@ class AdminAreaManilaClientsController extends Controller
 
     public function AdminAreaManilaRenewalClientPage($areaId)
     {
-        $area = DB::table('areas')->where('id', $areaId)->first();
+        $area = $this->getRelatedArea($areaId);
+
 
         $clients = DB::table('clients')
             ->where('clients.area_id', $areaId)
@@ -100,7 +101,8 @@ class AdminAreaManilaClientsController extends Controller
 
     public function AdminAreaManilaLapsedClientsPage($areaId)
     {
-        $area = DB::table('areas')->where('id', $areaId)->first();
+        $area = $this->getRelatedArea($areaId);
+
 
         $clients = DB::table('clients')
             ->where('clients.area_id', $areaId)
@@ -131,7 +133,8 @@ class AdminAreaManilaClientsController extends Controller
 
     public function AdminAreaManilaActiveClientsPage($areaId)
     {
-        $area = DB::table('areas')->where('id', $areaId)->first();
+        $area = $this->getRelatedArea($areaId);
+
 
         $clients = DB::table('clients')
             ->where('clients.area_id', $areaId)
@@ -284,5 +287,15 @@ class AdminAreaManilaClientsController extends Controller
             'admin.areas.manila.clients.print.print_lapsed',
             compact('area', 'clients', 'month', 'startOfMonth', 'endOfMonth')
         );
+    }
+
+    private function getRelatedArea($areaId)
+    {
+        $area = DB::table('areas')
+            ->where('id', $areaId)
+            ->where('location_name', 'Manila Area')
+            ->first();
+
+        return $area;
     }
 }

@@ -14,6 +14,7 @@ class AdminAreaManilaPaymentsController extends Controller
     {
         $area = DB::table('areas')
             ->where('id', $areaId)
+            ->where('location_name', 'Manila Area')
             ->select('id', 'areas_name as area_name')
             ->first();
 
@@ -29,7 +30,10 @@ class AdminAreaManilaPaymentsController extends Controller
         $payments = DB::table('clients_payments')
             ->join('clients', 'clients.id', '=', 'clients_payments.client_id')
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
+            ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->where('clients_payments.client_area', $areaId)
+            ->where('areas.location_name', 'Manila Area')
+
             ->select(
                 'clients_payments.reference_number',
                 DB::raw('MAX(clients_payments.collected_by) as collected_by'),
@@ -52,12 +56,16 @@ class AdminAreaManilaPaymentsController extends Controller
 
         $area = DB::table('areas')
             ->where('id', $areaId)
+            ->where('location_name', 'Manila Area')
             ->select('id', 'areas_name as area_name')
             ->first();
 
         $payments = DB::table('clients_payments')
-            ->where('client_area', $areaId)
+            ->join('areas', 'areas.id', '=', 'clients_payments.client_area')
+            ->where('clients_payments.client_area', $areaId)
+            ->where('areas.location_name', 'Manila Area')
             ->whereBetween('due_date', [$from, $to])
+
             ->select(
                 'reference_number',
                 'collected_by',
@@ -108,8 +116,10 @@ class AdminAreaManilaPaymentsController extends Controller
         $reference_number = $due_date . '-' . sprintf("%03d", $newNumber);
 
         $clients = DB::table('clients')
+            ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->leftJoin('clients_loans', 'clients.id', '=', 'clients_loans.client_id')
             ->where('clients.area_id', $id)
+            ->where('areas.location_name', 'Manila Area')
             ->where('clients_loans.balance', '>', 0)
             ->where(function ($query) use ($due_date) {
                 $query->where(function ($q) use ($due_date) {
@@ -168,7 +178,9 @@ class AdminAreaManilaPaymentsController extends Controller
         $payments = DB::table('clients_payments')
             ->join('clients', 'clients.id', '=', 'clients_payments.client_id')
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
+            ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->where('clients_payments.reference_number', $referenceNumber)
+            ->where('areas.location_name', 'Manila Area')
             ->select(
                 'clients_payments.id',
                 'clients.fullname',
@@ -244,7 +256,7 @@ class AdminAreaManilaPaymentsController extends Controller
                 ->update(['is_lapsed' => 1]);
         }
 
-        return redirect()->back()->with('success', "Payment collected successfully! Remaining balance: ₱" . number_format($remainingBalance, 2));
+        return redirect()->back()->with('success', "Payment collected successfully!");
     }
 
 

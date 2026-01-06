@@ -38,6 +38,7 @@ class AdminAreaManilaController extends Controller
         $query = DB::table('clients_loans')
             ->join('clients', 'clients.id', '=', 'clients_loans.client_id')
             ->join('areas', 'areas.id', '=', 'clients.area_id')
+            ->where('areas.location_name', 'Manila Area')
             ->whereBetween('clients_loans.created_at', [$from, $to]);
 
         if (!$request->all_areas && $request->area_id) {
@@ -60,10 +61,10 @@ class AdminAreaManilaController extends Controller
             ->get();
 
         return view('admin.areas.manila.print.print_sales', [
-            'loans' => $loans,
-            'from'  => $from,
-            'to'    => $to,
-            'allAreas' => $request->all_areas
+            'loans'     => $loans,
+            'from'      => $from,
+            'to'        => $to,
+            'allAreas'  => $request->all_areas
         ]);
     }
 }

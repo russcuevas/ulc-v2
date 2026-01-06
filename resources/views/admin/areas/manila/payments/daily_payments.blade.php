@@ -316,7 +316,7 @@
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/admin/manila/collect-payment/${paymentId}`;
+                    form.action = `/admin/areas/manila/collect-payment/${paymentId}`;
 
                     const csrf = document.createElement('input');
                     csrf.type = 'hidden';
@@ -378,7 +378,7 @@
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/admin/manila/no-payment/${paymentId}`;
+                    form.action = `/admin/areas/manila/no-payment/${paymentId}`;
 
                     const csrf = document.createElement('input');
                     csrf.type = 'hidden';
