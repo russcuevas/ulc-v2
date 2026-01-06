@@ -14,6 +14,13 @@
     <link rel="stylesheet" href="{{ asset('assets/admin/css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        .generate-soa-btn.loading {
+            pointer-events: none;
+            /* Prevent clicking again */
+            opacity: 0.7;
+        }
+    </style>
 </head>
 
 <body>
@@ -115,9 +122,13 @@
                                             </td>
 
                                             <td>
-                                                <a style="text-decoration: none" href="">CHECK PAYMENT
-                                                    HISTORY</a>
+                                                <a style="text-decoration: none"
+                                                    href="{{ route('admin.area.manila.clients.loan.payments', $loan->id) }}"
+                                                    target="_blank" class="generate-soa-link">
+                                                    GENERATE STATEMENT OF ACCOUNT
+                                                </a>
                                             </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -178,6 +189,30 @@
             positionClass: "toast-top-right"
         };
     </script>
+    <script>
+        document.addEventListener('click', function(event) {
+            const link = event.target.closest('.generate-soa-link');
+            if (!link) return;
+
+            if (link.classList.contains('loading')) {
+                event.preventDefault();
+                return;
+            }
+
+            link.classList.add('loading');
+            const originalContent = link.innerHTML;
+
+            link.innerHTML = `
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Loading...
+            `;
+            setTimeout(() => {
+                link.innerHTML = originalContent;
+                link.classList.remove('loading');
+            }, 1000);
+        });
+    </script>
+
 
 </body>
 

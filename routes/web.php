@@ -54,7 +54,7 @@ Route::get('/admin/areas/manila/{area}/clients/lapsed/print', [AdminAreaManilaCl
 // Manila Clients View History
 Route::get('/admin/areas/manila/clients/{clientId}', [AdminAreaManilaClientsHistoryController::class, 'AdminAreaManilaClientsProfilePage'])->name('admin.area.manila.clients.profile.page');
 Route::get('/admin/areas/manila/clients/{clientId}/loans/print', [AdminAreaManilaClientsHistoryController::class, 'AdminAreaManilaClientsPrintLoanHistory'])->name('admin.area.manila.clients.print.history.page');
-
+Route::get('/admin/areas/manila/clients/loans/{loanId}/payments', [AdminAreaManilaClientsHistoryController::class, 'AdminAreaManilaClientLoanPaymentsPage'])->name('admin.area.manila.clients.loan.payments');
 
 
 // Manila Payments Route
