@@ -48,17 +48,17 @@
                                 ALL ACCOUNTS [{{ $totalCount }}]
                             </a>
 
-                            <a href="{{ route('admin.area.manila.clients.renewal', $area->id) }}"
+                            <a href="{{ route('admin.area.manila.clients.renewal.page', $area->id) }}"
                                 class="btn btn-sm btn-info mb-1">
                                 FOR RENEWAL [{{ $renewalCount }}]
                             </a>
 
-                            <a href="{{ route('admin.area.manila.clients.active', $area->id) }}"
+                            <a href="{{ route('admin.area.manila.clients.active.page', $area->id) }}"
                                 class="btn btn-sm btn-outline-success mb-1">
                                 ACTIVE ACCOUNTS [{{ $activeCount }}]
                             </a>
 
-                            <a href="{{ route('admin.area.manila.clients.lapsed', $area->id) }}"
+                            <a href="{{ route('admin.area.manila.clients.lapsed.page', $area->id) }}"
                                 class="btn btn-sm btn-outline-danger mb-1">
                                 LAPSED ACCOUNTS [{{ $lapsedCount }}]
                             </a>

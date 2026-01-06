@@ -67,6 +67,13 @@
                         </div>
 
                         <div class="card-body table-responsive">
+                            <div class="d-flex flex-column align-items-end">
+                                <a href="{{ route('admin.area.manila.clients.print.history.page', $client->id) }}"
+                                    target="_blank" class="btn btn-sm btn-primary mb-1">
+                                    <i class="fas fa-print me-1"></i> PRINT SUMMARY LOAN
+                                </a>
+
+                            </div>
                             <table id="loanHistory" class="table table-bordered table-striped js-basic-example">
                                 <thead class="table-light" style="font-size: 11px;">
                                     <tr>
@@ -77,6 +84,7 @@
                                         <th>Mode</th>
                                         <th>Amount</th>
                                         <th>Balance</th>
+                                        <th>Daily</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -97,6 +105,8 @@
                                             </td>
                                             <td>₱{{ number_format($loan->loan_amount, 2) }}</td>
                                             <td>₱{{ number_format($loan->balance, 2) }}</td>
+                                            <td>₱{{ number_format($loan->daily, 2) }}</td>
+
                                             <td data-order="{{ $loan->payment_status === 'unpaid' ? 0 : 1 }}">
                                                 <span
                                                     class="badge {{ $loan->payment_status === 'paid' ? 'bg-success' : 'bg-danger' }}">
@@ -167,10 +177,7 @@
             timeOut: 4000,
             positionClass: "toast-top-right"
         };
-
-        // TOASTR NOTIFICATIONS
     </script>
-
 
 </body>
 

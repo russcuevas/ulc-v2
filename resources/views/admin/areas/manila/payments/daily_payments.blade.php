@@ -35,6 +35,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card shadow-sm border-1">
+
                         <div class="d-flex justify-content-between align-items-start m-4">
                             <div>
                                 <h5 class="card-title mb-1">
@@ -49,16 +50,18 @@
                             <div class="text-end">
                                 <span class="text-muted fw-semibold">
                                     {{ \Carbon\Carbon::parse($payments->first()->due_date)->format('M d, Y') }}
-                                </span>
+                                </span> <br>
 
-                                {{-- <div class="mt-2">
-                                    <a href="" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-print me-1"></i> PRINT
-                                    </a>
-                                </div> --}}
+                                <span class="badge bg-primary text-uppercase">
+                                    TOTAL CLIENTS: [{{ $payments->unique('fullname')->count() }}]
+                                </span>
                             </div>
                         </div>
-
+                        <div class="m-4 text-end" style="margin-top: 0px !important;">
+                            <a href="" class="btn btn-sm btn-primary">
+                                <i class="fas fa-print me-1"></i> PRINT PAYMENTS
+                            </a>
+                        </div>
 
 
 

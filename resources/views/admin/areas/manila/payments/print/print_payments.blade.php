@@ -69,7 +69,7 @@
                 <tr class="summary-header text-left">
                     <td>REFERENCE #</td>
                     <td>COLLECTOR</td>
-                    <td>COUNT</td>
+                    <td>NO OF CLIENTS</td>
                     <td>TOTAL COLLECTIBLES</td>
                     <td>TOTAL COLLECTIONS</td>
                     <td>TOTAL AMOUNT</td>
@@ -83,16 +83,10 @@
 
                 @foreach ($payments as $payment)
                     @php
-                        $specialAmount =
-                            $payment->cash_amount +
-                            $payment->advance_amount +
-                            $payment->gcash_amount +
-                            $payment->cheque_amount;
-
                         $grandActive += $payment->active_amount;
-                        $grandSpecial += $specialAmount;
                         $grandTotal += $payment->total_collection;
                     @endphp
+
 
                     <!-- MAIN ROW -->
                     <tr class="fw-semibold">
@@ -100,23 +94,25 @@
                         <td>{{ $payment->collected_by }}</td>
                         <td class="text-left">{{ $payment->total_accounts }}</td>
                         <td class="text-left">₱{{ number_format($payment->active_amount, 2) }}</td>
-                        <td class="text-left">₱{{ number_format($specialAmount, 2) }}</td>
+                        <td class="text-left">₱{{ number_format($payment->total_collection, 2) }}</td>
                         <td class="text-left">₱{{ number_format($payment->total_collection, 2) }}</td>
                     </tr>
+
 
                     <br>
 
                     <!-- SUB DETAILS -->
                     <tr class="sub-row">
                         <td colspan="6">
-                            Cash: <strong>₱{{ number_format($payment->cash_amount, 2) }}</strong> |
-                            Advance: <strong>₱{{ number_format($payment->advance_amount, 2) }}</strong> |
+                            Cash: <strong>{{ $payment->cash_count }}</strong> |
+                            Advance: <strong>{{ $payment->advance_count }}</strong> |
                             <br>
-                            GCash: <strong>₱{{ number_format($payment->gcash_amount, 2) }}</strong> |
-                            Cheque: <strong>₱{{ number_format($payment->cheque_amount, 2) }}</strong> |
+                            GCash: <strong>{{ $payment->gcash_count }}</strong> |
+                            Cheque: <strong>{{ $payment->cheque_count }}</strong> |
                             No Payment: <strong>{{ $payment->no_payment_count }}</strong>
                         </td>
                     </tr>
+
 
                     <tr>
                         <td colspan="6">
@@ -129,9 +125,10 @@
                 <tr class="fw-bold border-top">
                     <td colspan="3" class="text-end">GRAND TOTAL</td>
                     <td class="text-left">₱{{ number_format($grandActive, 2) }}</td>
-                    <td class="text-left">₱{{ number_format($grandSpecial, 2) }}</td>
+                    <td class="text-left"></td>
                     <td class="text-left">₱{{ number_format($grandTotal, 2) }}</td>
                 </tr>
+
             </table>
 
         </section>

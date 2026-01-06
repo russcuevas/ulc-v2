@@ -310,7 +310,7 @@
                     form.method = 'GET';
                     form.action =
                         "{{ route('admin.area.manila.payments.print.summary.collections', $area->id) }}";
-                    form.target = '_blank'; // <-- this makes the form submit open in a new tab
+                    form.target = '_blank';
 
                     form.innerHTML = `
             <input type="hidden" name="from_date" value="${result.value.from}">

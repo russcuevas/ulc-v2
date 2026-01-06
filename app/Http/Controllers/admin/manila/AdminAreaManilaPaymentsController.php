@@ -66,10 +66,11 @@ class AdminAreaManilaPaymentsController extends Controller
                 DB::raw('SUM(daily) as active_amount'),
                 DB::raw('SUM(collection) as total_collection'),
 
-                DB::raw("SUM(CASE WHEN type = 'CASH' THEN collection ELSE 0 END) as cash_amount"),
-                DB::raw("SUM(CASE WHEN type = 'ADVANCE' THEN collection ELSE 0 END) as advance_amount"),
-                DB::raw("SUM(CASE WHEN type = 'GCASH' THEN collection ELSE 0 END) as gcash_amount"),
-                DB::raw("SUM(CASE WHEN type = 'CHEQUE' THEN collection ELSE 0 END) as cheque_amount"),
+                // ✅ COUNT per payment type
+                DB::raw("COUNT(CASE WHEN type = 'CASH' THEN 1 END) as cash_count"),
+                DB::raw("COUNT(CASE WHEN type = 'ADVANCE' THEN 1 END) as advance_count"),
+                DB::raw("COUNT(CASE WHEN type = 'GCASH' THEN 1 END) as gcash_count"),
+                DB::raw("COUNT(CASE WHEN type = 'CHEQUE' THEN 1 END) as cheque_count"),
 
                 DB::raw("COUNT(CASE WHEN type = 'NO PAYMENT' THEN 1 END) as no_payment_count")
             )
