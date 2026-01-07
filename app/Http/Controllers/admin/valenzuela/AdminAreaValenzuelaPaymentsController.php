@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin\manila;
+namespace App\Http\Controllers\admin\valenzuela;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 
-class AdminAreaManilaPaymentsController extends Controller
+class AdminAreaValenzuelaPaymentsController extends Controller
 {
-    public function AdminAreaManilaClientPaymentsPage($areaId)
+    public function AdminAreaValenzuelaClientPaymentsPage($areaId)
     {
         $area = DB::table('areas')
             ->where('id', $areaId)
-            ->where('location_name', 'Manila Area')
+            ->where('location_name', 'Valenzuela Area')
             ->select('id', 'areas_name as area_name')
             ->first();
 
@@ -32,7 +32,7 @@ class AdminAreaManilaPaymentsController extends Controller
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
             ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->where('clients_payments.client_area', $areaId)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
 
             ->select(
                 'clients_payments.reference_number',
@@ -46,24 +46,24 @@ class AdminAreaManilaPaymentsController extends Controller
             ->orderBy('due_date', 'desc')
             ->get();
 
-        return view('admin.areas.manila.payments.payments', compact('area', 'collectors', 'payments'));
+        return view('admin.areas.valenzuela.payments.payments', compact('area', 'collectors', 'payments'));
     }
 
-    public function AdminAreaManilaPrintSummaryCollections(Request $request, $areaId)
+    public function AdminAreaValenzuelaPrintSummaryCollections(Request $request, $areaId)
     {
         $from = $request->from_date;
         $to = $request->to_date;
 
         $area = DB::table('areas')
             ->where('id', $areaId)
-            ->where('location_name', 'Manila Area')
+            ->where('location_name', 'Valenzuela Area')
             ->select('id', 'areas_name as area_name')
             ->first();
 
         $payments = DB::table('clients_payments')
             ->join('areas', 'areas.id', '=', 'clients_payments.client_area')
             ->where('clients_payments.client_area', $areaId)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
             ->whereBetween('due_date', [$from, $to])
 
             ->select(
@@ -86,14 +86,14 @@ class AdminAreaManilaPaymentsController extends Controller
             ->get();
 
         return view(
-            'admin.areas.manila.payments.print.print_payments',
+            'admin.areas.valenzuela.payments.print.print_payments',
             compact('area', 'payments', 'from', 'to')
         );
     }
 
 
 
-    public function AdminAreaManilaClientPaymentsRequest(Request $request, $id)
+    public function AdminAreaValenzuelaClientPaymentsRequest(Request $request, $id)
     {
         $due_date = $request->due_date;
         $collector = DB::table('collectors')->where('id', $request->collector)->first();
@@ -119,7 +119,7 @@ class AdminAreaManilaPaymentsController extends Controller
             ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->leftJoin('clients_loans', 'clients.id', '=', 'clients_loans.client_id')
             ->where('clients.area_id', $id)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
             ->where('clients_loans.balance', '>', 0)
             ->where(function ($query) use ($due_date) {
                 $query->where(function ($q) use ($due_date) {
@@ -173,7 +173,7 @@ class AdminAreaManilaPaymentsController extends Controller
         return redirect()->back()->with('success', 'Payments entry successfully.');
     }
 
-    public function AdminAreaManilaClientUpdateCollection(Request $request, $id)
+    public function AdminAreaValenzuelaClientUpdateCollection(Request $request, $id)
     {
         $request->validate([
             'collection' => 'required|numeric|min:0',
@@ -218,15 +218,14 @@ class AdminAreaManilaPaymentsController extends Controller
         ]);
     }
 
-
-    public function AdminAreaManilaClientDailyPaymentsPage($referenceNumber)
+    public function AdminAreaValenzuelaClientDailyPaymentsPage($referenceNumber)
     {
         $payments = DB::table('clients_payments')
             ->join('clients', 'clients.id', '=', 'clients_payments.client_id')
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
             ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->where('clients_payments.reference_number', $referenceNumber)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
             ->select(
                 'clients_payments.id',
                 'clients.fullname',
@@ -246,19 +245,19 @@ class AdminAreaManilaPaymentsController extends Controller
         }
 
         return view(
-            'admin.areas.manila.payments.daily_payments',
+            'admin.areas.valenzuela.payments.daily_payments',
             compact('payments', 'referenceNumber')
         );
     }
 
-    public function AdminAreaManilaClientPrintDailyPayments($referenceNumber)
+    public function AdminAreaValenzuelaClientPrintDailyPayments($referenceNumber)
     {
         $payments = DB::table('clients_payments')
             ->join('clients', 'clients.id', '=', 'clients_payments.client_id')
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
             ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->where('clients_payments.reference_number', $referenceNumber)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
             ->select(
                 'clients_payments.id',
                 'clients.fullname',
@@ -284,7 +283,7 @@ class AdminAreaManilaPaymentsController extends Controller
         ];
 
         return view(
-            'admin.areas.manila.payments.print.print_daily_payments',
+            'admin.areas.valenzuela.payments.print.print_daily_payments',
             compact('payments', 'referenceNumber', 'area')
         );
     }
@@ -293,7 +292,7 @@ class AdminAreaManilaPaymentsController extends Controller
 
 
 
-    public function AdminAreaManilaClientCollectPaymentRequest(Request $request, $id)
+    public function AdminAreaValenzuelaClientCollectPaymentRequest(Request $request, $id)
     {
         $request->validate([
             'amount' => 'required|numeric|min:0.01',
@@ -348,7 +347,7 @@ class AdminAreaManilaPaymentsController extends Controller
 
 
 
-    public function AdminAreaManilaClientNoPaymentRequest(Request $request, $id)
+    public function AdminAreaValenzuelaClientNoPaymentRequest(Request $request, $id)
     {
         DB::table('clients_payments')
             ->where('id', $id)

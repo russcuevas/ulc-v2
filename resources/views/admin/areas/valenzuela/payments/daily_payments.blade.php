@@ -58,8 +58,8 @@
                             </div>
                         </div>
                         <div class="m-4 text-end" style="margin-top: 0px !important;">
-                            <a href="{{ route('admin.area.manila.payments.print', $referenceNumber) }}" target="_blank"
-                                class="btn btn-sm btn-primary">
+                            <a href="{{ route('admin.area.valenzuela.payments.print', $referenceNumber) }}"
+                                target="_blank" class="btn btn-sm btn-primary">
                                 <i class="fas fa-print me-1"></i> PRINT SUMMARY
                             </a>
                         </div>
@@ -327,7 +327,7 @@
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/admin/areas/manila/collect-payment/${paymentId}`;
+                    form.action = `/admin/areas/valenzuela/collect-payment/${paymentId}`;
 
                     const csrf = document.createElement('input');
                     csrf.type = 'hidden';
@@ -389,7 +389,7 @@
                 if (result.isConfirmed) {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/admin/areas/manila/no-payment/${paymentId}`;
+                    form.action = `/admin/areas/valenzuela/no-payment/${paymentId}`;
 
                     const csrf = document.createElement('input');
                     csrf.type = 'hidden';
@@ -445,7 +445,7 @@
             }).then((result) => {
                 if (!result.isConfirmed) return;
 
-                fetch(`/admin/areas/manila/${paymentId}/update-collection`, {
+                fetch(`/admin/areas/valenzuela/${paymentId}/update-collection`, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',

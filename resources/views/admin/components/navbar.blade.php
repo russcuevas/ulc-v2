@@ -109,7 +109,8 @@
             </a>
 
 
-            <a href="" class="nav-link small">
+            <a href="{{ route('admin.area.valenzuela.page') }}"
+                class="nav-link small {{ request()->routeIs('admin.area.valenzuela.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location-dot me-2"></i>
                 Valenzuela
             </a>
