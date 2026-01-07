@@ -205,6 +205,47 @@ class AdminAreaManilaPaymentsController extends Controller
         );
     }
 
+    public function AdminAreaManilaClientPrintDailyPayments($referenceNumber)
+    {
+        $payments = DB::table('clients_payments')
+            ->join('clients', 'clients.id', '=', 'clients_payments.client_id')
+            ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
+            ->join('areas', 'areas.id', '=', 'clients.area_id')
+            ->where('clients_payments.reference_number', $referenceNumber)
+            ->where('areas.location_name', 'Manila Area')
+            ->select(
+                'clients_payments.id',
+                'clients.fullname',
+                'clients_payments.daily',
+                'clients_payments.collection',
+                'clients_payments.due_date',
+                'clients_payments.collected_by',
+                'clients_payments.type',
+                'clients_payments.is_lapsed',
+                'clients_loans.loan_amount',
+                'clients_loans.balance',
+                'clients_loans.payment_status',
+                'areas.areas_name'
+            )
+            ->get();
+
+        if ($payments->isEmpty()) {
+            abort(404, 'No payments found for this reference number');
+        }
+
+        $area = (object)[
+            'areas_name' => $payments->first()->areas_name
+        ];
+
+        return view(
+            'admin.areas.manila.payments.print.print_daily_payments',
+            compact('payments', 'referenceNumber', 'area')
+        );
+    }
+
+
+
+
 
     public function AdminAreaManilaClientCollectPaymentRequest(Request $request, $id)
     {

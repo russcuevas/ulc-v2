@@ -58,8 +58,9 @@
                             </div>
                         </div>
                         <div class="m-4 text-end" style="margin-top: 0px !important;">
-                            <a href="" class="btn btn-sm btn-primary">
-                                <i class="fas fa-print me-1"></i> PRINT PAYMENTS
+                            <a href="{{ route('admin.area.manila.payments.print', $referenceNumber) }}" target="_blank"
+                                class="btn btn-sm btn-primary">
+                                <i class="fas fa-print me-1"></i> PRINT SUMMARY
                             </a>
                         </div>
 
