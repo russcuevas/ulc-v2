@@ -10,10 +10,60 @@
         xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="{{ asset('assets/auth/style.css') }}">
+    <style>
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
 
+        .loader-content {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #ff6b35;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Class to hide the loader */
+        .loader-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>Loading ULC System...</p>
+        </div>
+    </div>
     <div class="container-fluid p-0 d-flex min-vh-100">
         <div
             class="col-md-4 col-xl-3 bg-ulc-primary text-white p-5 p-lg-5 d-none d-md-flex flex-column justify-content-between shadow-lg">
@@ -50,29 +100,23 @@
                     </div>
                 @endif
 
-                <form method="POST" action="" class="needs-validation" novalidate>
+                <form method="POST" action="{{ route('auth.login.request') }}" class="needs-validation" novalidate>
+                    @csrf
                     @csrf
                     <div class="mb-4">
-                        <label for="email" class="form-label fw-medium">
-                            Email Address <span style="color: rgb(126, 30, 30)">*</span>
-                        </label>
+                        <label for="email" class="form-label fw-medium">Email Address <span
+                                style="color: red">*</span></label>
                         <input type="email" id="email" name="email" placeholder="Email Address"
                             class="form-control rounded-3 shadow-sm" required>
-                        <div class="invalid-feedback">
-                            Please enter your email address.
-                        </div>
+                        <div class="invalid-feedback">Please enter your email address.</div>
                     </div>
 
-                    <!-- Password Field -->
                     <div class="mb-4">
-                        <label for="password" class="form-label fw-medium">
-                            Password <span style="color: rgb(126, 30, 30)">*</span>
-                        </label>
+                        <label for="password" class="form-label fw-medium">Password <span
+                                style="color: red">*</span></label>
                         <input type="password" id="password" name="password" placeholder="Password"
                             class="form-control rounded-3 shadow-sm" required>
-                        <div class="invalid-feedback">
-                            Please enter your password.
-                        </div>
+                        <div class="invalid-feedback">Please enter your password.</div>
                     </div>
 
                     <!-- Login Button -->
@@ -132,6 +176,17 @@
         @if (session('success'))
             toastr.success("{{ session('success') }}");
         @endif
+    </script>
+
+    <script>
+        window.addEventListener("load", function() {
+            const loader = document.getElementById("preloader");
+
+            // Add a slight delay for a smoother transition
+            setTimeout(() => {
+                loader.classList.add("loader-hidden");
+            }, 500);
+        });
     </script>
 </body>
 
