@@ -49,7 +49,7 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <form action="" method="POST" class="d-inline">
+                            <form action="{{ route('auth.logout.request') }}" method="POST" class="d-inline">
                                 @csrf
                                 <button type="submit" class="dropdown-item d-flex gap-2 align-items-center">
                                     Logout
@@ -135,11 +135,13 @@
                         Valenzuela
                     </a>
 
-                    <a href="" class="nav-link small">
+                    <a href="{{ route('admin.area.caloocan.page') }}"
+                        class="nav-link small {{ request()->routeIs('admin.area.caloocan.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-location-dot me-2"></i>
                         Caloocan
                     </a>
-                    <a href="" class="nav-link small">
+                    <a href="{{ route('admin.area.fc.page') }}"
+                        class="nav-link small {{ request()->routeIs('admin.area.fc.*') ? 'active' : '' }}">
                         <i class="fa-solid fa-location-dot me-2"></i>
                         FC
                     </a>

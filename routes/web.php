@@ -5,15 +5,27 @@ use App\Http\Controllers\admin\AdminClientRenewalController;
 use App\Http\Controllers\admin\AdminCollectorController;
 use App\Http\Controllers\admin\AdminDashboardController;
 use App\Http\Controllers\admin\AdminSecretaryController;
+// ADMIN MANILA ROUTE
 use App\Http\Controllers\admin\manila\AdminAreaManilaController;
 use App\Http\Controllers\admin\manila\AdminAreaManilaClientsController;
 use App\Http\Controllers\admin\manila\AdminAreaManilaClientsHistoryController;
 use App\Http\Controllers\admin\manila\AdminAreaManilaPaymentsController;
-
+// ADMIN VALENZUELA ROUTE
 use App\Http\Controllers\admin\valenzuela\AdminAreaValenzuelaController;
 use App\Http\Controllers\admin\valenzuela\AdminAreaValenzuelaClientsController;
 use App\Http\Controllers\admin\valenzuela\AdminAreaValenzuelaClientsHistoryController;
 use App\Http\Controllers\admin\valenzuela\AdminAreaValenzuelaPaymentsController;
+// ADMIN CALOOCAN ROUTE
+use App\Http\Controllers\admin\caloocan\AdminAreaCaloocanController;
+use App\Http\Controllers\admin\caloocan\AdminAreaCaloocanClientsController;
+use App\Http\Controllers\admin\caloocan\AdminAreaCaloocanClientsHistoryController;
+use App\Http\Controllers\admin\caloocan\AdminAreaCaloocanPaymentsController;
+// ADMIN FC ROUTE
+use App\Http\Controllers\admin\fc\AdminAreaFCController;
+use App\Http\Controllers\admin\fc\AdminAreaFCClientsController;
+use App\Http\Controllers\admin\fc\AdminAreaFCClientsHistoryController;
+use App\Http\Controllers\admin\fc\AdminAreaFCPaymentsController;
+
 use App\Http\Controllers\auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +40,8 @@ Route::middleware(['auth', 'admin'])->group(
         // Admin Routes
         // Admin Dashboard Route
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'AdminDashboardPage'])->name('admin.dashboard.page');
+        Route::get('admin/dashboard/analytics/{location}', [AdminDashboardController::class, 'AnalyticsPage'])
+            ->name('admin.dashboard.analytics');
 
         // Admin Secretary Management Route
         Route::get('/admin/secretary', [AdminSecretaryController::class, 'AdminSecretaryPage'])->name('admin.secretary.page');
@@ -69,6 +83,7 @@ Route::middleware(['auth', 'admin'])->group(
         Route::get('/admin/areas/manila/{area}/payments', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPaymentsPage'])->name('admin.area.manila.payments');
         Route::post('/admin/areas/manila/{id}/create', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPaymentsRequest'])->name('areas.area.manila.payments.request');
         Route::post('/admin/areas/manila/{id}/update-collection', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientUpdateCollection'])->name('admin.area.manila.update.collection');
+
         Route::get('/admin/areas/manila/payments/{referenceNumber}/clients', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientDailyPaymentsPage'])->name('admin.area.manila.payments.clients');
         Route::get('/admin/areas/manila/payments/{referenceNumber}/print', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPrintDailyPayments'])->name('admin.area.manila.payments.print');
         Route::post('/admin/areas/manila/collect-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientCollectPaymentRequest'])->name('admin.manila.payments.clients.collect');
@@ -104,5 +119,61 @@ Route::middleware(['auth', 'admin'])->group(
         Route::post('/admin/areas/valenzuela/collect-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientCollectPaymentRequest'])->name('admin.valenzuela.payments.clients.collect');
         Route::post('/admin/areas/valenzuela/no-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientNoPaymentRequest'])->name('admin.valenzuela.payments.clients.not.paid');
         Route::get('/admin/areas/valenzuela/payments/{area}/summary/collections/print', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaPrintSummaryCollections'])->name('admin.area.valenzuela.payments.print.summary.collections');
+
+        // Caloocan Route
+        Route::get('/admin/areas/caloocan', [AdminAreaCaloocanController::class, 'AdminAreaCaloocanPage'])->name('admin.area.caloocan.page');
+        Route::get('/admin/areas/caloocan/sales/print', [AdminAreaCaloocanController::class, 'AdminAreaCaloocanPrintSalesReports'])->name('admin.area.caloocan.print.sales');
+
+        // Caloocan Clients Route
+        Route::get('/admin/areas/caloocan/{area}/clients', [AdminAreaCaloocanClientsController::class, 'AdminAreaCaloocanClientsPage'])->name('admin.area.caloocan.clients.page');
+        Route::get('/admin/areas/caloocan/{area}/clients/renewal', [AdminAreaCaloocanClientsController::class, 'AdminAreaCaloocanRenewalClientPage'])->name('admin.area.caloocan.clients.renewal.page');
+        Route::get('/admin/areas/caloocan/{area}/clients/lapsed', [AdminAreaCaloocanClientsController::class, 'AdminAreaCaloocanLapsedClientsPage'])->name('admin.area.caloocan.clients.lapsed.page');
+        Route::get('/admin/areas/caloocan/{area}/clients/active', [AdminAreaCaloocanClientsController::class, 'AdminAreaCaloocanActiveClientsPage'])->name('admin.area.caloocan.clients.active.page');
+        Route::get('/admin/areas/caloocan/{area}/clients/lapsed/print', [AdminAreaCaloocanClientsController::class, 'AdminAreaCaloocanLapsedClientsPrint'])->name('admin.area.caloocan.clients.lapsed.page.print');
+
+        // Caloocan Clients View History
+        Route::get('/admin/areas/caloocan/clients/{clientId}', [AdminAreaCaloocanClientsHistoryController::class, 'AdminAreaCaloocanClientsProfilePage'])->name('admin.area.caloocan.clients.profile.page');
+        Route::get('/admin/areas/caloocan/clients/{clientId}/loans/print', [AdminAreaCaloocanClientsHistoryController::class, 'AdminAreaCaloocanClientsPrintLoanHistory'])->name('admin.area.caloocan.clients.print.history.page');
+        Route::get('/admin/areas/caloocan/clients/loans/{loanId}/payments', [AdminAreaCaloocanClientsHistoryController::class, 'AdminAreaCaloocanClientLoanPaymentsPage'])->name('admin.area.caloocan.clients.loan.payments');
+
+
+        // Caloocan Payments Route
+        Route::get('/admin/areas/caloocan/{area}/payments', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientPaymentsPage'])->name('admin.area.caloocan.payments');
+        Route::post('/admin/areas/caloocan/{id}/create', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientPaymentsRequest'])->name('areas.area.caloocan.payments.request');
+        Route::post('/admin/areas/caloocan/{id}/update-collection', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientUpdateCollection'])->name('admin.area.caloocan.update.collection');
+
+        Route::get('/admin/areas/caloocan/payments/{referenceNumber}/clients', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientDailyPaymentsPage'])->name('admin.area.caloocan.payments.clients');
+        Route::get('/admin/areas/caloocan/payments/{referenceNumber}/print', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientPrintDailyPayments'])->name('admin.area.caloocan.payments.print');
+        Route::post('/admin/areas/caloocan/collect-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientCollectPaymentRequest'])->name('admin.caloocan.payments.clients.collect');
+        Route::post('/admin/areas/caloocan/no-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientNoPaymentRequest'])->name('admin.caloocan.payments.clients.not.paid');
+        Route::get('/admin/areas/caloocan/payments/{area}/summary/collections/print', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanPrintSummaryCollections'])->name('admin.area.caloocan.payments.print.summary.collections');
+
+        // FC Route
+        Route::get('/admin/areas/fc', [AdminAreaFCController::class, 'AdminAreaFCPage'])->name('admin.area.fc.page');
+        Route::get('/admin/areas/fc/sales/print', [AdminAreaFCController::class, 'AdminAreaFCPrintSalesReports'])->name('admin.area.fc.print.sales');
+
+        // FC Clients Route
+        Route::get('/admin/areas/fc/{area}/clients', [AdminAreaFCClientsController::class, 'AdminAreaFCClientsPage'])->name('admin.area.fc.clients.page');
+        Route::get('/admin/areas/fc/{area}/clients/renewal', [AdminAreaFCClientsController::class, 'AdminAreaFCRenewalClientPage'])->name('admin.area.fc.clients.renewal.page');
+        Route::get('/admin/areas/fc/{area}/clients/lapsed', [AdminAreaFCClientsController::class, 'AdminAreaFCLapsedClientsPage'])->name('admin.area.fc.clients.lapsed.page');
+        Route::get('/admin/areas/fc/{area}/clients/active', [AdminAreaFCClientsController::class, 'AdminAreaFCActiveClientsPage'])->name('admin.area.fc.clients.active.page');
+        Route::get('/admin/areas/fc/{area}/clients/lapsed/print', [AdminAreaFCClientsController::class, 'AdminAreaFCLapsedClientsPrint'])->name('admin.area.fc.clients.lapsed.page.print');
+
+        // FC Clients View History
+        Route::get('/admin/areas/fc/clients/{clientId}', [AdminAreaFCClientsHistoryController::class, 'AdminAreaFCClientsProfilePage'])->name('admin.area.fc.clients.profile.page');
+        Route::get('/admin/areas/fc/clients/{clientId}/loans/print', [AdminAreaFCClientsHistoryController::class, 'AdminAreaFCClientsPrintLoanHistory'])->name('admin.area.fc.clients.print.history.page');
+        Route::get('/admin/areas/fc/clients/loans/{loanId}/payments', [AdminAreaFCClientsHistoryController::class, 'AdminAreaFCClientLoanPaymentsPage'])->name('admin.area.fc.clients.loan.payments');
+
+
+        // FC Payments Route
+        Route::get('/admin/areas/fc/{area}/payments', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientPaymentsPage'])->name('admin.area.fc.payments');
+        Route::post('/admin/areas/fc/{id}/create', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientPaymentsRequest'])->name('areas.area.fc.payments.request');
+        Route::post('/admin/areas/fc/{id}/update-collection', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientUpdateCollection'])->name('admin.area.fc.update.collection');
+
+        Route::get('/admin/areas/fc/payments/{referenceNumber}/clients', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientDailyPaymentsPage'])->name('admin.area.fc.payments.clients');
+        Route::get('/admin/areas/fc/payments/{referenceNumber}/print', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientPrintDailyPayments'])->name('admin.area.fc.payments.print');
+        Route::post('/admin/areas/fc/collect-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientCollectPaymentRequest'])->name('admin.fc.payments.clients.collect');
+        Route::post('/admin/areas/fc/no-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientNoPaymentRequest'])->name('admin.fc.payments.clients.not.paid');
+        Route::get('/admin/areas/fc/payments/{area}/summary/collections/print', [AdminAreaFCPaymentsController::class, 'AdminAreaFCPrintSummaryCollections'])->name('admin.area.fc.payments.print.summary.collections');
     }
 );
