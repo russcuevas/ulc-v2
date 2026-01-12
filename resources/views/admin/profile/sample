@@ -1,0 +1,56 @@
+<div class="container">
+    <h4 class="mb-4">Admin Profile</h4>
+
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <form action="{{ route('admin.profile.update') }}" method="POST">
+        @csrf
+<div class="mb-3">
+    <label>Role</label>
+    <input type="text"
+           class="form-control"
+           value="{{ ucfirst($admin->role) }}"
+           readonly>
+</div>
+
+        <div class="mb-3">
+            <label>Full Name</label>
+            <input type="text" name="fullname" class="form-control" value="{{ old('fullname', $admin->fullname) }}">
+        </div>
+
+        <div class="mb-3">
+            <label>Phone Number</label>
+            <input type="text" name="phone_number" class="form-control"
+                value="{{ old('phone_number', $admin->phone_number) }}">
+        </div>
+
+        <div class="mb-3">
+            <label>Gender</label>
+            <select name="gender" class="form-control">
+                <option value="male" {{ $admin->gender == 'male' ? 'selected' : '' }}>Male</option>
+                <option value="female" {{ $admin->gender == 'female' ? 'selected' : '' }}>Female</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email" name="email" class="form-control" value="{{ old('email', $admin->email) }}">
+        </div>
+
+        <hr>
+
+        <div class="mb-3">
+            <label>New Password (optional)</label>
+            <input type="password" name="password" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label>Confirm Password</label>
+            <input type="password" name="password_confirmation" class="form-control">
+        </div>
+
+        <button class="btn btn-primary">Update Profile</button>
+    </form>
+</div>

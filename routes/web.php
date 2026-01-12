@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\AdminClientController;
 use App\Http\Controllers\admin\AdminClientRenewalController;
 use App\Http\Controllers\admin\AdminCollectorController;
 use App\Http\Controllers\admin\AdminDashboardController;
+use App\Http\Controllers\admin\AdminProfileController;
 use App\Http\Controllers\admin\AdminSecretaryController;
 // ADMIN MANILA ROUTE
 use App\Http\Controllers\admin\manila\AdminAreaManilaController;
@@ -42,6 +43,11 @@ Route::middleware(['auth', 'admin'])->group(
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'AdminDashboardPage'])->name('admin.dashboard.page');
         Route::get('admin/dashboard/analytics/{location}', [AdminDashboardController::class, 'AnalyticsPage'])
             ->name('admin.dashboard.analytics');
+
+        //Admin Profile Management Route
+        Route::get('/admin/profile', [AdminProfileController::class, 'AdminProfilePage'])->name('admin.profile.page');
+        Route::post('/profile/update', [AdminProfileController::class, 'UpdateProfile'])
+            ->name('admin.profile.update');
 
         // Admin Secretary Management Route
         Route::get('/admin/secretary', [AdminSecretaryController::class, 'AdminSecretaryPage'])->name('admin.secretary.page');
@@ -89,8 +95,6 @@ Route::middleware(['auth', 'admin'])->group(
         Route::post('/admin/areas/manila/collect-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientCollectPaymentRequest'])->name('admin.manila.payments.clients.collect');
         Route::post('/admin/areas/manila/no-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientNoPaymentRequest'])->name('admin.manila.payments.clients.not.paid');
         Route::get('/admin/areas/manila/payments/{area}/summary/collections/print', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaPrintSummaryCollections'])->name('admin.area.manila.payments.print.summary.collections');
-
-
 
         // Valenzuela Route
         Route::get('/admin/areas/valenzuela', [AdminAreaValenzuelaController::class, 'AdminAreaValenzuelaPage'])->name('admin.area.valenzuela.page');

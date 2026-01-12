@@ -44,7 +44,7 @@
 
                     <div class="user-avatar" data-bs-toggle="dropdown">{{ $user_initials }}</div>
                     <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><a class="dropdown-item" href="">Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ route('admin.profile.page') }}">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -179,7 +179,8 @@
                 <div class="dropdown">
                     <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">{{ $user_initials }}</div>
                     <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><a class="dropdown-item d-flex gap-2 align-items-center" href="">Profile</a></li>
+                        <li><a class="dropdown-item d-flex gap-2 align-items-center"
+                                href="{{ route('admin.profile.page') }}">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
