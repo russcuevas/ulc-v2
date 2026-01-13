@@ -28,6 +28,7 @@ use App\Http\Controllers\admin\fc\AdminAreaFCClientsHistoryController;
 use App\Http\Controllers\admin\fc\AdminAreaFCPaymentsController;
 
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\secretary\manila\ManilaClientsController;
 use App\Http\Controllers\secretary\manila\ManilaDashboardController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaDashboardController;
 use Illuminate\Support\Facades\Route;
@@ -192,6 +193,12 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
         [ManilaDashboardController::class, 'ManilaDashboardPage']
     )->middleware('secretary.area:manila')
         ->name('secretary.manila.dashboard.page');
+
+    Route::get(
+        '/manila/clients',
+        [ManilaClientsController::class, 'ManilaClientsPage']
+    )->middleware('secretary.area:manila')
+        ->name('secretary.manila.clients.page');
 
     Route::get(
         '/valenzuela/dashboard',
