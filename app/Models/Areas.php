@@ -11,9 +11,8 @@ class Areas extends Model
 
     protected $fillable = [
         'secretary_id',
-        'secretary_id',
+        'collector_id',
         'location_name',
         'areas_name',
     ];
-
 }

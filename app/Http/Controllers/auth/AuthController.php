@@ -39,6 +39,37 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard.page')->with('success', 'Logged in successfully!');
         }
 
+        if ($user->role === 'secretary') {
+
+            $area = DB::table('areas')
+                ->where('secretary_id', $user->id)
+                ->first();
+
+            if (!$area) {
+                Auth::logout();
+                return back()->with('error', 'No area assigned to this secretary.');
+            }
+
+            switch ($area->location_name) {
+                case 'Manila Area':
+                    return redirect()->route('secretary.manila.dashboard.page')
+                        ->with('success', 'Logged in successfully!');
+
+                case 'Valenzuela Area':
+                    return redirect()->route('secretary.valenzuela.dashboard.page')
+                        ->with('success', 'Logged in successfully!');
+
+                case 'Caloocan Area':
+                    return redirect()->route('secretary.caloocan.dashboard')
+                        ->with('success', 'Logged in successfully!');
+
+                default:
+                    Auth::logout();
+                    return back()->with('error', 'Invalid area assignment.');
+            }
+        }
+
+
         return redirect('/');
     }
 

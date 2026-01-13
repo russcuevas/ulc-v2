@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use App\Models\Clients;
 use App\Models\ClientsLoans;
 use App\Models\ClientsPayment;
@@ -88,11 +89,23 @@ class AdminDashboardController extends Controller
             'areaStats'
         ));
     }
+
     public function AnalyticsPage(Request $request, $location)
     {
-        $from = $request->from_month ? Carbon::parse($request->from_month)->startOfMonth() : null;
-        $to = $request->to_month ? Carbon::parse($request->to_month)->endOfMonth() : null;
+        // -------------------------
+        // Date filters
+        // -------------------------
+        $from = $request->from_month
+            ? Carbon::parse($request->from_month)->startOfMonth()
+            : null;
 
+        $to = $request->to_month
+            ? Carbon::parse($request->to_month)->endOfMonth()
+            : null;
+
+        // -------------------------
+        // Base queries
+        // -------------------------
         $clientsQuery = Clients::query()
             ->join('areas', 'clients.area_id', '=', 'areas.id')
             ->where('areas.location_name', $location);
@@ -107,44 +120,94 @@ class AdminDashboardController extends Controller
             ->join('areas', 'clients.area_id', '=', 'areas.id')
             ->where('areas.location_name', $location);
 
+        // -------------------------
+        // Apply date filters
+        // -------------------------
         if ($from && $to) {
             $clientsQuery->whereBetween('clients.created_at', [$from, $to]);
             $loansQuery->whereBetween('clients_loans.created_at', [$from, $to]);
             $paymentsQuery->whereBetween('clients_payments.created_at', [$from, $to]);
         }
 
-        // Overall numbers
+        // -------------------------
+        // Summary cards
+        // -------------------------
         $clients = $clientsQuery->count();
         $loans = $loansQuery->sum('loan_amount');
         $collected = $paymentsQuery->sum('collection');
 
+        // -------------------------
+        // Grouped data by month
+        // -------------------------
         $loansByMonth = $loansQuery
             ->selectRaw("DATE_FORMAT(clients_loans.created_at, '%Y-%m') as month, SUM(loan_amount) as total")
             ->groupByRaw("DATE_FORMAT(clients_loans.created_at, '%Y-%m')")
-            ->orderByRaw("DATE_FORMAT(clients_loans.created_at, '%Y-%m') ASC")
+            ->orderByRaw("DATE_FORMAT(clients_loans.created_at, '%Y-%m')")
             ->get();
+
 
         $collectedByMonth = $paymentsQuery
             ->selectRaw("DATE_FORMAT(clients_payments.created_at, '%Y-%m') as month, SUM(collection) as total")
             ->groupByRaw("DATE_FORMAT(clients_payments.created_at, '%Y-%m')")
-            ->orderByRaw("DATE_FORMAT(clients_payments.created_at, '%Y-%m') ASC")
+            ->orderByRaw("DATE_FORMAT(clients_payments.created_at, '%Y-%m')")
             ->get();
+
 
         $clientsByMonth = $clientsQuery
             ->selectRaw("DATE_FORMAT(clients.created_at, '%Y-%m') as month, COUNT(*) as total")
             ->groupByRaw("DATE_FORMAT(clients.created_at, '%Y-%m')")
-            ->orderByRaw("DATE_FORMAT(clients.created_at, '%Y-%m') ASC")
+            ->orderByRaw("DATE_FORMAT(clients.created_at, '%Y-%m')")
             ->get();
 
+        // -------------------------
+        // 🔥 Generate full month range
+        // -------------------------
+        $months = [];
 
+        if ($from && $to) {
+            $period = CarbonPeriod::create($from, '1 month', $to);
+            foreach ($period as $date) {
+                $months[] = $date->format('Y-m');
+            }
+        } else {
+            $months = $loansByMonth->pluck('month')->toArray();
+        }
 
+        // -------------------------
+        // Map DB results
+        // -------------------------
+        $loansMap = $loansByMonth->pluck('total', 'month')->toArray();
+        $collectionsMap = $collectedByMonth->pluck('total', 'month')->toArray();
+        $clientsMap = $clientsByMonth->pluck('total', 'month')->toArray();
+
+        // -------------------------
+        // Build aligned chart arrays
+        // -------------------------
+        $labels = $months;
+        $loansData = [];
+        $collectedData = [];
+        $clientsData = [];
+
+        foreach ($months as $month) {
+            $loansData[] = $loansMap[$month] ?? 0;
+            $collectedData[] = $collectionsMap[$month] ?? 0;
+            $clientsData[] = $clientsMap[$month] ?? 0;
+        }
+
+        // -------------------------
         // Loan status breakdown
+        // -------------------------
         $loanStatus = $loansQuery
             ->select('loan_status', DB::raw('COUNT(*) as total'))
             ->groupBy('loan_status')
             ->get();
 
-        // Payment status breakdown
+        $loanStatusLabels = $loanStatus->pluck('loan_status')->toArray();
+        $loanStatusData = $loanStatus->pluck('total')->toArray();
+
+        // -------------------------
+        // Payment type breakdown
+        // -------------------------
         $paymentStatusRaw = $paymentsQuery
             ->select('type', DB::raw('SUM(collection) as total'))
             ->groupBy('type')
@@ -154,24 +217,15 @@ class AdminDashboardController extends Controller
 
         foreach ($paymentStatusRaw as $payment) {
             $key = strtoupper(trim($payment->type));
-            if (!isset($paymentStatusMap[$key])) {
-                $paymentStatusMap[$key] = 0;
-            }
-            $paymentStatusMap[$key] += $payment->total;
+            $paymentStatusMap[$key] = ($paymentStatusMap[$key] ?? 0) + $payment->total;
         }
-
-        // Labels & datasets
-        $labels = $loansByMonth->pluck('month')->toArray();
-        $loansData = $loansByMonth->pluck('total')->toArray();
-        $collectedData = $collectedByMonth->pluck('total')->toArray();
-        $clientsData = $clientsByMonth->pluck('total')->toArray();
-
-        $loanStatusLabels = $loanStatus->pluck('loan_status')->toArray();
-        $loanStatusData = $loanStatus->pluck('total')->toArray();
 
         $paymentStatusLabels = array_keys($paymentStatusMap);
         $paymentStatusData = array_values($paymentStatusMap);
 
+        // -------------------------
+        // Return view
+        // -------------------------
         return view('admin.dashboard.analytics', compact(
             'location',
             'clients',

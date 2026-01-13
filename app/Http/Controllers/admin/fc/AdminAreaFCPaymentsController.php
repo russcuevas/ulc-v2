@@ -70,7 +70,7 @@ class AdminAreaFCPaymentsController extends Controller
                 'reference_number',
                 'collected_by',
 
-                DB::raw('COUNT(id) as total_accounts'),
+                DB::raw('COUNT(clients_payments.id) as total_accounts'),
                 DB::raw('SUM(daily) as active_amount'),
                 DB::raw('SUM(collection) as total_collection'),
 

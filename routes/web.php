@@ -28,6 +28,8 @@ use App\Http\Controllers\admin\fc\AdminAreaFCClientsHistoryController;
 use App\Http\Controllers\admin\fc\AdminAreaFCPaymentsController;
 
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\secretary\manila\ManilaDashboardController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaDashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -181,3 +183,19 @@ Route::middleware(['auth', 'admin'])->group(
         Route::get('/admin/areas/fc/payments/{area}/summary/collections/print', [AdminAreaFCPaymentsController::class, 'AdminAreaFCPrintSummaryCollections'])->name('admin.area.fc.payments.print.summary.collections');
     }
 );
+
+
+Route::prefix('secretary')->middleware(['auth'])->group(function () {
+
+    Route::get(
+        '/manila/dashboard',
+        [ManilaDashboardController::class, 'ManilaDashboardPage']
+    )->middleware('secretary.area:manila')
+        ->name('secretary.manila.dashboard.page');
+
+    Route::get(
+        '/valenzuela/dashboard',
+        [ValenzuelaDashboardController::class, 'ValenzuelaDashboardPage']
+    )->middleware('secretary.area:valenzuela')
+        ->name('secretary.valenzuela.dashboard.page');
+});
