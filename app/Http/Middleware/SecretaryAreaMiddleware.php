@@ -17,51 +17,28 @@ class SecretaryAreaMiddleware
 
         $user = Auth::user();
 
-        // Role check
         if ($user->role !== 'secretary') {
             return redirect('/')->with('error', 'Unauthorized access.');
         }
 
-        // Get assigned area
-        $assignedArea = DB::table('areas')
-            ->where('secretary_id', $user->id)
-            ->value('location_name');
-
-        if (!$assignedArea) {
-            Auth::logout();
-            return redirect()->route('auth.login.page')
-                ->with('error', 'No area assigned.');
-        }
-
-        // Normalize route parameter
         $routeArea = strtolower($area);
+        $locationMap = [
+            'manila' => 'Manila Area',
+            'caloocan' => 'Caloocan Area',
+            'valenzuela' => 'Valenzuela Area',
+            'fc' => 'Financial Counselor',
+        ];
 
-        // Determine allowed area from DB (SWITCH)
-        switch ($assignedArea) {
-            case 'Manila Area':
-                $allowedArea = 'manila';
-                break;
-
-            case 'Caloocan Area':
-                $allowedArea = 'caloocan';
-                break;
-
-            case 'Valenzuela Area':
-                $allowedArea = 'valenzuela';
-                break;
-
-            case 'Financial Counselor':
-                $allowedArea = 'fc';
-                break;
-
-            default:
-                Auth::logout();
-                return redirect()->route('auth.login.page')
-                    ->with('error', 'Invalid area assignment.');
+        if (!isset($locationMap[$routeArea])) {
+            abort(403, 'Invalid area.');
         }
 
-        // Compare
-        if ($allowedArea !== $routeArea) {
+        $hasAccess = DB::table('areas')
+            ->where('secretary_id', $user->id)
+            ->where('location_name', $locationMap[$routeArea])
+            ->exists();
+
+        if (!$hasAccess) {
             return redirect()->back()
                 ->with('error', 'You are not assigned to this area.');
         }

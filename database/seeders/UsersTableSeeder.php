@@ -16,7 +16,7 @@ class UsersTableSeeder extends Seeder
     {
         //Can update all
         User::create([
-            'fullname' => 'System Admin',
+            'fullname' => 'Hydie Cadiz',
             'phone_number' => '09123456789',
             'gender' => 'female',
             'email' => 'admin@ulc.com',
@@ -35,7 +35,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456789'),
             'role' => 'secretary',
             'status' => 'verified',
-            'created_by' => 'Admin'
+            'created_by' => 'Hydie Cadiz'
         ]);
 
         //Valenzuala Area
@@ -47,7 +47,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456789'),
             'role' => 'secretary',
             'status' => 'verified',
-            'created_by' => 'Admin'
+            'created_by' => 'Hydie Cadiz'
 
         ]);
 
@@ -60,7 +60,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456789'),
             'role' => 'secretary',
             'status' => 'verified',
-            'created_by' => 'Admin'
+            'created_by' => 'Hydie Cadiz'
 
         ]);
 
@@ -73,8 +73,7 @@ class UsersTableSeeder extends Seeder
             'password' => Hash::make('123456789'),
             'role' => 'secretary',
             'status' => 'verified',
-            'created_by' => 'Admin'
-
+            'created_by' => 'Hydie Cadiz'
         ]);
     }
 }

@@ -82,7 +82,10 @@
                     <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>
-                <a href="" class="nav-link">
+
+                <a href="{{ route('secretary.manila.clients.page') }}"
+                    class="nav-link 
+                    {{ request()->routeIs('secretary.manila.clients.page', 'secretary.manila.edit.clients.page') ? 'active' : '' }}">
                     <i class="fa-solid fa-users"></i>
                     Clients
                 </a>

@@ -67,6 +67,7 @@
                                                 </td>
                                                 <td class="text-wrap">
                                                     {{ \Carbon\Carbon::parse($client->created_at)->format('F j, Y - h:i A') }}
+                                                    <br>
                                                     <span class="badge rounded-pill bg-success">
                                                         by: {{ $client->created_by }}
                                                     </span>
@@ -167,7 +168,7 @@
 
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
+                    text: "It will delete also the related loans with these account, You won't be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',

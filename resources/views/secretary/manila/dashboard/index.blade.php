@@ -86,6 +86,8 @@
 
     <div class="main-content">
         <div class="row g-4 mb-4">
+            <h4>Manila Area</h4>
+
             @if (request('from_month') && request('to_month'))
                 <div class="alert alert-primary mb-3">
                     Showing data from
@@ -96,7 +98,7 @@
                     </strong>
                 </div>
             @endif
-            <form id="filterForm" method="GET" action="" class="row g-3 mb-4">
+            <form id="filterForm" method="GET" action="" class="row g-4 mb-4">
 
                 <div class="col-md-4">
                     <label class="form-label">From Month</label>
@@ -119,7 +121,6 @@
 
             </form>
 
-            <h4>Manila Area</h4>
             <div class="col-12 col-md-6 col-xl-4">
                 <div class="card border-2 shadow-lg h-100 card-left-orange">
                     <div class="card-body">

@@ -29,6 +29,7 @@ use App\Http\Controllers\admin\fc\AdminAreaFCPaymentsController;
 
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\secretary\manila\ManilaClientsController;
+use App\Http\Controllers\secretary\manila\ManilaClientsRenewalController;
 use App\Http\Controllers\secretary\manila\ManilaDashboardController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaDashboardController;
 use Illuminate\Support\Facades\Route;
@@ -188,21 +189,19 @@ Route::middleware(['auth', 'admin'])->group(
 
 Route::prefix('secretary')->middleware(['auth'])->group(function () {
 
-    Route::get(
-        '/manila/dashboard',
-        [ManilaDashboardController::class, 'ManilaDashboardPage']
-    )->middleware('secretary.area:manila')
-        ->name('secretary.manila.dashboard.page');
+    // Secretary Manila Area Route
+    // Secretary Dashboard Route
+    Route::get('/manila/dashboard', [ManilaDashboardController::class, 'ManilaDashboardPage'])->middleware('secretary.area:manila')->name('secretary.manila.dashboard.page');
+    // Secretary Clients Route
+    Route::get('/manila/clients', [ManilaClientsController::class, 'ManilaClientsPage'])->middleware('secretary.area:manila')->name('secretary.manila.clients.page');
+    Route::post('/manila/add/clients', [ManilaClientsController::class, 'ManilaAddClientRequest'])->middleware('secretary.area:manila')->name('secretary.manila.add.clients.request');
+    Route::get('/manila/edit/clients/{id}', [ManilaClientsController::class, 'ManilaEditClientPage'])->middleware('secretary.area:manila')->name('secretary.manila.edit.clients.page');
+    Route::put('/manila/update/clients/{id}', [ManilaClientsController::class, 'ManilaUpdateClientRequest'])->middleware('secretary.area:manila')->name('secretary.manila.update.clients.request');
+    Route::delete('/manila/delete/clients/{id}', [ManilaClientsController::class, 'ManilaDeleteClientRequest'])->middleware('secretary.area:manila')->name('secretary.manila.delete.clients.request');
+    Route::post('/manila/add/renewal', [ManilaClientsRenewalController::class, 'ManilaClientAddRenewalRequest'])->middleware('secretary.area:manila')->name('secretary.manila.add.renewal.clients.request');
 
-    Route::get(
-        '/manila/clients',
-        [ManilaClientsController::class, 'ManilaClientsPage']
-    )->middleware('secretary.area:manila')
-        ->name('secretary.manila.clients.page');
 
-    Route::get(
-        '/valenzuela/dashboard',
-        [ValenzuelaDashboardController::class, 'ValenzuelaDashboardPage']
-    )->middleware('secretary.area:valenzuela')
-        ->name('secretary.valenzuela.dashboard.page');
+
+    // Secretary Valenzuela Area Route
+    Route::get('/valenzuela/dashboard', [ValenzuelaDashboardController::class, 'ValenzuelaDashboardPage'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.dashboard.page');
 });
