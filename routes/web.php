@@ -28,6 +28,7 @@ use App\Http\Controllers\admin\fc\AdminAreaFCClientsHistoryController;
 use App\Http\Controllers\admin\fc\AdminAreaFCPaymentsController;
 
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\secretary\manila\ManilaAreaController;
 use App\Http\Controllers\secretary\manila\ManilaClientsController;
 use App\Http\Controllers\secretary\manila\ManilaClientsRenewalController;
 use App\Http\Controllers\secretary\manila\ManilaDashboardController;
@@ -199,6 +200,8 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::put('/manila/update/clients/{id}', [ManilaClientsController::class, 'ManilaUpdateClientRequest'])->middleware('secretary.area:manila')->name('secretary.manila.update.clients.request');
     Route::delete('/manila/delete/clients/{id}', [ManilaClientsController::class, 'ManilaDeleteClientRequest'])->middleware('secretary.area:manila')->name('secretary.manila.delete.clients.request');
     Route::post('/manila/add/renewal', [ManilaClientsRenewalController::class, 'ManilaClientAddRenewalRequest'])->middleware('secretary.area:manila')->name('secretary.manila.add.renewal.clients.request');
+
+    Route::get('/manila/areas/', [ManilaAreaController::class, 'ManilaAreaPage'])->name('manila.area.page');
 
 
 
