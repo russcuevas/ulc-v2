@@ -89,9 +89,9 @@
                     <i class="fa-solid fa-users"></i>
                     Clients
                 </a>
-                <a href="{{ route('manila.area.page') }}"
+                <a href="{{ route('secretary.manila.area.page') }}"
                     class="nav-link 
-                    {{ request()->routeIs('manila.area.page') ? 'active' : '' }}">
+                    {{ request()->routeIs('secretary.manila.area.page') ? 'active' : '' }}">
                     <i class="fa-solid fa-map"></i>
                     Areas
                 </a>

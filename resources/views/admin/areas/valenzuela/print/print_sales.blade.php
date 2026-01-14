@@ -121,7 +121,7 @@
 
                     <tr>
                         <td colspan="3"><strong>NO. OF CLIENTS</strong></td>
-                        <td colspan="6">{{ count(array_unique($clientIds)) }}</td>
+                        <td colspan="6">{{ count($clientIds) }}</td>
                     </tr>
 
                     <tr>

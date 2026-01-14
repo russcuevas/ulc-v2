@@ -178,7 +178,7 @@
 
                     const form = document.createElement('form');
                     form.method = 'GET';
-                    form.action = "{{ route('admin.area.manila.print.sales') }}";
+                    form.action = "{{ route('secretary.area.manila.print.sales') }}";
                     form.target = '_blank';
 
                     form.innerHTML = `

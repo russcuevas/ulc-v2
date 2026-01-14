@@ -5,6 +5,7 @@ namespace App\Http\Controllers\secretary\manila;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ManilaAreaController extends Controller
 {
@@ -22,5 +23,43 @@ class ManilaAreaController extends Controller
             ->get();
 
         return view('secretary.manila.areas.index', compact('areas'));
+    }
+
+    public function ManilaAreaPrintSalesReports(Request $request)
+    {
+        $from = Carbon::parse($request->from_date)->startOfDay();
+        $to   = Carbon::parse($request->to_date)->endOfDay();
+
+        $query = DB::table('clients_loans')
+            ->join('clients', 'clients.id', '=', 'clients_loans.client_id')
+            ->join('areas', 'areas.id', '=', 'clients.area_id')
+            ->where('areas.location_name', 'Manila Area')
+            ->whereBetween('clients_loans.created_at', [$from, $to]);
+
+        if (!$request->all_areas && $request->area_id) {
+            $query->where('areas.id', $request->area_id);
+        }
+
+        $loans = $query->select(
+            'clients_loans.pn_number',
+            'clients_loans.loan_status',
+            'clients_loans.created_at',
+            'clients.fullname',
+            'areas.areas_name',
+            'clients_loans.loan_from',
+            'clients_loans.loan_to',
+            'clients_loans.daily',
+            'clients_loans.loan_amount'
+        )
+            ->orderBy('areas.areas_name')
+            ->orderBy('clients_loans.created_at')
+            ->get();
+
+        return view('secretary.manila.areas.print.print_sales', [
+            'loans'     => $loans,
+            'from'      => $from,
+            'to'        => $to,
+            'allAreas'  => $request->all_areas
+        ]);
     }
 }

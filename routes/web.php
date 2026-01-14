@@ -193,6 +193,7 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     // Secretary Manila Area Route
     // Secretary Dashboard Route
     Route::get('/manila/dashboard', [ManilaDashboardController::class, 'ManilaDashboardPage'])->middleware('secretary.area:manila')->name('secretary.manila.dashboard.page');
+
     // Secretary Clients Route
     Route::get('/manila/clients', [ManilaClientsController::class, 'ManilaClientsPage'])->middleware('secretary.area:manila')->name('secretary.manila.clients.page');
     Route::post('/manila/add/clients', [ManilaClientsController::class, 'ManilaAddClientRequest'])->middleware('secretary.area:manila')->name('secretary.manila.add.clients.request');
@@ -201,7 +202,9 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::delete('/manila/delete/clients/{id}', [ManilaClientsController::class, 'ManilaDeleteClientRequest'])->middleware('secretary.area:manila')->name('secretary.manila.delete.clients.request');
     Route::post('/manila/add/renewal', [ManilaClientsRenewalController::class, 'ManilaClientAddRenewalRequest'])->middleware('secretary.area:manila')->name('secretary.manila.add.renewal.clients.request');
 
-    Route::get('/manila/areas/', [ManilaAreaController::class, 'ManilaAreaPage'])->name('manila.area.page');
+    // Secretary Areas Route
+    Route::get('/manila/areas/', [ManilaAreaController::class, 'ManilaAreaPage'])->name('secretary.manila.area.page');
+    Route::get('/manila/areas/sales/print', [ManilaAreaController::class, 'ManilaAreaPrintSalesReports'])->name('secretary.area.manila.print.sales');
 
 
 
