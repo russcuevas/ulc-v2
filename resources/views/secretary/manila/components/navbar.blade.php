@@ -91,7 +91,7 @@
                 </a>
                 <a href="{{ route('secretary.manila.area.page') }}"
                     class="nav-link 
-                    {{ request()->routeIs('secretary.manila.area.page') ? 'active' : '' }}">
+                    {{ request()->routeIs('secretary.manila.area.page', 'secretary.area.manila.payments', 'secretary.area.manila.payments.clients') ? 'active' : '' }}">
                     <i class="fa-solid fa-map"></i>
                     Areas
                 </a>
