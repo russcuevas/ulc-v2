@@ -28,6 +28,8 @@ use App\Http\Controllers\admin\fc\AdminAreaFCClientsHistoryController;
 use App\Http\Controllers\admin\fc\AdminAreaFCPaymentsController;
 
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\secretary\manila\ManilaAreaClientsController;
+use App\Http\Controllers\secretary\manila\ManilaAreaClientsHistoryController;
 use App\Http\Controllers\secretary\manila\ManilaAreaController;
 use App\Http\Controllers\secretary\manila\ManilaAreaPaymentsController;
 use App\Http\Controllers\secretary\manila\ManilaClientsController;
@@ -204,19 +206,39 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::post('/manila/add/renewal', [ManilaClientsRenewalController::class, 'ManilaClientAddRenewalRequest'])->middleware('secretary.area:manila')->name('secretary.manila.add.renewal.clients.request');
 
     // Secretary List of Areas Route
-    Route::get('/manila/areas/', [ManilaAreaController::class, 'ManilaAreaPage'])->name('secretary.manila.area.page');
-    Route::get('/manila/areas/sales/print', [ManilaAreaController::class, 'ManilaAreaPrintSalesReports'])->name('secretary.area.manila.print.sales');
+    Route::get('/manila/areas/', [ManilaAreaController::class, 'ManilaAreaPage'])->middleware('secretary.area:manila')->name('secretary.manila.area.page');
+    Route::get('/manila/areas/sales/print', [ManilaAreaController::class, 'ManilaAreaPrintSalesReports'])->middleware('secretary.area:manila')->name('secretary.area.manila.print.sales');
+
+    // TODO
+    //ACCOUNTS
+    // Route::get('/admin/areas/manila/{area}/clients/renewal', [AdminAreaManilaClientsController::class, 'AdminAreaManilaRenewalClientPage'])->name('admin.area.manila.clients.renewal.page');
+    // Route::get('/admin/areas/manila/{area}/clients/lapsed', [AdminAreaManilaClientsController::class, 'AdminAreaManilaLapsedClientsPage'])->name('admin.area.manila.clients.lapsed.page');
+    // Route::get('/admin/areas/manila/{area}/clients/active', [AdminAreaManilaClientsController::class, 'AdminAreaManilaActiveClientsPage'])->name('admin.area.manila.clients.active.page');
+
+    //HISTORY
+    // Route::get('/admin/areas/manila/clients/{clientId}/loans/print', [AdminAreaManilaClientsHistoryController::class, 'AdminAreaManilaClientsPrintLoanHistory'])->name('admin.area.manila.clients.print.history.page');
+    // Route::get('/admin/areas/manila/clients/loans/{loanId}/payments', [AdminAreaManilaClientsHistoryController::class, 'AdminAreaManilaClientLoanPaymentsPage'])->name('admin.area.manila.clients.loan.payments');
+
+
+
+    //Secretary Clients Accounts
+    Route::get('/manila/{area}/clients', [ManilaAreaClientsController::class, 'ManilaAreaClientsPage'])->middleware('secretary.area:manila')->name('secretary.area.manila.clients.page');
+    Route::get('/manila/{area}/clients/lapsed/print', [ManilaAreaClientsController::class, 'ManilaAreaLapsedClientsPrint'])->middleware('secretary.area:manila')->name('secretary.area.manila.clients.lapsed.page.print');
+
+
+    //Secretary Clients History
+    Route::get('/manila/clients/{clientId}', [ManilaAreaClientsHistoryController::class, 'ManilaAreaClientsProfilePage'])->middleware('secretary.area:manila')->name('secretary.area.manila.clients.profile.page');
 
     // Secretary Areas Payments Route
-    Route::get('/manila/{area}/payments', [ManilaAreaPaymentsController::class, 'ManilaClientPaymentsPage'])->name('secretary.area.manila.payments');
-    Route::post('/manila/{id}/create/payments', [ManilaAreaPaymentsController::class, 'ManilaClientPaymentsRequest'])->name('secretary.area.manila.payments.request');
-    Route::get('/manila/payments/{area}/summary/collections/print', [ManilaAreaPaymentsController::class, 'ManilaPrintSummaryCollections'])->name('secretary.area.manila.payments.print.summary.collections');
-    Route::get('/manila/payments/{referenceNumber}/clients', [ManilaAreaPaymentsController::class, 'ManilaClientDailyPaymentsPage'])->name('secretary.area.manila.payments.clients');
-    Route::post('/manila/payments/{id}/update-collection', [ManilaAreaPaymentsController::class, 'ManilaClientUpdateCollection'])->name('secretary.area.manila.update.collection');
-    Route::get('/manila/payments/{referenceNumber}/print', [ManilaAreaPaymentsController::class, 'ManilaClientPrintDailyPayments'])->name('secretary.area.manila.payments.print');
+    Route::get('/manila/{area}/payments', [ManilaAreaPaymentsController::class, 'ManilaClientPaymentsPage'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments');
+    Route::post('/manila/{id}/create/payments', [ManilaAreaPaymentsController::class, 'ManilaClientPaymentsRequest'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.request');
+    Route::get('/manila/payments/{area}/summary/collections/print', [ManilaAreaPaymentsController::class, 'ManilaPrintSummaryCollections'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.print.summary.collections');
+    Route::get('/manila/payments/{referenceNumber}/clients', [ManilaAreaPaymentsController::class, 'ManilaClientDailyPaymentsPage'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.clients');
+    Route::post('/manila/payments/{id}/update-collection', [ManilaAreaPaymentsController::class, 'ManilaClientUpdateCollection'])->middleware('secretary.area:manila')->name('secretary.area.manila.update.collection');
+    Route::get('/manila/payments/{referenceNumber}/print', [ManilaAreaPaymentsController::class, 'ManilaClientPrintDailyPayments'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.print');
 
-    Route::post('/manila/collect-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientCollectPaymentRequest'])->name('secretary.manila.payments.clients.collect');
-    Route::post('/manila/no-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientNoPaymentRequest'])->name('secretary.area.manila.payments.clients.not.paid');
+    Route::post('/manila/collect-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientCollectPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.manila.payments.clients.collect');
+    Route::post('/manila/no-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientNoPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.clients.not.paid');
 
     // Secretary Valenzuela Area Route
     Route::get('/valenzuela/dashboard', [ValenzuelaDashboardController::class, 'ValenzuelaDashboardPage'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.dashboard.page');

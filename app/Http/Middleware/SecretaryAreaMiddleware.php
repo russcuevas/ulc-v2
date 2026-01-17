@@ -12,7 +12,7 @@ class SecretaryAreaMiddleware
     public function handle(Request $request, Closure $next, $area)
     {
         if (!Auth::check()) {
-            return redirect()->route('auth.login.page');
+            return redirect()->route('auth.login.page')->with('error', 'Please login first');
         }
 
         $user = Auth::user();

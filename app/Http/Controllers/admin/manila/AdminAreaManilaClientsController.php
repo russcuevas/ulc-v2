@@ -252,13 +252,8 @@ class AdminAreaManilaClientsController extends Controller
                     ->whereBetween('month_payments.created_at', [$startOfMonth, $endOfMonth]);
             })
             ->where('clients.area_id', $areaId)
-            ->where(function ($query) use ($startOfMonth, $endOfMonth) {
-                $query->where('clients_loans.is_lapsed', 1)
-                    ->orWhere(function ($q) use ($startOfMonth, $endOfMonth) {
-                        $q->whereBetween('month_payments.created_at', [$startOfMonth, $endOfMonth])
-                            ->where('month_payments.is_lapsed', 1);
-                    });
-            })
+            ->where('clients_loans.is_lapsed', 1)
+            ->whereBetween('clients_loans.updated_at', [$startOfMonth, $endOfMonth])
             ->select(
                 'clients.fullname',
                 'clients_loans.id as client_loans_id',
@@ -267,8 +262,7 @@ class AdminAreaManilaClientsController extends Controller
                 'clients_loans.loan_amount',
                 'clients_loans.balance',
                 'clients_loans.updated_at',
-                DB::raw('COALESCE(SUM(month_payments.collection),0) as total_collection'),
-                DB::raw('1 as is_lapsed')
+                DB::raw('COALESCE(SUM(month_payments.collection),0) as total_collection')
             )
             ->groupBy(
                 'clients.id',
@@ -282,6 +276,7 @@ class AdminAreaManilaClientsController extends Controller
             )
             ->orderBy('clients.fullname')
             ->get();
+
 
         return view(
             'admin.areas.manila.clients.print.print_lapsed',

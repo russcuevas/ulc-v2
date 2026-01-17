@@ -59,7 +59,6 @@ class AdminAreaManilaClientsHistoryController extends Controller
 
     public function AdminAreaManilaClientLoanPaymentsPage($loanId)
     {
-        // Get loan and ensure it belongs to Manila
         $loan = DB::table('clients_loans')
             ->join('clients', 'clients.id', '=', 'clients_loans.client_id')
             ->join('areas', 'areas.id', '=', 'clients.area_id')
@@ -72,10 +71,9 @@ class AdminAreaManilaClientsHistoryController extends Controller
             abort(404, 'Loan not found or not in Manila Area');
         }
 
-        // Get payments for this loan
         $payments = DB::table('clients_payments')
             ->where('client_loans_id', $loanId)
-            ->orderBy('due_date', 'asc')  // probably ascending by date is better for payment history
+            ->orderBy('due_date', 'asc')
             ->get();
 
         return view('admin.areas.manila.clients.client_payment_history', compact('loan', 'payments'));

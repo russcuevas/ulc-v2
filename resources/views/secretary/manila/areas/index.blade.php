@@ -74,7 +74,7 @@
                                                 <td>{{ $area->areas_name }}</td>
                                                 <td>{{ $area->clients_count }}</td>
                                                 <td>
-                                                    <a href="{{ route('admin.area.manila.clients.page', $area->id) }}"
+                                                    <a href="{{ route('secretary.area.manila.clients.page', $area->id) }}"
                                                         class="btn btn-sm btn-outline-info">
                                                         View Clients <i class="fas fa-eye"></i>
                                                     </a>
