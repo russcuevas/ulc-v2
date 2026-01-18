@@ -27,8 +27,8 @@
                             class="text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('secretary.manila.area.page') }}"
                             class="text-decoration-none"><i class="fas fa-location-dot me-1"></i> Manila</a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><i class="fa-solid fa-users me-1"></i>
-                        All Accounts</li>
+                    <li class="breadcrumb-item active" aria-current="page"><i class="fa-solid fa-box"></i>
+                        For Renewal Accounts</li>
                 </ol>
             </nav>
             <div class="row">
@@ -36,27 +36,20 @@
                     <div class="card shadow-sm border-1">
                         <div class="d-flex justify-content-between align-items-start m-4">
                             <h5 class="card-title mb-0">
-                                <span class="badge bg-primary">
-                                    [{{ $area->areas_name }}] - ALL ACCOUNTS ({{ count($clients) }})
+                                <span class="badge bg-info">
+                                    [{{ $area->areas_name }}] - FOR RENEWAL CLIENTS ({{ count($clients) }})
                                 </span>
                             </h5>
-
-                            <!-- RIGHT: Buttons -->
-                            <div class="d-flex flex-column align-items-end">
-                                <a href="javascript:void(0)" id="printDataAccounts" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-print me-1"></i> PRINT SUMMARY DATA
-                                </a>
-                            </div>
                         </div>
 
                         <div class="card-body p-4">
                             <a href="{{ route('secretary.area.manila.clients.page', $area->id) }}"
-                                class="btn btn-sm btn-primary mb-1">
+                                class="btn btn-sm btn-outline-primary mb-1">
                                 ALL ACCOUNTS [{{ $totalCount }}]
                             </a>
 
                             <a href="{{ route('secretary.area.manila.clients.renewal.page', $area->id) }}"
-                                class="btn btn-sm btn-outline-info mb-1">
+                                class="btn btn-sm btn-info mb-1">
                                 FOR RENEWAL [{{ $renewalCount }}]
                             </a>
 
@@ -98,20 +91,14 @@
                                                 <td>{{ $client->address }}</td>
                                                 <td>{{ $client->gender }}</td>
                                                 <td>
-                                                    @if ($client->is_lapsed)
-                                                        <span class="badge bg-danger">LAPSED</span>
-                                                    @elseif ($client->is_renewal)
-                                                        <span class="badge bg-info">FOR RENEWAL</span>
-                                                    @else
-                                                        <span class="badge bg-success">ACTIVE</span>
-                                                    @endif
+                                                    <span class="badge bg-info">FOR RENEWAL</span>
                                                 </td>
 
                                                 <td>{{ \Carbon\Carbon::parse($client->created_at)->format('F j, Y - h:i A') }}
                                                 </td>
 
                                                 <td>
-                                                    <a href="{{ route('secretary.area.manila.clients.profile.page', $client->id) }}"
+                                                    <a href="{{ route('admin.area.manila.clients.profile.page', $client->id) }}"
                                                         class="btn btn-sm btn-outline-info">
                                                         View <i class="fas fa-eye"></i>
                                                     </a>
@@ -179,7 +166,7 @@
     <script>
         document.getElementById('printDataAccounts').addEventListener('click', function() {
             Swal.fire({
-                title: '<i class="fas fa-print me-1"></i> Print Summary Data',
+                title: '<i class="fas fa-print me-1"></i> Print Data',
                 html: `
                 <div class="row g-2 text-start">
                     <div class="col-12">
@@ -191,7 +178,9 @@
                 </div>
 
                 <div class="d-grid gap-2 mt-3">
-                    <button id="print-lapsed" class="btn btn-primary">PRINT LAPSED ACCOUNTS</button>
+                    <button id="print-all" class="btn btn-primary">PRINT ALL ACCOUNTS</button>
+                    <button id="print-active" class="btn btn-success">PRINT ACTIVE ACCOUNTS</button>
+                    <button id="print-lapsed" class="btn btn-danger">PRINT LAPSED ACCOUNTS</button>
                 </div>
             `,
                 showConfirmButton: false,
@@ -201,8 +190,35 @@
 
                     const areaId = {{ $area->id }};
 
+                    // Default to current month
                     document.getElementById('month').value =
                         new Date().toISOString().slice(0, 7);
+
+                    document.getElementById('print-all').addEventListener('click', function() {
+                        const month = document.getElementById('month').value;
+                        if (!month) {
+                            Swal.showValidationMessage('Please select a month');
+                            return;
+                        }
+
+                        window.open(
+                            `/admin/areas/manila/${areaId}/clients/print?month=${month}`,
+                            '_blank'
+                        );
+                    });
+
+                    document.getElementById('print-active').addEventListener('click', function() {
+                        const month = document.getElementById('month').value;
+                        if (!month) {
+                            Swal.showValidationMessage('Please select a month');
+                            return;
+                        }
+
+                        window.open(
+                            `/admin/areas/manila/${areaId}/clients/active/print?month=${month}`,
+                            '_blank'
+                        );
+                    });
 
                     document.getElementById('print-lapsed').addEventListener('click', function() {
                         const month = document.getElementById('month').value;
@@ -212,7 +228,7 @@
                         }
 
                         window.open(
-                            `/secretary/manila/${areaId}/clients/lapsed/print?month=${month}`,
+                            `/admin/areas/manila/${areaId}/clients/lapsed/print?month=${month}`,
                             '_blank'
                         );
                     });

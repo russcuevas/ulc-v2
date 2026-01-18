@@ -75,7 +75,7 @@
 
                         <div class="card-body table-responsive">
                             <div class="d-flex flex-column align-items-end">
-                                <a href="{{ route('admin.area.manila.clients.print.history.page', $client->id) }}"
+                                <a href="{{ route('secretary.area.manila.clients.print.history.page', $client->id) }}"
                                     target="_blank" class="btn btn-sm btn-primary mb-1">
                                     <i class="fas fa-print me-1"></i> PRINT SUMMARY LOAN
                                 </a>
@@ -123,7 +123,7 @@
 
                                             <td>
                                                 <a style="text-decoration: none"
-                                                    href="{{ route('admin.area.manila.clients.loan.payments', $loan->id) }}"
+                                                    href="{{ route('secretary.area.manila.clients.loan.payments', $loan->id) }}"
                                                     target="_blank" class="generate-soa-link">
                                                     GENERATE STATEMENT OF ACCOUNT
                                                 </a>

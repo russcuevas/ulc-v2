@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ManilaAreaPaymentsController extends Controller
 {
@@ -141,6 +142,8 @@ class ManilaAreaPaymentsController extends Controller
             return redirect()->back()->with('error', 'No clients with due payments (balance > 0) for this day.');
         }
 
+        $secretaryFullname = Auth::user()->fullname;
+
         foreach ($clients as $client) {
             $is_lapsed = Carbon::parse($client->loan_to)->lt(now()) ? 1 : 0;
 
@@ -161,7 +164,7 @@ class ManilaAreaPaymentsController extends Controller
                 'collection'       => null,
                 'type'             => null,
                 'is_lapsed'        => $is_lapsed,
-                'created_by'       => 'System',
+                'created_by'       => $secretaryFullname,
                 'created_at'       => now(),
                 'updated_at'       => now(),
             ]);

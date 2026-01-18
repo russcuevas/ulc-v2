@@ -91,7 +91,18 @@
                 </a>
                 <a href="{{ route('secretary.manila.area.page') }}"
                     class="nav-link 
-                    {{ request()->routeIs('secretary.manila.area.page', 'secretary.area.manila.payments', 'secretary.area.manila.payments.clients', 'secretary.area.manila.clients.page', 'secretary.area.manila.clients.profile.page') ? 'active' : '' }}">
+                    {{ request()->routeIs(
+                        'secretary.manila.area.page',
+                        'secretary.area.manila.payments',
+                        'secretary.area.manila.payments.clients',
+                        'secretary.area.manila.clients.page',
+                        'secretary.area.manila.clients.renewal.page',
+                        'secretary.area.manila.clients.active.page',
+                        'secretary.area.manila.clients.lapsed.page',
+                        'secretary.area.manila.clients.profile.page',
+                    )
+                        ? 'active'
+                        : '' }}">
                     <i class="fa-solid fa-map"></i>
                     Areas
                 </a>
@@ -128,7 +139,8 @@
                 <div class="dropdown">
                     <div class="user-avatar" data-bs-toggle="dropdown" aria-expanded="false">{{ $user_initials }}</div>
                     <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><a class="dropdown-item d-flex gap-2 align-items-center" href="">Profile</a></li>
+                        <li><a class="dropdown-item d-flex gap-2 align-items-center"
+                                href="{{ route('secretary.manila.profile.page') }}">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

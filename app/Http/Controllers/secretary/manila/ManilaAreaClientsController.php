@@ -110,6 +110,106 @@ class ManilaAreaClientsController extends Controller
         );
     }
 
+    public function ManilaAreaActiveClientsPage($areaId)
+    {
+        $area = $this->getRelatedArea($areaId);
+
+
+        $clients = DB::table('clients')
+            ->where('clients.area_id', $areaId)
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('clients_loans')
+                    ->whereColumn('clients_loans.client_id', 'clients.id')
+                    ->where('clients_loans.payment_status', 'unpaid')
+                    ->where('clients_loans.balance', '>', 0)
+                    ->whereDate('clients_loans.loan_to', '>=', now());
+            })
+            ->select('clients.*')
+            ->get();
+
+        $clients->transform(function ($client) {
+            $client->is_lapsed = 0;
+            $client->is_renewal = 0;
+            return $client;
+        });
+
+        $counts = $this->getClientAccountCounts($areaId);
+
+        return view(
+            'secretary.manila.areas.clients.active_clients',
+            array_merge(compact('clients', 'area'), $counts)
+        );
+    }
+
+    public function ManilaAreaRenewalClientPage($areaId)
+    {
+        $area = $this->getRelatedArea($areaId);
+
+
+        $clients = DB::table('clients')
+            ->where('clients.area_id', $areaId)
+            ->whereExists(function ($query) {
+                $query->from('clients_loans')
+                    ->whereColumn('clients_loans.client_id', 'clients.id')
+                    ->where('clients_loans.payment_status', 'paid')
+                    ->where('clients_loans.balance', 0);
+            })
+            ->whereNotExists(function ($query) {
+                $query->from('clients_loans')
+                    ->whereColumn('clients_loans.client_id', 'clients.id')
+                    ->where('clients_loans.payment_status', 'unpaid')
+                    ->where('clients_loans.balance', '>', 0);
+            })
+            ->select('clients.*')
+            ->get();
+
+        $clients->transform(function ($client) {
+            $client->is_renewal = 1;
+            $client->is_lapsed = 0;
+            return $client;
+        });
+
+        $counts = $this->getClientAccountCounts($areaId);
+
+        return view(
+            'secretary.manila.areas.clients.for_renewal_clients',
+            array_merge(compact('clients', 'area'), $counts)
+        );
+    }
+
+    public function ManilaAreaLapsedClientsPage($areaId)
+    {
+        $area = $this->getRelatedArea($areaId);
+
+
+        $clients = DB::table('clients')
+            ->where('clients.area_id', $areaId)
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('clients_loans')
+                    ->whereColumn('clients_loans.client_id', 'clients.id')
+                    ->where('clients_loans.payment_status', 'unpaid')
+                    ->where('clients_loans.balance', '>', 0)
+                    ->whereDate('clients_loans.loan_to', '<', now());
+            })
+            ->select('clients.*')
+            ->get();
+
+        $clients->transform(function ($client) {
+            $client->is_lapsed = 1;
+            $client->is_renewal = 0;
+            return $client;
+        });
+
+        $counts = $this->getClientAccountCounts($areaId);
+
+        return view(
+            'secretary.manila.areas.clients.lapsed_clients',
+            array_merge(compact('clients', 'area'), $counts)
+        );
+    }
+
     private function getRelatedArea($areaId)
     {
         $area = DB::table('areas')
