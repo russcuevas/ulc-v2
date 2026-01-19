@@ -40,7 +40,9 @@ class ManilaAreaPaymentsController extends Controller
                 DB::raw('MAX(clients_payments.due_date) as due_date'),
                 DB::raw('SUM(clients_payments.daily) as daily'),
                 DB::raw('SUM(clients_payments.collection) as collection'),
-                DB::raw('MAX(clients_loans.payment_status) as payment_status')
+                DB::raw('MAX(clients_loans.payment_status) as payment_status'),
+                DB::raw('MAX(clients_payments.created_at) as created_at'),
+                DB::raw('MAX(clients_payments.created_by) as created_by')
             )
             ->groupBy('clients_payments.reference_number')
             ->orderBy('due_date', 'desc')
