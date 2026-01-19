@@ -193,10 +193,10 @@ Route::middleware(['auth', 'admin'])->group(
 
 
 Route::prefix('secretary')->middleware(['auth'])->group(function () {
-
     // Secretary Manila Area Route
-    // Secretary Dashboard Route
+    // Secretary Manila Dashboard Route
     Route::get('/manila/dashboard', [ManilaDashboardController::class, 'ManilaDashboardPage'])->middleware('secretary.area:manila')->name('secretary.manila.dashboard.page');
+    Route::get('/manila/areas/breakdown/analytics', [ManilaDashboardController::class, 'ManilaAreasBreakdownSummary'])->middleware('secretary.area:manila')->name('secretary.manila.analytics.page');
 
     //Secretary Manila Profile Management Route
     Route::get('/manila/profile', [ManilaProfileController::class, 'ManilaProfilePage'])->name('secretary.manila.profile.page');
@@ -240,5 +240,6 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::post('/manila/no-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientNoPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.clients.not.paid');
 
     // Secretary Valenzuela Area Route
+    // Secretary Valenzuela Dashboard Route
     Route::get('/valenzuela/dashboard', [ValenzuelaDashboardController::class, 'ValenzuelaDashboardPage'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.dashboard.page');
 });

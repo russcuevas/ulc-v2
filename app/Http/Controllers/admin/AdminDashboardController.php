@@ -223,6 +223,53 @@ class AdminDashboardController extends Controller
         $paymentStatusLabels = array_keys($paymentStatusMap);
         $paymentStatusData = array_values($paymentStatusMap);
 
+
+        $areas = DB::table('areas')
+            ->where('location_name', $location)
+            ->orderBy('areas_name')
+            ->get();
+
+        $data = [];
+
+        foreach ($areas as $area) {
+
+            // Collector name
+            $collector = DB::table('collectors')->where('id', $area->collector_id)->first();
+            $collectorName = $collector ? $collector->fullname : 'N/A';
+
+            // Total Loans
+            $totalLoans = DB::table('clients_loans')
+                ->whereIn('client_id', function ($query) use ($area, $from, $to) {
+                    $sub = DB::table('clients')->select('id')->where('area_id', $area->id);
+                    if ($from && $to) {
+                        $sub->whereBetween('created_at', [$from, $to]);
+                    }
+                    $query->fromSub($sub, 'subquery')->select('id');
+                })
+                ->when($from && $to, fn($q) => $q->whereBetween('created_at', [$from, $to]))
+                ->sum('loan_amount');
+
+            // Total Clients
+            $totalClients = DB::table('clients')
+                ->where('area_id', $area->id)
+                ->when($from && $to, fn($q) => $q->whereBetween('created_at', [$from, $to]))
+                ->count();
+
+            // Total Collected
+            $totalCollected = DB::table('clients_payments')
+                ->where('client_area', $area->id)
+                ->when($from && $to, fn($q) => $q->whereBetween('created_at', [$from, $to]))
+                ->sum('collection');
+
+            $data[] = [
+                'area' => $area->areas_name,
+                'collector' => $collectorName,
+                'total_loans' => $totalLoans,
+                'total_clients' => $totalClients,
+                'total_collected' => $totalCollected,
+            ];
+        }
+
         // -------------------------
         // Return view
         // -------------------------
@@ -240,7 +287,8 @@ class AdminDashboardController extends Controller
             'paymentStatusLabels',
             'paymentStatusData',
             'from',
-            'to'
+            'to',
+            'data'
         ));
     }
 }

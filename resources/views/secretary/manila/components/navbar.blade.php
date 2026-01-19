@@ -78,7 +78,7 @@
             </div>
             <div class="nav flex-column nav-pills px-3 mt-2">
                 <a href="{{ route('secretary.manila.dashboard.page') }}"
-                    class="nav-link {{ request()->routeIs('secretary.manila.dashboard.page') ? 'active' : '' }}">
+                    class="nav-link {{ request()->routeIs('secretary.manila.dashboard.page', 'secretary.manila.analytics.page') ? 'active' : '' }}">
                     <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>

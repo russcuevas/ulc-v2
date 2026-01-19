@@ -98,7 +98,7 @@
                     </strong>
                 </div>
             @endif
-            <form id="filterForm" method="GET" action="" class="row g-4 mb-4">
+            <form id="filterForm" method="GET" action="" class="row g-4">
 
                 <div class="col-md-4">
                     <label class="form-label">From Month</label>
@@ -130,7 +130,9 @@
                                 <i class="fa-solid fa-coins"></i>
                             </div>
                         </div>
-                        <h2 class="h3 fw-bold mb-1">₱</h2>
+                        <h2 class="h3 fw-bold mb-1">
+                            ₱{{ number_format($totalLoans, 2) }}
+                        </h2>
                     </div>
                 </div>
             </div>
@@ -144,7 +146,9 @@
                                 <i class="fa-solid fa-users"></i>
                             </div>
                         </div>
-                        <h2 class="h3 fw-bold mb-1"></h2>
+                        <h2 class="h3 fw-bold mb-1">
+                            {{ number_format($totalClients) }}
+                        </h2>
                     </div>
                 </div>
             </div>
@@ -158,15 +162,53 @@
                                 <i class="fa-solid fa-hand-holding-dollar"></i>
                             </div>
                         </div>
-                        <h2 class="h3 fw-bold mb-1">₱</h2>
+                        <h2 class="h3 fw-bold mb-1">
+                            ₱{{ number_format($totalCollected, 2) }}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <a style="text-align: right" href="{{ route('secretary.manila.analytics.page') }}">View areas breakdown</a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-12 col-lg-8">
+                <div class="card border-2 shadow-lg h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="card-title mb-0">Loan Analytics [Monthly Collections]</h5>
+                            </div>
+                        </div>
+                        <span class="text-success small">
+                            Total selected range: ₱<span id="totalYearCollections"></span>
+                        </span>
+
+
+                        <canvas id="portfolioChart" style="width:100%; max-height:300px;"></canvas>
                     </div>
                 </div>
             </div>
 
-        </div>
+            <div class="col-12 col-lg-4">
+                <div class="card border-2 shadow-lg h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Recent Activity</h5>
 
-        <div class="row g-4">
+                        <div class="d-flex gap-3 mb-4">
+                            <div class="activity-dot  flex-shrink-0"></div>
+                            <div>
+                                <p class="mb-1 small"></p>
+                                <small class="text-body-secondary">
 
+                                    <span style="color: #ff6b35"></span>
+                                </small>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -174,6 +216,57 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/admin/js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const labels = @json($labels);
+        const collectionsData = @json($collectionsData);
+
+        // FIXED total calculation + formatting
+        const totalYear = collectionsData
+            .map(v => Number(v))
+            .reduce((a, b) => a + b, 0);
+
+        document.getElementById('totalYearCollections').innerText =
+            totalYear.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+        const ctx = document.getElementById('portfolioChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Monthly Collections',
+                    data: collectionsData.map(v => Number(v)),
+                    backgroundColor: 'rgb(255, 107, 53)',
+                    borderColor: 'black',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₱' + value.toLocaleString('en-PH');
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+    </script>
+
     <script>
         toastr.options = {
             closeButton: true,

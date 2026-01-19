@@ -123,6 +123,7 @@
 
         </form>
 
+
         {{-- Summary Cards --}}
         <div class="row g-4 mb-4">
             <div class="col-md-4">
@@ -150,6 +151,39 @@
                 </div>
             </div>
         </div>
+
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Area Name</th>
+                        <th>Collector</th>
+                        <th>Total Loans</th>
+                        <th>Total Clients</th>
+                        <th>Total Collected</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($data as $index => $area)
+                        <tr>
+                            <td>{{ $area['area'] }}</td>
+                            <td>{{ $area['collector'] ?? 'N/A' }}</td>
+                            <td>₱{{ number_format($area['total_loans'], 2) }}</td>
+                            <td>{{ number_format($area['total_clients']) }}</td>
+                            <td>₱{{ number_format($area['total_collected'], 2) }}</td>
+                        </tr>
+                    @endforeach
+                    @if (count($data) === 0)
+                        <tr>
+                            <td colspan="6" class="text-center">No data found for this range</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+
+
 
         <div class="row">
             <div class="col-md-6">
