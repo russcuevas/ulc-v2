@@ -102,12 +102,12 @@
 
                 <form method="POST" action="{{ route('auth.login.request') }}" class="needs-validation" novalidate>
                     @csrf
-                    @csrf
                     <div class="mb-4">
                         <label for="email" class="form-label fw-medium">Email Address <span
                                 style="color: red">*</span></label>
-                        <input type="email" id="email" name="email" placeholder="Email Address"
-                            class="form-control rounded-3 shadow-sm" required>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}"
+                            placeholder="Email Address" class="form-control rounded-3 shadow-sm" required>
+
                         <div class="invalid-feedback">Please enter your email address.</div>
                     </div>
 

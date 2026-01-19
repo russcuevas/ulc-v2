@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Auth;
 
 class AdminAreaManilaPaymentsController extends Controller
 {
@@ -40,7 +40,9 @@ class AdminAreaManilaPaymentsController extends Controller
                 DB::raw('MAX(clients_payments.due_date) as due_date'),
                 DB::raw('SUM(clients_payments.daily) as daily'),
                 DB::raw('SUM(clients_payments.collection) as collection'),
-                DB::raw('MAX(clients_loans.payment_status) as payment_status')
+                DB::raw('MAX(clients_loans.payment_status) as payment_status'),
+                DB::raw('MAX(clients_payments.created_at) as created_at'),
+                DB::raw('MAX(clients_payments.created_by) as created_by')
             )
             ->groupBy('clients_payments.reference_number')
             ->orderBy('due_date', 'desc')
@@ -144,6 +146,9 @@ class AdminAreaManilaPaymentsController extends Controller
             return redirect()->back()->with('error', 'No clients with due payments (balance > 0) for this day.');
         }
 
+        $adminFullname = Auth::user()->fullname;
+
+
         foreach ($clients as $client) {
             $is_lapsed = Carbon::parse($client->loan_to)->lt(now()) ? 1 : 0;
 
@@ -164,7 +169,7 @@ class AdminAreaManilaPaymentsController extends Controller
                 'collection'       => null,
                 'type'             => null,
                 'is_lapsed'        => $is_lapsed,
-                'created_by'       => 'System',
+                'created_by'       => $adminFullname,
                 'created_at'       => now(),
                 'updated_at'       => now(),
             ]);

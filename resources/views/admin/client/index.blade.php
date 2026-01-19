@@ -63,12 +63,14 @@
                                                 <td class="text-wrap">{{ $client->address }}</td>
                                                 <td class="text-wrap">
                                                     {{ $client->location_name }} -
-                                                    <span style="color: #ff6b35">[{{ $client->areas_name }}]</span>
+                                                    <span
+                                                        style="color: #ff6b35; font-weight: 900;">[{{ $client->areas_name }}]</span>
                                                 </td>
                                                 <td class="text-wrap">
-                                                    {{ \Carbon\Carbon::parse($client->created_at)->format('F j, Y - h:i A') }}
-                                                    <br>
-                                                    <span class="badge rounded-pill bg-success">
+                                                    <span style="text-align: left; font-size: 10px;"
+                                                        class="badge bg-danger">
+                                                        {{ \Carbon\Carbon::parse($client->created_at)->format('F j, Y - h:i A') }}
+                                                        <br>
                                                         by: {{ $client->created_by }}
                                                     </span>
                                                 </td>

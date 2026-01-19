@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AdminClientRenewalController extends Controller
@@ -31,6 +32,7 @@ class AdminClientRenewalController extends Controller
             'release_number' => 'required|string|unique:clients_loans,release_number'
         ]);
 
+        $adminFullname = Auth::user()->fullname;
 
         DB::table('clients_loans')->insert([
             'client_id'      => $request->client_id,
@@ -45,7 +47,7 @@ class AdminClientRenewalController extends Controller
             'loan_terms'     => $request->loan_terms,
             'loan_status'    => 'renewal',
             'payment_status' => 'unpaid',
-            'created_by'     => 'Admin',
+            'created_by'     => $adminFullname,
             'created_at'     => now(),
             'updated_at'     => now(),
         ]);

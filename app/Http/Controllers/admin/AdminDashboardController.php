@@ -229,6 +229,14 @@ class AdminDashboardController extends Controller
             ->orderBy('areas_name')
             ->get();
 
+        $firstArea = $areas->first();
+        $secretary = null;
+
+        if ($firstArea) {
+            $sec = DB::table('users')->where('id', $firstArea->secretary_id)->first();
+            $secretary = $sec ? $sec->fullname : 'N/A';
+        }
+
         $data = [];
 
         foreach ($areas as $area) {
@@ -288,6 +296,7 @@ class AdminDashboardController extends Controller
             'paymentStatusData',
             'from',
             'to',
+            'secretary',
             'data'
         ));
     }

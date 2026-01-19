@@ -83,7 +83,17 @@
                                 <tbody>
                                     @foreach ($payments as $payment)
                                         <tr>
-                                            <td>{{ $payment->reference_number }}</td>
+                                            <td>
+                                                <span
+                                                    style="color: green; font-weight: 900;">{{ $payment->reference_number }}</span>
+                                                <br>
+                                                <span style="text-align: left; font-size: 10px;"
+                                                    class="badge bg-danger">
+                                                    {{ \Carbon\Carbon::parse($payment->created_at)->format('F j, Y - h:i A') }}
+                                                    <br>
+                                                    by: {{ $payment->created_by }}
+                                                </span>
+                                            </td>
                                             <td>{{ $payment->collected_by }}</td>
                                             <td>{{ \Carbon\Carbon::parse($payment->due_date)->format('F d, Y') }}
                                             </td>

@@ -26,11 +26,15 @@ class AuthController extends Controller
         $user = DB::table('users')->where('email', $request->email)->first();
 
         if (!$user) {
-            return redirect()->back()->with('error', 'Invalid email or password.');
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', 'Invalid email or password');
         }
 
         if (!Hash::check($request->password, $user->password)) {
-            return redirect()->back()->with('error', 'Invalid email or password.');
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', 'Invalid email or password');
         }
 
         Auth::loginUsingId($user->id);

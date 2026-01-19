@@ -186,7 +186,7 @@
                                                 <td>
                                                     {{ ucfirst($loan->loan_status) }}
                                                     <br>
-                                                    <span class="badge rounded-pill bg-success">
+                                                    <span class="badge rounded-pill bg-danger">
                                                         Issued by: {{ $loan->created_by }}
                                                     </span>
                                                 </td>

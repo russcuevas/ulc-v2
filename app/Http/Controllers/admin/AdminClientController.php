@@ -8,6 +8,7 @@ use App\Models\ClientsLoans;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AdminClientController extends Controller
 {
@@ -66,7 +67,9 @@ class AdminClientController extends Controller
             'release_number' => 'required|string|unique:clients_loans,release_number'
         ]);
 
-        DB::transaction(function () use ($request) {
+        $adminFullname = Auth::user()->fullname;
+
+        DB::transaction(function () use ($request, $adminFullname) {
 
             $clientId = DB::table('clients')->insertGetId([
                 'fullname'   => $request->fullname,
@@ -74,7 +77,7 @@ class AdminClientController extends Controller
                 'address'    => $request->address,
                 'area_id'    => $request->area_id,
                 'gender'     => $request->gender,
-                'created_by' => 'Admin',
+                'created_by' => $adminFullname,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -92,7 +95,7 @@ class AdminClientController extends Controller
                 'loan_terms'     => $request->loan_terms,
                 'loan_status'    => 'new',
                 'payment_status' => 'unpaid',
-                'created_by'     => 'Admin',
+                'created_by'     => $adminFullname,
                 'created_at'     => now(),
                 'updated_at'     => now(),
             ]);

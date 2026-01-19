@@ -151,8 +151,26 @@
                 </div>
             </div>
         </div>
-
-
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card border-2 shadow-lg p-4 mb-5">
+                    <h6>LOANS/COLLECTED BREAKDOWN</h6>
+                    <canvas id="lineChart" height="255px"></canvas>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-2 shadow-lg p-4 mb-5">
+                    <h6>LOAN STATUS BREAKDOWN</h6>
+                    <canvas id="loanStatusChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-2 shadow-lg p-4 mb-5">
+                    <h6>PAYMENT TYPE BREAKDOWN</h6>
+                    <canvas id="paymentStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
                 <thead class="table-light">
@@ -182,30 +200,9 @@
                 </tbody>
             </table>
         </div>
-
-
-
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card border-2 shadow-lg p-4 mb-5">
-                    <h6>LOANS/COLLECTED BREAKDOWN</h6>
-                    <canvas id="lineChart" height="255px"></canvas>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-2 shadow-lg p-4 mb-5">
-                    <h6>LOAN STATUS BREAKDOWN</h6>
-                    <canvas id="loanStatusChart"></canvas>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-2 shadow-lg p-4 mb-5">
-                    <h6>PAYMENT TYPE BREAKDOWN</h6>
-                    <canvas id="paymentStatusChart"></canvas>
-                </div>
-            </div>
-        </div>
-
+        <h6 style="text-transform: uppercase; text-align: right; margin-bottom: 10px; color: red;">ASSIGNED SECRETARY:
+            {{ $secretary }}
+        </h6>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
