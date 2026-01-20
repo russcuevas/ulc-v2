@@ -373,6 +373,40 @@ class AdminAreaFCPaymentsController extends Controller
                 ->update(['is_lapsed' => 1]);
         }
 
+        $adminFullname = Auth::user()->fullname ?? 'Admin';
+        $adminId = Auth::id();
+
+        // Get client info
+        $client = DB::table('clients')->where('id', $loan->client_id)->first();
+        $clientFullname = $client->fullname ?? 'Unknown Client';
+        $areaId = $payment->client_area ?? 0;
+
+        $areaName = DB::table('areas')
+            ->where('id', $areaId)
+            ->value('areas_name') ?? 'Unknown Area';
+
+        DB::table('activities')->insert([
+            'users_id'          => $adminId,
+            'areas'             => $areaName,
+            'role'              => 'admin',
+            'type'              => 'Collected Payments',
+            'description'       => sprintf(
+                '<strong>Admin %s</strong> collected a payment<br>
+            <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
+            <span style="font-size: 12px; color: #6c757d;">In: Financial Counselor - [%s]</span><br>
+            <span style="font-size: 12px; color: #6c757d;">Amount Collected: %s</span>',
+                $adminFullname,
+                $clientFullname,
+                $areaName,
+                number_format($request->amount, 2)
+            ),
+            'color'             => 'success',
+            'is_read_secretary' => 0,
+            'is_read_admin'     => 0,
+            'created_at'        => now(),
+            'updated_at'        => now(),
+        ]);
+
         return redirect()->back()->with('success', "Payment collected successfully!");
     }
 
