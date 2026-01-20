@@ -179,13 +179,15 @@ class AdminAreaManilaPaymentsController extends Controller
             ->where('id', $client->client_area)
             ->value('areas_name') ?? 'Unknown Area';
 
+        //Notifications
         DB::table('activities')->insert([
             'users_id'          => $adminId,
+            'areas'             => 'Manila Area',
             'role'              => 'admin',
             'type'              => 'Payments Entry',
             'description' => sprintf(
                 '<strong>Admin %s</strong> added a new payment entry<br>
-                <span style="font-size: 12px; color: #6c757d;">In Area: %s</span><br>
+                <span style="font-size: 12px; color: #6c757d;">In: Manila Area - [%s]</span><br>
                 <span style="font-size: 12px; color: #6c757d;">With Reference No: %s</span>',
                 $adminFullname,
                 $areaName,

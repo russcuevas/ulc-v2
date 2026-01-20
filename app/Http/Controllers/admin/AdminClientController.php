@@ -70,7 +70,10 @@ class AdminClientController extends Controller
 
         $adminFullname = Auth::user()->fullname;
         $adminId = Auth::id();
-
+        $area = DB::table('areas')
+            ->select('areas_name', 'location_name')
+            ->where('id', $request->area_id)
+            ->first();
         DB::transaction(function () use ($request, $adminFullname) {
 
             $clientId = DB::table('clients')->insertGetId([
@@ -106,16 +109,18 @@ class AdminClientController extends Controller
         // Notification
         Activity::create([
             'users_id'          => $adminId,
+            'areas'    => $area->location_name ?? '',
             'role'              => 'admin',
             'type'              => 'Account Creation',
             'description'       => sprintf(
                 '<strong>Admin %s</strong> created a new client and loan.<br>
                 <span style="font-size: 12px; color: #6c757d;">
                     Client: <strong>%s</strong><br>
-                    In Area: <strong>%s</strong>
+                    In: <strong>%s - [%s]</strong>
                 </span>',
                 $adminFullname,
                 $request->fullname,
+                $area->location_name,
                 DB::table('areas')->where('id', $request->area_id)->value('areas_name') ?? 'Unknown Area'
             ),
             'color'             => 'success',

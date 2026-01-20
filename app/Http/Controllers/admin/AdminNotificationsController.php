@@ -17,6 +17,7 @@ class AdminNotificationsController extends Controller
             ->map(function ($n) {
                 return [
                     'id' => $n->id,
+                    'areas' => $n->areas,
                     'type' => $n->type,
                     'description' => $n->description,
                     'color'       => $n->color,

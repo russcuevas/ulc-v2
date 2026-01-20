@@ -147,6 +147,7 @@ class AdminAreaValenzuelaPaymentsController extends Controller
         }
 
         $adminFullname = Auth::user()->fullname;
+        $adminId = Auth::id();
 
 
         foreach ($clients as $client) {
@@ -174,6 +175,32 @@ class AdminAreaValenzuelaPaymentsController extends Controller
                 'updated_at'       => now(),
             ]);
         }
+
+        //Notifications
+        $areaName = DB::table('areas')
+            ->where('id', $client->client_area)
+            ->value('areas_name') ?? 'Unknown Area';
+
+        DB::table('activities')->insert([
+            'users_id'          => $adminId,
+            'areas'             => 'Valenzuela Area',
+            'role'              => 'admin',
+            'type'              => 'Payments Entry',
+            'description' => sprintf(
+                '<strong>Admin %s</strong> added a new payment entry<br>
+                <span style="font-size: 12px; color: #6c757d;">In: Valenzuela Area - [%s]</span><br>
+                <span style="font-size: 12px; color: #6c757d;">With Reference No: %s</span>',
+                $adminFullname,
+                $areaName,
+                $reference_number
+            ),
+
+            'color'             => 'success',
+            'is_read_secretary' => 0,
+            'is_read_admin'     => 0,
+            'created_at'        => now(),
+            'updated_at'        => now(),
+        ]);
 
         return redirect()->back()->with('success', 'Payments entry successfully.');
     }

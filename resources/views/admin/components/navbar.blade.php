@@ -289,27 +289,31 @@
                                         const checkMark = n.is_read_admin == 0 ?
                                             `<div class="mark-read-btn ms-auto" title="Mark as read">&#10003;</div>` :
                                             '';
+                                        const fadeStyle = n.is_read_admin == 1 ? 'opacity:0.5;' : '';
 
                                         list.insertAdjacentHTML('beforeend', `
-                                        <div>
-                                            <div class="notification-item d-flex align-items-start gap-2 border-start border-4 border-${n.color}" data-id="${n.id}">
-                                                <span class="${dotClass} bg-${n.color}"></span>
-                                                <div class="flex-grow-1">
-                                                    <div style="color: #ff6b35;" class="small fw-semibold">${n.type}:</div>
-                                                    <div class="small fw-semibold">${n.description}</div>
-                                                    <div class="text-muted small">${n.time}</div>
+                                            <div>
+                                                <div class="notification-item d-flex align-items-start gap-2 border-start border-4 border-${n.color}" 
+                                                    data-id="${n.id}" 
+                                                    style="${fadeStyle}">
+                                                    <span class="${dotClass} bg-${n.color}"></span>
+                                                    <div class="flex-grow-1">
+                                                        <div style="color: #ff6b35;" class="small fw-semibold">${n.type}:</div>
+                                                        <div class="small fw-semibold">${n.description}</div>
+                                                        <div class="text-muted small text-end">${n.time}</div>
+                                                    </div>
+                                                    ${checkMark}
                                                 </div>
-                                                ${checkMark}
                                             </div>
-                                        </div>
-                                        <hr>
-                            `);
+                                            <hr>
+                                        `);
                                     });
 
                                     // Add click events to checkmarks
                                     list.querySelectorAll('.mark-read-btn').forEach(btn => {
                                         btn.addEventListener('click', function(e) {
                                             e.stopPropagation();
+
                                             const notificationItem = this.closest(
                                                 '.notification-item');
                                             const id = notificationItem.dataset.id;
@@ -318,6 +322,7 @@
 
                                             // Optimistic UI
                                             dot.classList.remove('unread');
+                                            notificationItem.style.opacity = '0.5'; // ✅ FADE
                                             this.remove();
                                             updateBadge(-1);
                                             showToast('Notification marked as read');
@@ -329,14 +334,15 @@
                                                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                                     },
                                                     body: JSON.stringify({
-                                                        id: id
+                                                        id
                                                     })
                                                 })
                                                 .then(res => res.json())
                                                 .then(resp => {
                                                     if (!resp.success) {
-                                                        // revert if failed
                                                         dot.classList.add('unread');
+                                                        notificationItem.style.opacity =
+                                                            '1';
                                                         showToast('Failed to mark as read');
                                                         console.error(resp.message);
                                                     }

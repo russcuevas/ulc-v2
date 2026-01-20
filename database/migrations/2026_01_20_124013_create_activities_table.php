@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
+            $table->string('areas');
             $table->string('role');
             $table->string('type');
             $table->text('description');
