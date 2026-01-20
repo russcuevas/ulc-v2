@@ -108,11 +108,21 @@ class AdminClientController extends Controller
             'users_id'          => $adminId,
             'role'              => 'admin',
             'type'              => 'Account Creation',
-            'description'       => 'Admin ' . $adminFullname . ' created a new client and loan: ' . $request->fullname,
+            'description'       => sprintf(
+                '<strong>Admin %s</strong> created a new client and loan.<br>
+                <span style="font-size: 12px; color: #6c757d;">
+                    Client: <strong>%s</strong><br>
+                    In Area: <strong>%s</strong>
+                </span>',
+                $adminFullname,
+                $request->fullname,
+                DB::table('areas')->where('id', $request->area_id)->value('areas_name') ?? 'Unknown Area'
+            ),
             'color'             => 'success',
             'is_read_secretary' => 0,
             'is_read_admin'     => 0,
         ]);
+
 
         return redirect()->back()->with('success', 'Client successfully created!');
     }

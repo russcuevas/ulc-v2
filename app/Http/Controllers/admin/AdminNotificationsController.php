@@ -34,7 +34,7 @@ class AdminNotificationsController extends Controller
         ]);
     }
 
-    public function AdminMarkAsRead(Request $request)
+    public function AdminMarkAsReadNotifications(Request $request)
     {
         $notificationId = $request->id;
 

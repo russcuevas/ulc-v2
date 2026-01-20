@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->string('role');
             $table->string('type');
-            $table->string('description');
+            $table->text('description');
             $table->string('color');
             $table->boolean('is_read_secretary')->default(0);
             $table->boolean('is_read_admin')->default(0);

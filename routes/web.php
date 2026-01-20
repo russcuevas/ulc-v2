@@ -56,8 +56,8 @@ Route::middleware(['auth', 'admin'])->group(
 
         Route::get('/admin/notifications/fetch', [AdminNotificationsController::class, 'AdminFetchNotifications'])
             ->name('admin.notifications.fetch');
-        Route::post('/admin/notifications/mark-as-read', [AdminNotificationsController::class, 'AdminMarkAsRead'])
-            ->name('admin.notifications.markAsRead');
+        Route::post('/admin/notifications/mark-as-read', [AdminNotificationsController::class, 'AdminMarkAsReadNotifications'])
+            ->name('admin.notifications.read.notification');
 
         //Admin Profile Management Route
         Route::get('/admin/profile', [AdminProfileController::class, 'AdminProfilePage'])->name('admin.profile.page');

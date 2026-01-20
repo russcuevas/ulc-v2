@@ -10,3 +10,5 @@ CREATE TABLE ACTIVITY
       'color',
       'is_read_secretary',
       'is_read_admin',
+
+      areas add column
