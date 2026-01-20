@@ -168,7 +168,8 @@
                     </div>
                 </div>
             </div>
-            <a style="text-align: right" href="{{ route('secretary.manila.analytics.page') }}">View areas breakdown</a>
+            <a style="text-align: right; text-decoration: none;"
+                href="{{ route('secretary.manila.analytics.page') }}">View summary details</a>
         </div>
 
         <div class="row g-4">

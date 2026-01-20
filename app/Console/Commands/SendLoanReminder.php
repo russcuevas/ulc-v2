@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class SendLoanReminder extends Command
 {
-    // Command signature to run it via artisan
     protected $signature = 'loan:reminder';
 
     protected $description = 'Send daily loan reminders for clients based on loan start date';
@@ -18,7 +17,6 @@ class SendLoanReminder extends Command
     {
         $today = Carbon::today();
 
-        // Get clients whose loan starts today or already started
         $loans = DB::table('clients_loans')
             ->join('clients', 'clients_loans.client_id', '=', 'clients.id')
             ->whereDate('clients_loans.loan_from', '=', $today)

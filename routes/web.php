@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\AdminClientController;
 use App\Http\Controllers\admin\AdminClientRenewalController;
 use App\Http\Controllers\admin\AdminCollectorController;
 use App\Http\Controllers\admin\AdminDashboardController;
+use App\Http\Controllers\admin\AdminNotificationsController;
 use App\Http\Controllers\admin\AdminProfileController;
 use App\Http\Controllers\admin\AdminSecretaryController;
 // ADMIN MANILA ROUTE
@@ -53,6 +54,11 @@ Route::middleware(['auth', 'admin'])->group(
         Route::get('admin/dashboard/analytics/{location}', [AdminDashboardController::class, 'AnalyticsPage'])
             ->name('admin.dashboard.analytics');
 
+        Route::get('/admin/notifications/fetch', [AdminNotificationsController::class, 'AdminFetchNotifications'])
+            ->name('admin.notifications.fetch');
+        Route::post('/admin/notifications/mark-as-read', [AdminNotificationsController::class, 'AdminMarkAsRead'])
+            ->name('admin.notifications.markAsRead');
+
         //Admin Profile Management Route
         Route::get('/admin/profile', [AdminProfileController::class, 'AdminProfilePage'])->name('admin.profile.page');
         Route::post('/profile/update', [AdminProfileController::class, 'UpdateProfile'])
@@ -101,6 +107,7 @@ Route::middleware(['auth', 'admin'])->group(
 
         Route::get('/admin/areas/manila/payments/{referenceNumber}/clients', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientDailyPaymentsPage'])->name('admin.area.manila.payments.clients');
         Route::get('/admin/areas/manila/payments/{referenceNumber}/print', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPrintDailyPayments'])->name('admin.area.manila.payments.print');
+        // NEED SMS
         Route::post('/admin/areas/manila/collect-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientCollectPaymentRequest'])->name('admin.manila.payments.clients.collect');
         Route::post('/admin/areas/manila/no-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientNoPaymentRequest'])->name('admin.manila.payments.clients.not.paid');
         Route::get('/admin/areas/manila/payments/{area}/summary/collections/print', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaPrintSummaryCollections'])->name('admin.area.manila.payments.print.summary.collections');
@@ -129,6 +136,7 @@ Route::middleware(['auth', 'admin'])->group(
 
         Route::get('/admin/areas/valenzuela/payments/{referenceNumber}/clients', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientDailyPaymentsPage'])->name('admin.area.valenzuela.payments.clients');
         Route::get('/admin/areas/valenzuela/payments/{referenceNumber}/print', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientPrintDailyPayments'])->name('admin.area.valenzuela.payments.print');
+        // NEED SMS
         Route::post('/admin/areas/valenzuela/collect-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientCollectPaymentRequest'])->name('admin.valenzuela.payments.clients.collect');
         Route::post('/admin/areas/valenzuela/no-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientNoPaymentRequest'])->name('admin.valenzuela.payments.clients.not.paid');
         Route::get('/admin/areas/valenzuela/payments/{area}/summary/collections/print', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaPrintSummaryCollections'])->name('admin.area.valenzuela.payments.print.summary.collections');
@@ -157,6 +165,7 @@ Route::middleware(['auth', 'admin'])->group(
 
         Route::get('/admin/areas/caloocan/payments/{referenceNumber}/clients', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientDailyPaymentsPage'])->name('admin.area.caloocan.payments.clients');
         Route::get('/admin/areas/caloocan/payments/{referenceNumber}/print', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientPrintDailyPayments'])->name('admin.area.caloocan.payments.print');
+        // NEED SMS
         Route::post('/admin/areas/caloocan/collect-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientCollectPaymentRequest'])->name('admin.caloocan.payments.clients.collect');
         Route::post('/admin/areas/caloocan/no-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientNoPaymentRequest'])->name('admin.caloocan.payments.clients.not.paid');
         Route::get('/admin/areas/caloocan/payments/{area}/summary/collections/print', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanPrintSummaryCollections'])->name('admin.area.caloocan.payments.print.summary.collections');
@@ -185,6 +194,7 @@ Route::middleware(['auth', 'admin'])->group(
 
         Route::get('/admin/areas/fc/payments/{referenceNumber}/clients', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientDailyPaymentsPage'])->name('admin.area.fc.payments.clients');
         Route::get('/admin/areas/fc/payments/{referenceNumber}/print', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientPrintDailyPayments'])->name('admin.area.fc.payments.print');
+        // NEED SMS
         Route::post('/admin/areas/fc/collect-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientCollectPaymentRequest'])->name('admin.fc.payments.clients.collect');
         Route::post('/admin/areas/fc/no-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientNoPaymentRequest'])->name('admin.fc.payments.clients.not.paid');
         Route::get('/admin/areas/fc/payments/{area}/summary/collections/print', [AdminAreaFCPaymentsController::class, 'AdminAreaFCPrintSummaryCollections'])->name('admin.area.fc.payments.print.summary.collections');

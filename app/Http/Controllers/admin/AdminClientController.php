@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Clients;
 use App\Models\ClientsLoans;
 use Illuminate\Http\Request;
@@ -68,6 +69,7 @@ class AdminClientController extends Controller
         ]);
 
         $adminFullname = Auth::user()->fullname;
+        $adminId = Auth::id();
 
         DB::transaction(function () use ($request, $adminFullname) {
 
@@ -100,6 +102,17 @@ class AdminClientController extends Controller
                 'updated_at'     => now(),
             ]);
         });
+
+        // Notification
+        Activity::create([
+            'users_id'          => $adminId,
+            'role'              => 'admin',
+            'type'              => 'Account Creation',
+            'description'       => 'Admin ' . $adminFullname . ' created a new client and loan: ' . $request->fullname,
+            'color'             => 'success',
+            'is_read_secretary' => 0,
+            'is_read_admin'     => 0,
+        ]);
 
         return redirect()->back()->with('success', 'Client successfully created!');
     }
