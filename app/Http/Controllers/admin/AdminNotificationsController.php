@@ -34,7 +34,7 @@ class AdminNotificationsController extends Controller
 
     public function AdminFetchNotifications()
     {
-        $notifications = Activity::where('role', 'admin')
+        $notifications = Activity::latest()
             ->latest()
             ->take(10)
             ->get()
@@ -53,7 +53,7 @@ class AdminNotificationsController extends Controller
 
         return response()->json([
             'notifications' => $notifications,
-            'unread_count'  => Activity::where('role', 'admin')
+            'unread_count'  => Activity::latest()
                 ->where('is_read_admin', 0)
                 ->count(),
         ]);

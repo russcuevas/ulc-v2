@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\secretary\manila;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Clients;
 use App\Models\ClientsLoans;
 use Illuminate\Http\Request;
@@ -70,7 +71,11 @@ class ManilaClientsController extends Controller
         ]);
 
         $secretaryFullname = Auth::user()->fullname;
-
+        $secretaryId = Auth::id();
+        $area = DB::table('areas')
+            ->select('areas_name', 'location_name')
+            ->where('id', $request->area_id)
+            ->first();
         DB::transaction(function () use ($request, $secretaryFullname) {
 
             $clientId = DB::table('clients')->insertGetId([
@@ -102,6 +107,28 @@ class ManilaClientsController extends Controller
                 'updated_at'     => now(),
             ]);
         });
+
+        // Notification
+        Activity::create([
+            'users_id'          => $secretaryId,
+            'areas'    => $area->location_name ?? '',
+            'role'              => 'secretary',
+            'type'              => 'Account Creation',
+            'description'       => sprintf(
+                '<strong>Secretary %s</strong> from Manila Area created a new client and loan.<br>
+                <span style="font-size: 12px; color: #6c757d;">
+                <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
+                <span style="font-size: 12px; color: #6c757d;">In: %s - [%s]</span><br>
+                </span>',
+                $secretaryFullname,
+                $request->fullname,
+                $area->location_name,
+                DB::table('areas')->where('id', $request->area_id)->value('areas_name') ?? 'Unknown Area'
+            ),
+            'color'             => 'success',
+            'is_read_secretary' => 0,
+            'is_read_admin'     => 0,
+        ]);
 
         return redirect()->back()->with('success', 'Client successfully created!');
     }

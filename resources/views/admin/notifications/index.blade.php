@@ -56,6 +56,7 @@
                                         <tr>
                                             <th style="display:none;">ReadOrder</th>
                                             <th>Summary</th>
+                                            <th>Role</th>
                                             <th>Type</th>
                                             <th>Date-Time</th>
                                             <th>Status</th>
@@ -68,6 +69,13 @@
                                                 class="{{ $activity->is_read_admin == 1 ? 'table-secondary text-muted' : 'table-primary' }}">
                                                 <td style="display:none;">{{ $activity->is_read_admin }}</td>
                                                 <td>{!! $activity->description !!}</td>
+                                                <td>
+                                                    <span
+                                                        style="text-align: left; font-size: 10px; text-transform: capitalize"
+                                                        class="badge bg-primary">
+                                                        {{ $activity->role ?? 'Unknown' }}
+                                                    </span>
+                                                </td>
                                                 <td>{{ $activity->type }}</td>
                                                 <td class="text-wrap">
                                                     <span style="text-align: left; font-size: 10px;"

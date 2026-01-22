@@ -225,28 +225,36 @@ class AdminAreaValenzuelaPaymentsController extends Controller
 
         $prevCollection = $payment->collection ?? 0;
         $maxAllowed = $loan->balance + $prevCollection;
-        $newCollection = $request->collection > $maxAllowed ? $maxAllowed : $request->collection;
+
+        $newCollection = min($request->collection, $maxAllowed);
         $difference = $newCollection - $prevCollection;
+        $newBalance = $loan->balance - $difference;
+        $paymentStatus = $newBalance <= 0 ? 'paid' : 'unpaid';
 
-        DB::table('clients_payments')
-            ->where('id', $id)
-            ->update([
-                'collection' => $newCollection,
-                'updated_at' => now()
-            ]);
+        DB::transaction(function () use ($id, $loan, $newCollection, $newBalance, $paymentStatus) {
 
-        DB::table('clients_loans')
-            ->where('id', $loan->id)
-            ->update([
-                'balance' => $loan->balance - $difference,
-                'updated_at' => now()
-            ]);
+            DB::table('clients_payments')
+                ->where('id', $id)
+                ->update([
+                    'collection' => $newCollection,
+                    'updated_at' => now()
+                ]);
+
+            DB::table('clients_loans')
+                ->where('id', $loan->id)
+                ->update([
+                    'balance' => $newBalance,
+                    'payment_status' => $paymentStatus,
+                    'updated_at' => now()
+                ]);
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Collection updated successfully',
             'newCollection' => $newCollection,
-            'remainingBalance' => $loan->balance - $difference
+            'remainingBalance' => $newBalance,
+            'payment_status' => $paymentStatus
         ]);
     }
 
@@ -386,6 +394,8 @@ class AdminAreaValenzuelaPaymentsController extends Controller
             ->where('id', $areaId)
             ->value('areas_name') ?? 'Unknown Area';
 
+        $type = $request->type;
+
         DB::table('activities')->insert([
             'users_id'          => $adminId,
             'areas'             => $areaName,
@@ -395,10 +405,12 @@ class AdminAreaValenzuelaPaymentsController extends Controller
                 '<strong>Admin %s</strong> collected a payment<br>
             <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
             <span style="font-size: 12px; color: #6c757d;">In: Valenzuela Area - [%s]</span><br>
+            <span style="font-size: 12px; color: #6c757d;">Payment Type: %s</span><br>
             <span style="font-size: 12px; color: #6c757d;">Amount Collected: %s</span>',
                 $adminFullname,
                 $clientFullname,
                 $areaName,
+                ucfirst($type),
                 number_format($request->amount, 2)
             ),
             'color'             => 'success',

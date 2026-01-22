@@ -145,6 +145,7 @@ class ManilaAreaPaymentsController extends Controller
         }
 
         $secretaryFullname = Auth::user()->fullname;
+        $secretaryId = Auth::id();
 
         foreach ($clients as $client) {
             $is_lapsed = Carbon::parse($client->loan_to)->lt(now()) ? 1 : 0;
@@ -172,6 +173,32 @@ class ManilaAreaPaymentsController extends Controller
             ]);
         }
 
+        $areaName = DB::table('areas')
+            ->where('id', $client->client_area)
+            ->value('areas_name') ?? 'Unknown Area';
+
+        //Notifications
+        DB::table('activities')->insert([
+            'users_id'          => $secretaryId,
+            'areas'             => 'Manila Area',
+            'role'              => 'secretary',
+            'type'              => 'Payments Entry',
+            'description' => sprintf(
+                '<strong>Secretary %s</strong> from Manila Area added a new payment entry<br>
+                <span style="font-size: 12px; color: #6c757d;">In: Manila Area - [%s]</span><br>
+                <span style="font-size: 12px; color: #6c757d;">With Reference No: %s</span>',
+                $secretaryFullname,
+                $areaName,
+                $reference_number
+            ),
+
+            'color'             => 'success',
+            'is_read_secretary' => 0,
+            'is_read_admin'     => 0,
+            'created_at'        => now(),
+            'updated_at'        => now(),
+        ]);
+
         return redirect()->back()->with('success', 'Payments entry successfully.');
     }
 
@@ -196,28 +223,36 @@ class ManilaAreaPaymentsController extends Controller
 
         $prevCollection = $payment->collection ?? 0;
         $maxAllowed = $loan->balance + $prevCollection;
-        $newCollection = $request->collection > $maxAllowed ? $maxAllowed : $request->collection;
+
+        $newCollection = min($request->collection, $maxAllowed);
         $difference = $newCollection - $prevCollection;
+        $newBalance = $loan->balance - $difference;
+        $paymentStatus = $newBalance <= 0 ? 'paid' : 'unpaid';
 
-        DB::table('clients_payments')
-            ->where('id', $id)
-            ->update([
-                'collection' => $newCollection,
-                'updated_at' => now()
-            ]);
+        DB::transaction(function () use ($id, $loan, $newCollection, $newBalance, $paymentStatus) {
 
-        DB::table('clients_loans')
-            ->where('id', $loan->id)
-            ->update([
-                'balance' => $loan->balance - $difference,
-                'updated_at' => now()
-            ]);
+            DB::table('clients_payments')
+                ->where('id', $id)
+                ->update([
+                    'collection' => $newCollection,
+                    'updated_at' => now()
+                ]);
+
+            DB::table('clients_loans')
+                ->where('id', $loan->id)
+                ->update([
+                    'balance' => $newBalance,
+                    'payment_status' => $paymentStatus,
+                    'updated_at' => now()
+                ]);
+        });
 
         return response()->json([
             'success' => true,
             'message' => 'Collection updated successfully',
             'newCollection' => $newCollection,
-            'remainingBalance' => $loan->balance - $difference
+            'remainingBalance' => $newBalance,
+            'payment_status' => $paymentStatus
         ]);
     }
 
@@ -340,6 +375,43 @@ class ManilaAreaPaymentsController extends Controller
                 ->where('id', $loan->id)
                 ->update(['is_lapsed' => 1]);
         }
+        $secretaryFullname = Auth::user()->fullname ?? 'Secretary';
+        $secretaryId = Auth::id();
+
+        // Get client info
+        $client = DB::table('clients')->where('id', $loan->client_id)->first();
+        $clientFullname = $client->fullname ?? 'Unknown Client';
+        $areaId = $payment->client_area ?? 0;
+
+        $areaName = DB::table('areas')
+            ->where('id', $areaId)
+            ->value('areas_name') ?? 'Unknown Area';
+
+        $type = $request->type;
+
+        DB::table('activities')->insert([
+            'users_id'          => $secretaryId,
+            'areas'             => $areaName,
+            'role'              => 'secretary',
+            'type'              => 'Collected Payments',
+            'description'       => sprintf(
+                '<strong>Secretary %s</strong> from Manila Area collected a payment<br>
+        <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
+        <span style="font-size: 12px; color: #6c757d;">In: Manila Area - [%s]</span><br>
+        <span style="font-size: 12px; color: #6c757d;">Payment Type: %s</span><br>
+        <span style="font-size: 12px; color: #6c757d;">Amount Collected: ₱%s</span>',
+                $secretaryFullname,
+                $clientFullname,
+                $areaName,
+                ucfirst($type),
+                number_format($request->amount, 2)
+            ),
+            'color'             => 'success',
+            'is_read_secretary' => 0,
+            'is_read_admin'     => 0,
+            'created_at'        => now(),
+            'updated_at'        => now(),
+        ]);
 
         return redirect()->back()->with('success', "Payment collected successfully!");
     }

@@ -115,8 +115,8 @@ class AdminClientController extends Controller
             'description'       => sprintf(
                 '<strong>Admin %s</strong> created a new client and loan.<br>
                 <span style="font-size: 12px; color: #6c757d;">
-                    Client: <strong>%s</strong><br>
-                    In: <strong>%s - [%s]</strong>
+                <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
+                <span style="font-size: 12px; color: #6c757d;">In: %s - [%s]</span><br>
                 </span>',
                 $adminFullname,
                 $request->fullname,
