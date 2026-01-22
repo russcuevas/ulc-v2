@@ -70,6 +70,75 @@
             font-size: 1rem;
             font-weight: 500;
         }
+
+        .activity-dot {
+            margin-left: 10px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Pulse animation */
+        .pulse {
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .activity-item p {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .activity-item small {
+            color: #6c757d;
+        }
+
+        /* Scrollbar styling for modern browsers */
+        #recent-activity-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #recent-activity-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        #recent-activity-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        #recent-activity-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
     </style>
 </head>
 
@@ -173,7 +242,7 @@
         </div>
 
         <div class="row g-4">
-            <div class="col-12 col-lg-8">
+            <div class="col-12 col-lg-7">
                 <div class="card border-2 shadow-lg h-100">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -191,25 +260,24 @@
                 </div>
             </div>
 
-            <div class="col-12 col-lg-4">
+            <div class="col-12 col-lg-5">
                 <div class="card border-2 shadow-lg h-100">
-                    <div class="card-body">
-                        <h5 class="card-title mb-4">Recent Activity</h5>
-
-                        <div class="d-flex gap-3 mb-4">
-                            <div class="activity-dot  flex-shrink-0"></div>
-                            <div>
-                                <p class="mb-1 small"></p>
-                                <small class="text-body-secondary">
-
-                                    <span style="color: #ff6b35"></span>
-                                </small>
-                            </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">
+                                Recent Activity
+                            </h5>
+                            <a href="" class="small text-decoration-none">View all activity</a>
                         </div>
 
+                        <!-- Scrollable container -->
+                        <div id="recent-activity-container" style="overflow-y: auto; max-height: 400px;">
+                            <div class="text-center text-muted small py-3">Loading...</div>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -293,6 +361,66 @@
             });
         });
     </script>
+
+    <script>
+        function getColorByActivityType(colorType) {
+            switch (colorType) {
+                case 'success':
+                    return '#28a745';
+                case 'info':
+                    return '#17a2b8';
+                case 'warning':
+                    return '#ffc107';
+                case 'danger':
+                    return '#dc3545';
+                default:
+                    return '#6c757d';
+            }
+        }
+
+
+        function fetchSecretaryNotifications() {
+            fetch("{{ route('secretary.manila.fetch_notifications') }}")
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('recent-activity-container');
+                    container.innerHTML = '';
+
+                    if (data.notifications.length === 0) {
+                        container.innerHTML = '<p class="text-muted small">No recent activity.</p>';
+                        return;
+                    }
+
+                    data.notifications.forEach(n => {
+                        const dotColor = getColorByActivityType(n.color);
+                        const pulseClass = n.is_read_secretary == 0 ? 'pulse' : '';
+
+                        const html = `
+                        <div class="activity-item d-flex gap-2 mb-3 position-relative">
+                            <div class="activity-dot ${pulseClass}" style="background-color: ${dotColor};"></div>
+                            <div class="flex-grow-1 position-relative">
+                                <p class="small mb-1">${n.type}</p>
+                                <small>${n.description}</small>
+                                <div class="time-badge" style="position: absolute; bottom: 0; right: 0; font-size: 0.7rem; color: #6c757d;">
+                                    ${n.time}
+                                </div>
+                            </div>
+                        </div>
+                        `;
+
+                        container.insertAdjacentHTML('beforeend', html);
+                    });
+                })
+                .catch(err => console.error(err));
+        }
+
+        // Fetch on page load
+        document.addEventListener('DOMContentLoaded', fetchSecretaryNotifications);
+
+        // Refresh every 15 seconds
+        setInterval(fetchSecretaryNotifications, 15000);
+    </script>
+
 </body>
 
 </html>

@@ -395,7 +395,9 @@ class AdminAreaManilaPaymentsController extends Controller
         $client = DB::table('clients')->where('id', $loan->client_id)->first();
         $clientFullname = $client->fullname ?? 'Unknown Client';
         $areaId = $payment->client_area ?? 0;
-
+        $areaLocation = DB::table('areas')
+            ->where('id', $areaId)
+            ->value('location_name') ?? 'Unknown Location';
         $areaName = DB::table('areas')
             ->where('id', $areaId)
             ->value('areas_name') ?? 'Unknown Area';
@@ -404,7 +406,7 @@ class AdminAreaManilaPaymentsController extends Controller
 
         DB::table('activities')->insert([
             'users_id'          => $adminId,
-            'areas'             => $areaName,
+            'areas'             => $areaLocation,
             'role'              => 'admin',
             'type'              => 'Collected Payments',
             'description'       => sprintf(
@@ -412,7 +414,7 @@ class AdminAreaManilaPaymentsController extends Controller
             <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
             <span style="font-size: 12px; color: #6c757d;">In: Manila Area - [%s]</span><br>
             <span style="font-size: 12px; color: #6c757d;">Payment Type: %s</span><br>
-            <span style="font-size: 12px; color: #6c757d;">Amount Collected: %s</span>',
+            <span style="font-size: 12px; color: #6c757d;">Amount Collected: ₱%s</span>',
                 $adminFullname,
                 $clientFullname,
                 $areaName,

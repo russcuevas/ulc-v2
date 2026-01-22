@@ -383,6 +383,10 @@ class ManilaAreaPaymentsController extends Controller
         $clientFullname = $client->fullname ?? 'Unknown Client';
         $areaId = $payment->client_area ?? 0;
 
+        $areaLocation = DB::table('areas')
+            ->where('id', $areaId)
+            ->value('location_name') ?? 'Unknown Location';
+
         $areaName = DB::table('areas')
             ->where('id', $areaId)
             ->value('areas_name') ?? 'Unknown Area';
@@ -391,7 +395,7 @@ class ManilaAreaPaymentsController extends Controller
 
         DB::table('activities')->insert([
             'users_id'          => $secretaryId,
-            'areas'             => $areaName,
+            'areas'             => $areaLocation,
             'role'              => 'secretary',
             'type'              => 'Collected Payments',
             'description'       => sprintf(
