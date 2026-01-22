@@ -54,10 +54,12 @@ Route::middleware(['auth', 'admin'])->group(
         Route::get('admin/dashboard/analytics/{location}', [AdminDashboardController::class, 'AnalyticsPage'])
             ->name('admin.dashboard.analytics');
 
-        Route::get('/admin/notifications/fetch', [AdminNotificationsController::class, 'AdminFetchNotifications'])
-            ->name('admin.notifications.fetch');
-        Route::post('/admin/notifications/mark-as-read', [AdminNotificationsController::class, 'AdminMarkAsReadNotifications'])
-            ->name('admin.notifications.read.notification');
+        Route::get('/admin/notifications', [AdminNotificationsController::class, 'AdminNotificationPage'])->name('admin.notification.page');
+        Route::post('/admin/notifications/mark-all-read', [AdminNotificationsController::class, 'AdminMarkAllAsReadNotifications'])->name('admin.notifications.mark.all.read');
+
+
+        Route::get('/admin/notifications/fetch', [AdminNotificationsController::class, 'AdminFetchNotifications'])->name('admin.notifications.fetch');
+        Route::post('/admin/notifications/mark-as-read', [AdminNotificationsController::class, 'AdminMarkAsReadNotifications'])->name('admin.notifications.read.notification');
 
         //Admin Profile Management Route
         Route::get('/admin/profile', [AdminProfileController::class, 'AdminProfilePage'])->name('admin.profile.page');

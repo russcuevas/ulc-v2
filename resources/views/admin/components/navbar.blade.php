@@ -1,14 +1,10 @@
         @php
             use Illuminate\Support\Facades\Auth;
-
-            // Get the logged-in user (default guard)
             $user = Auth::user();
-
-            // Default initials
             $user_initials = 'A';
 
             if ($user) {
-                $nameParts = explode(' ', $user->fullname ?? $user->name); // fallback if fullname not set
+                $nameParts = explode(' ', $user->fullname ?? $user->name);
                 $user_initials = '';
                 foreach ($nameParts as $part) {
                     $user_initials .= strtoupper(substr($part, 0, 1));
@@ -47,7 +43,12 @@
                         </button>
 
                         <div class="dropdown-menu dropdown-menu-end shadow notification-dropdown">
-                            <div class="dropdown-header fw-bold">Notifications</div>
+                            <div class="dropdown-header fw-bold"
+                                style="display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                                <span>Notifications</span>
+                                <a href="{{ route('admin.notification.page') }}"
+                                    style="font-size: 13px; font-weight: 600;">View all notifications</a>
+                            </div>
                             <div id="notificationMobileList" class="notification-mobile-list">
                                 <div class="text-center text-muted small py-3">Loading...</div>
                             </div>
@@ -114,14 +115,14 @@
 
                 <a href="{{ route('admin.client.page') }}"
                     class="nav-link 
-            {{ request()->routeIs('admin.client.page', 'admin.edit.client.page') ? 'active' : '' }}">
+                    {{ request()->routeIs('admin.client.page', 'admin.edit.client.page') ? 'active' : '' }}">
                     <i class="fa-solid fa-users"></i>
                     Clients
                 </a>
 
 
                 <a class="nav-link d-flex justify-content-between align-items-center
-        {{ request()->routeIs('admin.area.*') ? 'active' : '' }}"
+                    {{ request()->routeIs('admin.area.*') ? 'active' : '' }}"
                     data-bs-toggle="collapse" href="#areasMenu" role="button"
                     aria-expanded="{{ request()->routeIs('admin.area.*') ? 'true' : 'false' }}"
                     aria-controls="areasMenu">
@@ -191,7 +192,13 @@
                     </button>
 
                     <div class="dropdown-menu dropdown-menu-end shadow notification-dropdown">
-                        <div class="dropdown-header fw-bold">Notifications</div>
+
+                        <div class="dropdown-header fw-bold"
+                            style="display: flex; justify-content: space-between; align-items: center; background: #fff;">
+                            <span>Notifications</span>
+                            <a href="{{ route('admin.notification.page') }}"
+                                style="font-size: 13px; font-weight: 600;">View all notifications</a>
+                        </div>
                         <div id="notificationList" class="notification-list">
                             <div class="text-center text-muted small py-3">Loading...</div>
                         </div>
@@ -243,13 +250,13 @@
                         toast.ariaLive = 'assertive';
                         toast.ariaAtomic = 'true';
                         toast.innerHTML = `
-                <div class="d-flex">
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-            `;
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    ${message}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        `;
                         toastContainer.appendChild(toast);
                         const bsToast = new bootstrap.Toast(toast, {
                             delay: 2000
@@ -319,10 +326,8 @@
                                             const id = notificationItem.dataset.id;
                                             const dot = notificationItem.querySelector(
                                                 '.notif-dot');
-
-                                            // Optimistic UI
                                             dot.classList.remove('unread');
-                                            notificationItem.style.opacity = '0.5'; // ✅ FADE
+                                            notificationItem.style.opacity = '0.5';
                                             this.remove();
                                             updateBadge(-1);
                                             showToast('Notification marked as read');
@@ -350,14 +355,6 @@
                                         });
                                     });
                                 }
-
-                                list.insertAdjacentHTML('beforeend', `
-                        <div class="text-end mt-2">
-                            <a href="" style="color: #ff6b35" class="small fw-semibold text-decoration-none">
-                                VIEW ALL NOTIFICATIONS ->
-                            </a>
-                        </div>
-                    `);
 
                                 if (data.unread_count > 0) {
                                     badge.textContent = data.unread_count;
