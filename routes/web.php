@@ -208,10 +208,12 @@ Route::middleware(['auth', 'admin'])->group(
 Route::prefix('secretary')->middleware(['auth'])->group(function () {
     // Secretary Manila Area Route
     // Secretary Manila Dashboard Route
-    Route::get('/manila/notifications', [ManilaNotificationsController::class, 'ManilaFetchNotifications'])
-        ->name('secretary.manila.fetch_notifications');
     Route::get('/manila/dashboard', [ManilaDashboardController::class, 'ManilaDashboardPage'])->middleware('secretary.area:manila')->name('secretary.manila.dashboard.page');
     Route::get('/manila/areas/breakdown/analytics', [ManilaDashboardController::class, 'ManilaAreasBreakdownSummary'])->middleware('secretary.area:manila')->name('secretary.manila.analytics.page');
+    Route::get('/manila/notifications/fetch', [ManilaNotificationsController::class, 'ManilaFetchNotifications'])->name('secretary.manila.fetch_notifications');
+    Route::get('/manila/notifications', [ManilaNotificationsController::class, 'ManilaNotificationsPage'])->name('secretary.manila.notification.page');
+    Route::post('/manila/notifications/mark-all-read', [ManilaNotificationsController::class, 'ManilaMarkAllAsReadNotifications'])->name('secretary.manila.notifications.mark.all.read');
+
 
     //Secretary Manila Profile Management Route
     Route::get('/manila/profile', [ManilaProfileController::class, 'ManilaProfilePage'])->name('secretary.manila.profile.page');

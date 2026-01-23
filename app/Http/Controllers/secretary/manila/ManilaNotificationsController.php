@@ -5,13 +5,37 @@ namespace App\Http\Controllers\secretary\manila;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ManilaNotificationsController extends Controller
 {
+    public function ManilaNotificationsPage()
+    {
+        $activities = DB::table('activities')
+            ->leftJoin('users', 'activities.users_id', '=', 'users.id')
+            ->where('activities.areas', 'Manila Area')
+            ->select(
+                'activities.*',
+                'users.fullname as fullname'
+            )
+            ->orderBy('is_read_secretary', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('secretary.manila.notifications.index', compact('activities'));
+    }
+
+    public function ManilaMarkAllAsReadNotifications()
+    {
+        Activity::where('is_read_secretary', 0)
+            ->update(['is_read_secretary' => 1]);
+
+        return redirect()->back()->with('success', 'Mark all notification as read');
+    }
+
     public function ManilaFetchNotifications()
     {
         $notifications = Activity::where('areas', 'Manila Area')
-            ->where('role', 'secretary') // filter role
             ->latest()
             ->take(10)
             ->get()

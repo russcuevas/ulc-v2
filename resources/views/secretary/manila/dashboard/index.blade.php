@@ -267,7 +267,8 @@
                             <h5 class="card-title mb-0">
                                 Recent Activity
                             </h5>
-                            <a href="" class="small text-decoration-none">View all activity</a>
+                            <a href="{{ route('secretary.manila.notification.page') }}"
+                                class="small text-decoration-none">View all activity</a>
                         </div>
 
                         <!-- Scrollable container -->
