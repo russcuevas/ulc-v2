@@ -265,34 +265,32 @@
     <script>
         $(document).on('click', '.collect-payment-btn', function() {
             const clientName = $(this).data('client');
-            const paymentId = $(this).data('id'); // ✅ This is your payment ID
+            const paymentId = $(this).data('id');
             const balance = parseFloat($(this).data('balance'));
 
             Swal.fire({
                 title: 'Collect Payment',
                 html: `
-            <div class="text-start">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold"><i class="fa fa-user me-1 text-muted"></i> Client</label>
-                    <input type="text" class="form-control" value="${clientName}" disabled>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold"><i class="fa fa-money-bill-wave me-1 text-muted"></i> Payment Type</label>
-                    <select id="paymentType" class="form-select">
-                        <option value="">Select type</option>
-                        <option value="CASH">CASH</option>
-                        <option value="GCASH">GCASH</option>
-                        <option value="CHEQUE">CHEQUE</option>
-                        <option value="ADVANCE">ADVANCE</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label fw-semibold"><i class="fa fa-coins me-1 text-muted"></i> Amount (≤ ₱${balance.toFixed(2)})</label>
-                    <input id="paymentAmount" type="number" class="form-control" min="0.01" step="0.01" placeholder="Enter amount">
-                </div>
+        <div class="text-start">
+            <div class="mb-3">
+                <label class="form-label fw-semibold"><i class="fa fa-user me-1 text-muted"></i> Client</label>
+                <input type="text" class="form-control" value="${clientName}" disabled>
             </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold"><i class="fa fa-money-bill-wave me-1 text-muted"></i> Payment Type</label>
+                <select id="paymentType" class="form-select">
+                    <option value="">Select type</option>
+                    <option value="CASH">CASH</option>
+                    <option value="GCASH">GCASH</option>
+                    <option value="CHEQUE">CHEQUE</option>
+                    <option value="ADVANCE">ADVANCE</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold"><i class="fa fa-coins me-1 text-muted"></i> Amount (≤ ₱${balance.toFixed(2)})</label>
+                <input id="paymentAmount" type="number" class="form-control" min="0.01" step="0.01" placeholder="Enter amount">
+            </div>
+        </div>
         `,
                 showCancelButton: true,
                 confirmButtonText: 'Save',
@@ -306,18 +304,15 @@
                         Swal.showValidationMessage('Please enter a valid amount');
                         return false;
                     }
-
                     if (amount > balance) {
                         Swal.showValidationMessage(
                             `Amount cannot exceed balance: ₱${balance.toFixed(2)}`);
                         return false;
                     }
-
                     if (!type) {
                         Swal.showValidationMessage('Please select a payment type');
                         return false;
                     }
-
                     return {
                         amount,
                         type
@@ -325,6 +320,12 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Please wait...',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = `/admin/areas/valenzuela/collect-payment/${paymentId}`;
@@ -355,6 +356,8 @@
 
         // Remind payment
         $(document).on('click', '.remind-payment-btn', function() {
+            const paymentId = $(this).data('id');
+
             Swal.fire({
                 title: 'Remind Payment',
                 text: 'Would you like to remind the client about this payment?',
@@ -365,11 +368,23 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Reminder sent!',
-                        text: 'The client has been reminded about the payment.'
+                        title: 'Please wait...',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
                     });
-                    // You can trigger an AJAX or email notification here if needed
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/admin/areas/valenzuela/remind-payment/${paymentId}`;
+
+                    const csrf = document.createElement('input');
+                    csrf.type = 'hidden';
+                    csrf.name = '_token';
+                    csrf.value = '{{ csrf_token() }}';
+                    form.appendChild(csrf);
+
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             });
         });
@@ -387,6 +402,12 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Please wait...',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = `/admin/areas/valenzuela/no-payment/${paymentId}`;
