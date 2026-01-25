@@ -49,7 +49,6 @@ use App\Http\Controllers\secretary\valenzuela\ValenzuelaDashboardController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaNotificationsController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaProfileController;
 
-
 use App\Http\Controllers\secretary\caloocan\CaloocanAreaClientsController;
 use App\Http\Controllers\secretary\caloocan\CaloocanAreaClientsHistoryController;
 use App\Http\Controllers\secretary\caloocan\CaloocanAreaController;
@@ -59,6 +58,16 @@ use App\Http\Controllers\secretary\caloocan\CaloocanClientsRenewalController;
 use App\Http\Controllers\secretary\caloocan\CaloocanDashboardController;
 use App\Http\Controllers\secretary\caloocan\CaloocanNotificationsController;
 use App\Http\Controllers\secretary\caloocan\CaloocanProfileController;
+
+use App\Http\Controllers\secretary\fc\FCAreaClientsController;
+use App\Http\Controllers\secretary\fc\FCAreaClientsHistoryController;
+use App\Http\Controllers\secretary\fc\FCAreaController;
+use App\Http\Controllers\secretary\fc\FCAreaPaymentsController;
+use App\Http\Controllers\secretary\fc\FCClientsController;
+use App\Http\Controllers\secretary\fc\FCClientsRenewalController;
+use App\Http\Controllers\secretary\fc\FCDashboardController;
+use App\Http\Controllers\secretary\fc\FCNotificationsController;
+use App\Http\Controllers\secretary\fc\FCProfileController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -382,4 +391,54 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::post('/caloocan/collect-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientCollectPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.clients.collect');
     Route::post('/caloocan/remind-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientRemindPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.clients.remind');
     Route::post('/caloocan/no-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientNoPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.clients.not.paid');
+
+    // Secretary FC Area Route
+    // Secretary FC Dashboard Route
+    Route::get('/fc/dashboard', [FCDashboardController::class, 'FCDashboardPage'])->middleware('secretary.area:fc')->name('secretary.fc.dashboard.page');
+    Route::get('/fc/areas/breakdown/analytics', [FCDashboardController::class, 'FCAreasBreakdownSummary'])->middleware('secretary.area:fc')->name('secretary.fc.analytics.page');
+    Route::get('/fc/notifications/fetch', [FCNotificationsController::class, 'FCFetchNotifications'])->name('secretary.fc.fetch_notifications');
+    Route::get('/fc/notifications', [FCNotificationsController::class, 'FCNotificationsPage'])->name('secretary.fc.notification.page');
+    Route::post('/fc/notifications/mark-all-read', [FCNotificationsController::class, 'FCMarkAllAsReadNotifications'])->name('secretary.fc.notifications.mark.all.read');
+
+
+    //Secretary FC Profile Management Route
+    Route::get('/fc/profile', [FCProfileController::class, 'FCProfilePage'])->name('secretary.fc.profile.page');
+    Route::post('/fc/profile/update', [FCProfileController::class, 'FCUpdateProfile'])->name('secretary.profile.update');
+
+    // Secretary Clients Route
+    Route::get('/fc/clients', [FCClientsController::class, 'FCClientsPage'])->middleware('secretary.area:fc')->name('secretary.fc.clients.page');
+    Route::post('/fc/add/clients', [FCClientsController::class, 'FCAddClientRequest'])->middleware('secretary.area:fc')->name('secretary.fc.add.clients.request');
+    Route::get('/fc/edit/clients/{id}', [FCClientsController::class, 'FCEditClientPage'])->middleware('secretary.area:fc')->name('secretary.fc.edit.clients.page');
+    Route::put('/fc/update/clients/{id}', [FCClientsController::class, 'FCUpdateClientRequest'])->middleware('secretary.area:fc')->name('secretary.fc.update.clients.request');
+    Route::delete('/fc/delete/clients/{id}', [FCClientsController::class, 'FCDeleteClientRequest'])->middleware('secretary.area:fc')->name('secretary.fc.delete.clients.request');
+    Route::post('/fc/add/renewal', [FCClientsRenewalController::class, 'FCClientAddRenewalRequest'])->middleware('secretary.area:fc')->name('secretary.fc.add.renewal.clients.request');
+
+    // Secretary List of Areas Route
+    Route::get('/fc/areas/', [FCAreaController::class, 'FCAreaPage'])->middleware('secretary.area:fc')->name('secretary.fc.area.page');
+    Route::get('/fc/areas/sales/print', [FCAreaController::class, 'FCAreaPrintSalesReports'])->middleware('secretary.area:fc')->name('secretary.area.fc.print.sales');
+
+    //Secretary Clients Accounts
+    Route::get('/fc/{area}/clients', [FCAreaClientsController::class, 'FCAreaClientsPage'])->middleware('secretary.area:fc')->name('secretary.area.fc.clients.page');
+    Route::get('/fc/{area}/clients/lapsed', [FCAreaClientsController::class, 'FCAreaLapsedClientsPage'])->middleware('secretary.area:fc')->name('secretary.area.fc.clients.lapsed.page');
+    Route::get('/fc/{area}/clients/renewal', [FCAreaClientsController::class, 'FCAreaRenewalClientPage'])->middleware('secretary.area:fc')->name('secretary.area.fc.clients.renewal.page');
+    Route::get('/fc/{area}/clients/active', [FCAreaClientsController::class, 'FCAreaActiveClientsPage'])->middleware('secretary.area:fc')->name('secretary.area.fc.clients.active.page');
+    Route::get('/fc/{area}/clients/lapsed/print', [FCAreaClientsController::class, 'FCAreaLapsedClientsPrint'])->middleware('secretary.area:fc')->name('secretary.area.fc.clients.lapsed.page.print');
+
+    //Secretary Clients History
+    Route::get('/fc/clients/{clientId}', [FCAreaClientsHistoryController::class, 'FCAreaClientsProfilePage'])->middleware('secretary.area:fc')->name('secretary.area.fc.clients.profile.page');
+    Route::get('/fc/clients/{clientId}/loans/print', [FCAreaClientsHistoryController::class, 'FCAreaClientsPrintLoanHistory'])->middleware('secretary.area:fc')->name('secretary.area.fc.clients.print.history.page');
+    Route::get('/fc/clients/loans/{loanId}/payments', [FCAreaClientsHistoryController::class, 'FCAreaClientLoanPaymentsPage'])->middleware('secretary.area:fc')->name('secretary.area.fc.clients.loan.payments');
+
+    // Secretary Areas Payments Route
+    Route::get('/fc/{area}/payments', [FCAreaPaymentsController::class, 'FCClientPaymentsPage'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments');
+    Route::post('/fc/{id}/create/payments', [FCAreaPaymentsController::class, 'FCClientPaymentsRequest'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.request');
+    Route::get('/fc/payments/{area}/summary/collections/print', [FCAreaPaymentsController::class, 'FCPrintSummaryCollections'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.print.summary.collections');
+    Route::get('/fc/payments/{referenceNumber}/clients', [FCAreaPaymentsController::class, 'FCClientDailyPaymentsPage'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.clients');
+    Route::post('/fc/payments/{id}/update-collection', [FCAreaPaymentsController::class, 'FCClientUpdateCollection'])->middleware('secretary.area:fc')->name('secretary.area.fc.update.collection');
+    Route::get('/fc/payments/{referenceNumber}/print', [FCAreaPaymentsController::class, 'FCClientPrintDailyPayments'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.print');
+
+    // SMS
+    Route::post('/fc/collect-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientCollectPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.fc.payments.clients.collect');
+    Route::post('/fc/remind-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientRemindPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.fc.payments.clients.remind');
+    Route::post('/fc/no-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientNoPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.clients.not.paid');
 });
