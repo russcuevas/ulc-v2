@@ -38,6 +38,7 @@ use App\Http\Controllers\secretary\manila\ManilaClientsRenewalController;
 use App\Http\Controllers\secretary\manila\ManilaDashboardController;
 use App\Http\Controllers\secretary\manila\ManilaNotificationsController;
 use App\Http\Controllers\secretary\manila\ManilaProfileController;
+
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaAreaClientsController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaAreaClientsHistoryController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaAreaController;
@@ -47,6 +48,18 @@ use App\Http\Controllers\secretary\valenzuela\ValenzuelaClientsRenewalController
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaDashboardController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaNotificationsController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaProfileController;
+
+
+use App\Http\Controllers\secretary\caloocan\CaloocanAreaClientsController;
+use App\Http\Controllers\secretary\caloocan\CaloocanAreaClientsHistoryController;
+use App\Http\Controllers\secretary\caloocan\CaloocanAreaController;
+use App\Http\Controllers\secretary\caloocan\CaloocanAreaPaymentsController;
+use App\Http\Controllers\secretary\caloocan\CaloocanClientsController;
+use App\Http\Controllers\secretary\caloocan\CaloocanClientsRenewalController;
+use App\Http\Controllers\secretary\caloocan\CaloocanDashboardController;
+use App\Http\Controllers\secretary\caloocan\CaloocanNotificationsController;
+use App\Http\Controllers\secretary\caloocan\CaloocanProfileController;
+
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -318,4 +331,55 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::post('/valenzuela/collect-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientCollectPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.clients.collect');
     Route::post('/valenzuela/remind-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientRemindPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.clients.remind');
     Route::post('/valenzuela/no-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientNoPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.clients.not.paid');
+
+
+    // Secretary Caloocan Area Route
+    // Secretary Caloocan Dashboard Route
+    Route::get('/caloocan/dashboard', [CaloocanDashboardController::class, 'CaloocanDashboardPage'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.dashboard.page');
+    Route::get('/caloocan/areas/breakdown/analytics', [CaloocanDashboardController::class, 'CaloocanAreasBreakdownSummary'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.analytics.page');
+    Route::get('/caloocan/notifications/fetch', [CaloocanNotificationsController::class, 'CaloocanFetchNotifications'])->name('secretary.caloocan.fetch_notifications');
+    Route::get('/caloocan/notifications', [CaloocanNotificationsController::class, 'CaloocanNotificationsPage'])->name('secretary.caloocan.notification.page');
+    Route::post('/caloocan/notifications/mark-all-read', [CaloocanNotificationsController::class, 'CaloocanMarkAllAsReadNotifications'])->name('secretary.caloocan.notifications.mark.all.read');
+
+
+    //Secretary Caloocan Profile Management Route
+    Route::get('/caloocan/profile', [CaloocanProfileController::class, 'CaloocanProfilePage'])->name('secretary.caloocan.profile.page');
+    Route::post('/caloocan/profile/update', [CaloocanProfileController::class, 'CaloocanUpdateProfile'])->name('secretary.profile.update');
+
+    // Secretary Clients Route
+    Route::get('/caloocan/clients', [CaloocanClientsController::class, 'CaloocanClientsPage'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.clients.page');
+    Route::post('/caloocan/add/clients', [CaloocanClientsController::class, 'CaloocanAddClientRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.add.clients.request');
+    Route::get('/caloocan/edit/clients/{id}', [CaloocanClientsController::class, 'CaloocanEditClientPage'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.edit.clients.page');
+    Route::put('/caloocan/update/clients/{id}', [CaloocanClientsController::class, 'CaloocanUpdateClientRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.update.clients.request');
+    Route::delete('/caloocan/delete/clients/{id}', [CaloocanClientsController::class, 'CaloocanDeleteClientRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.delete.clients.request');
+    Route::post('/caloocan/add/renewal', [CaloocanClientsRenewalController::class, 'CaloocanClientAddRenewalRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.add.renewal.clients.request');
+
+    // Secretary List of Areas Route
+    Route::get('/caloocan/areas/', [CaloocanAreaController::class, 'CaloocanAreaPage'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.area.page');
+    Route::get('/caloocan/areas/sales/print', [CaloocanAreaController::class, 'CaloocanAreaPrintSalesReports'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.print.sales');
+
+    //Secretary Clients Accounts
+    Route::get('/caloocan/{area}/clients', [CaloocanAreaClientsController::class, 'CaloocanAreaClientsPage'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.clients.page');
+    Route::get('/caloocan/{area}/clients/lapsed', [CaloocanAreaClientsController::class, 'CaloocanAreaLapsedClientsPage'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.clients.lapsed.page');
+    Route::get('/caloocan/{area}/clients/renewal', [CaloocanAreaClientsController::class, 'CaloocanAreaRenewalClientPage'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.clients.renewal.page');
+    Route::get('/caloocan/{area}/clients/active', [CaloocanAreaClientsController::class, 'CaloocanAreaActiveClientsPage'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.clients.active.page');
+    Route::get('/caloocan/{area}/clients/lapsed/print', [CaloocanAreaClientsController::class, 'CaloocanAreaLapsedClientsPrint'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.clients.lapsed.page.print');
+
+    //Secretary Clients History
+    Route::get('/caloocan/clients/{clientId}', [CaloocanAreaClientsHistoryController::class, 'CaloocanAreaClientsProfilePage'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.clients.profile.page');
+    Route::get('/caloocan/clients/{clientId}/loans/print', [CaloocanAreaClientsHistoryController::class, 'CaloocanAreaClientsPrintLoanHistory'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.clients.print.history.page');
+    Route::get('/caloocan/clients/loans/{loanId}/payments', [CaloocanAreaClientsHistoryController::class, 'CaloocanAreaClientLoanPaymentsPage'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.clients.loan.payments');
+
+    // Secretary Areas Payments Route
+    Route::get('/caloocan/{area}/payments', [CaloocanAreaPaymentsController::class, 'CaloocanClientPaymentsPage'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments');
+    Route::post('/caloocan/{id}/create/payments', [CaloocanAreaPaymentsController::class, 'CaloocanClientPaymentsRequest'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.request');
+    Route::get('/caloocan/payments/{area}/summary/collections/print', [CaloocanAreaPaymentsController::class, 'CaloocanPrintSummaryCollections'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.print.summary.collections');
+    Route::get('/caloocan/payments/{referenceNumber}/clients', [CaloocanAreaPaymentsController::class, 'CaloocanClientDailyPaymentsPage'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.clients');
+    Route::post('/caloocan/payments/{id}/update-collection', [CaloocanAreaPaymentsController::class, 'CaloocanClientUpdateCollection'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.update.collection');
+    Route::get('/caloocan/payments/{referenceNumber}/print', [CaloocanAreaPaymentsController::class, 'CaloocanClientPrintDailyPayments'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.print');
+
+    // SMS
+    Route::post('/caloocan/collect-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientCollectPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.clients.collect');
+    Route::post('/caloocan/remind-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientRemindPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.clients.remind');
+    Route::post('/caloocan/no-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientNoPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.clients.not.paid');
 });

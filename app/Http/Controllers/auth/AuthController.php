@@ -64,9 +64,11 @@ class AuthController extends Controller
                         ->with('success', 'Logged in successfully!');
 
                 case 'Caloocan Area':
-                    return redirect()->route('secretary.caloocan.dashboard')
+                    return redirect()->route('secretary.caloocan.dashboard.page')
                         ->with('success', 'Logged in successfully!');
-
+                case 'Financial Counselor':
+                    return redirect()->route('secretary.fc.dashboard.page')
+                        ->with('success', 'Logged in successfully!');
                 default:
                     Auth::logout();
                     return back()->with('error', 'Invalid area assignment.');
