@@ -98,7 +98,7 @@
                                                 </td>
 
                                                 <td>
-                                                    <a href="{{ route('admin.area.manila.clients.profile.page', $client->id) }}"
+                                                    <a href="{{ route('secretary.area.manila.clients.profile.page', $client->id) }}"
                                                         class="btn btn-sm btn-outline-info">
                                                         View <i class="fas fa-eye"></i>
                                                     </a>
@@ -202,7 +202,7 @@
                         }
 
                         window.open(
-                            `/admin/areas/manila/${areaId}/clients/print?month=${month}`,
+                            `/secretary/areas/manila/${areaId}/clients/print?month=${month}`,
                             '_blank'
                         );
                     });
@@ -215,7 +215,7 @@
                         }
 
                         window.open(
-                            `/admin/areas/manila/${areaId}/clients/active/print?month=${month}`,
+                            `/secretary/areas/manila/${areaId}/clients/active/print?month=${month}`,
                             '_blank'
                         );
                     });
@@ -228,7 +228,7 @@
                         }
 
                         window.open(
-                            `/admin/areas/manila/${areaId}/clients/lapsed/print?month=${month}`,
+                            `/secretary/areas/manila/${areaId}/clients/lapsed/print?month=${month}`,
                             '_blank'
                         );
                     });

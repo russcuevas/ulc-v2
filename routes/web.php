@@ -38,7 +38,15 @@ use App\Http\Controllers\secretary\manila\ManilaClientsRenewalController;
 use App\Http\Controllers\secretary\manila\ManilaDashboardController;
 use App\Http\Controllers\secretary\manila\ManilaNotificationsController;
 use App\Http\Controllers\secretary\manila\ManilaProfileController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaAreaClientsController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaAreaClientsHistoryController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaAreaController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaAreaPaymentsController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaClientsController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaClientsRenewalController;
 use App\Http\Controllers\secretary\valenzuela\ValenzuelaDashboardController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaNotificationsController;
+use App\Http\Controllers\secretary\valenzuela\ValenzuelaProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -238,9 +246,9 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
 
     //Secretary Clients Accounts
     Route::get('/manila/{area}/clients', [ManilaAreaClientsController::class, 'ManilaAreaClientsPage'])->middleware('secretary.area:manila')->name('secretary.area.manila.clients.page');
-    Route::get('/manila/{area}/clients/lapsed', [ManilaAreaClientsController::class, 'ManilaAreaLapsedClientsPage'])->name('secretary.area.manila.clients.lapsed.page');
-    Route::get('/manila/{area}/clients/renewal', [ManilaAreaClientsController::class, 'ManilaAreaRenewalClientPage'])->name('secretary.area.manila.clients.renewal.page');
-    Route::get('/manila/{area}/clients/active', [ManilaAreaClientsController::class, 'ManilaAreaActiveClientsPage'])->name('secretary.area.manila.clients.active.page');
+    Route::get('/manila/{area}/clients/lapsed', [ManilaAreaClientsController::class, 'ManilaAreaLapsedClientsPage'])->middleware('secretary.area:manila')->name('secretary.area.manila.clients.lapsed.page');
+    Route::get('/manila/{area}/clients/renewal', [ManilaAreaClientsController::class, 'ManilaAreaRenewalClientPage'])->middleware('secretary.area:manila')->name('secretary.area.manila.clients.renewal.page');
+    Route::get('/manila/{area}/clients/active', [ManilaAreaClientsController::class, 'ManilaAreaActiveClientsPage'])->middleware('secretary.area:manila')->name('secretary.area.manila.clients.active.page');
     Route::get('/manila/{area}/clients/lapsed/print', [ManilaAreaClientsController::class, 'ManilaAreaLapsedClientsPrint'])->middleware('secretary.area:manila')->name('secretary.area.manila.clients.lapsed.page.print');
 
     //Secretary Clients History
@@ -256,11 +264,58 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::post('/manila/payments/{id}/update-collection', [ManilaAreaPaymentsController::class, 'ManilaClientUpdateCollection'])->middleware('secretary.area:manila')->name('secretary.area.manila.update.collection');
     Route::get('/manila/payments/{referenceNumber}/print', [ManilaAreaPaymentsController::class, 'ManilaClientPrintDailyPayments'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.print');
 
-    // NEED SMS
+    // SMS
     Route::post('/manila/collect-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientCollectPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.manila.payments.clients.collect');
+    Route::post('/manila/remind-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientRemindPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.manila.payments.clients.remind');
     Route::post('/manila/no-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientNoPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.clients.not.paid');
 
     // Secretary Valenzuela Area Route
     // Secretary Valenzuela Dashboard Route
     Route::get('/valenzuela/dashboard', [ValenzuelaDashboardController::class, 'ValenzuelaDashboardPage'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.dashboard.page');
+    Route::get('/valenzuela/areas/breakdown/analytics', [ValenzuelaDashboardController::class, 'ValenzuelaAreasBreakdownSummary'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.analytics.page');
+    Route::get('/valenzuela/notifications/fetch', [ValenzuelaNotificationsController::class, 'ValenzuelaFetchNotifications'])->name('secretary.valenzuela.fetch_notifications');
+    Route::get('/valenzuela/notifications', [ValenzuelaNotificationsController::class, 'ValenzuelaNotificationsPage'])->name('secretary.valenzuela.notification.page');
+    Route::post('/valenzuela/notifications/mark-all-read', [ValenzuelaNotificationsController::class, 'ValenzuelaMarkAllAsReadNotifications'])->name('secretary.valenzuela.notifications.mark.all.read');
+
+
+    //Secretary Valenzuela Profile Management Route
+    Route::get('/valenzuela/profile', [ValenzuelaProfileController::class, 'ValenzuelaProfilePage'])->name('secretary.valenzuela.profile.page');
+    Route::post('/valenzuela/profile/update', [ValenzuelaProfileController::class, 'ValenzuelaUpdateProfile'])->name('secretary.profile.update');
+
+    // Secretary Clients Route
+    Route::get('/valenzuela/clients', [ValenzuelaClientsController::class, 'ValenzuelaClientsPage'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.clients.page');
+    Route::post('/valenzuela/add/clients', [ValenzuelaClientsController::class, 'ValenzuelaAddClientRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.add.clients.request');
+    Route::get('/valenzuela/edit/clients/{id}', [ValenzuelaClientsController::class, 'ValenzuelaEditClientPage'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.edit.clients.page');
+    Route::put('/valenzuela/update/clients/{id}', [ValenzuelaClientsController::class, 'ValenzuelaUpdateClientRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.update.clients.request');
+    Route::delete('/valenzuela/delete/clients/{id}', [ValenzuelaClientsController::class, 'ValenzuelaDeleteClientRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.delete.clients.request');
+    Route::post('/valenzuela/add/renewal', [ValenzuelaClientsRenewalController::class, 'ValenzuelaClientAddRenewalRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.add.renewal.clients.request');
+
+    // Secretary List of Areas Route
+    Route::get('/valenzuela/areas/', [ValenzuelaAreaController::class, 'ValenzuelaAreaPage'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.area.page');
+    Route::get('/valenzuela/areas/sales/print', [ValenzuelaAreaController::class, 'ValenzuelaAreaPrintSalesReports'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.print.sales');
+
+    //Secretary Clients Accounts
+    Route::get('/valenzuela/{area}/clients', [ValenzuelaAreaClientsController::class, 'ValenzuelaAreaClientsPage'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.clients.page');
+    Route::get('/valenzuela/{area}/clients/lapsed', [ValenzuelaAreaClientsController::class, 'ValenzuelaAreaLapsedClientsPage'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.clients.lapsed.page');
+    Route::get('/valenzuela/{area}/clients/renewal', [ValenzuelaAreaClientsController::class, 'ValenzuelaAreaRenewalClientPage'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.clients.renewal.page');
+    Route::get('/valenzuela/{area}/clients/active', [ValenzuelaAreaClientsController::class, 'ValenzuelaAreaActiveClientsPage'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.clients.active.page');
+    Route::get('/valenzuela/{area}/clients/lapsed/print', [ValenzuelaAreaClientsController::class, 'ValenzuelaAreaLapsedClientsPrint'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.clients.lapsed.page.print');
+
+    //Secretary Clients History
+    Route::get('/valenzuela/clients/{clientId}', [ValenzuelaAreaClientsHistoryController::class, 'ValenzuelaAreaClientsProfilePage'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.clients.profile.page');
+    Route::get('/valenzuela/clients/{clientId}/loans/print', [ValenzuelaAreaClientsHistoryController::class, 'ValenzuelaAreaClientsPrintLoanHistory'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.clients.print.history.page');
+    Route::get('/valenzuela/clients/loans/{loanId}/payments', [ValenzuelaAreaClientsHistoryController::class, 'ValenzuelaAreaClientLoanPaymentsPage'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.clients.loan.payments');
+
+    // Secretary Areas Payments Route
+    Route::get('/valenzuela/{area}/payments', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientPaymentsPage'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments');
+    Route::post('/valenzuela/{id}/create/payments', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientPaymentsRequest'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.request');
+    Route::get('/valenzuela/payments/{area}/summary/collections/print', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaPrintSummaryCollections'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.print.summary.collections');
+    Route::get('/valenzuela/payments/{referenceNumber}/clients', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientDailyPaymentsPage'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.clients');
+    Route::post('/valenzuela/payments/{id}/update-collection', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientUpdateCollection'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.update.collection');
+    Route::get('/valenzuela/payments/{referenceNumber}/print', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientPrintDailyPayments'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.print');
+
+    // SMS
+    Route::post('/valenzuela/collect-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientCollectPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.clients.collect');
+    Route::post('/valenzuela/remind-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientRemindPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.clients.remind');
+    Route::post('/valenzuela/no-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientNoPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.clients.not.paid');
 });

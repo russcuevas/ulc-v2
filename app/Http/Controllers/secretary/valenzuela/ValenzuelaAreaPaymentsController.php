@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\secretary\manila;
+namespace App\Http\Controllers\secretary\valenzuela;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class ManilaAreaPaymentsController extends Controller
+class ValenzuelaAreaPaymentsController extends Controller
 {
-    public function ManilaClientPaymentsPage($areaId)
+    public function ValenzuelaClientPaymentsPage($areaId)
     {
         $area = DB::table('areas')
             ->where('id', $areaId)
-            ->where('location_name', 'Manila Area')
+            ->where('location_name', 'Valenzuela Area')
             ->select('id', 'areas_name as area_name')
             ->first();
 
@@ -32,7 +32,7 @@ class ManilaAreaPaymentsController extends Controller
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
             ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->where('clients_payments.client_area', $areaId)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
 
             ->select(
                 'clients_payments.reference_number',
@@ -48,24 +48,24 @@ class ManilaAreaPaymentsController extends Controller
             ->orderBy('due_date', 'desc')
             ->get();
 
-        return view('secretary.manila.areas.payments.payments', compact('area', 'collectors', 'payments'));
+        return view('secretary.valenzuela.areas.payments.payments', compact('area', 'collectors', 'payments'));
     }
 
-    public function ManilaPrintSummaryCollections(Request $request, $areaId)
+    public function ValenzuelaPrintSummaryCollections(Request $request, $areaId)
     {
         $from = $request->from_date;
         $to = $request->to_date;
 
         $area = DB::table('areas')
             ->where('id', $areaId)
-            ->where('location_name', 'Manila Area')
+            ->where('location_name', 'Valenzuela Area')
             ->select('id', 'areas_name as area_name')
             ->first();
 
         $payments = DB::table('clients_payments')
             ->join('areas', 'areas.id', '=', 'clients_payments.client_area')
             ->where('clients_payments.client_area', $areaId)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
             ->whereBetween('due_date', [$from, $to])
 
             ->select(
@@ -88,12 +88,12 @@ class ManilaAreaPaymentsController extends Controller
             ->get();
 
         return view(
-            'secretary.manila.areas.payments.print.payments',
+            'secretary.valenzuela.areas.payments.print.payments',
             compact('area', 'payments', 'from', 'to')
         );
     }
 
-    public function ManilaClientPaymentsRequest(Request $request, $id)
+    public function ValenzuelaClientPaymentsRequest(Request $request, $id)
     {
         $due_date = $request->due_date;
         $collector = DB::table('collectors')->where('id', $request->collector)->first();
@@ -119,7 +119,7 @@ class ManilaAreaPaymentsController extends Controller
             ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->leftJoin('clients_loans', 'clients.id', '=', 'clients_loans.client_id')
             ->where('clients.area_id', $id)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
             ->where('clients_loans.balance', '>', 0)
             ->where(function ($query) use ($due_date) {
                 $query->where(function ($q) use ($due_date) {
@@ -180,12 +180,12 @@ class ManilaAreaPaymentsController extends Controller
         //Notifications
         DB::table('activities')->insert([
             'users_id'          => $secretaryId,
-            'areas'             => 'Manila Area',
+            'areas'             => 'Valenzuela Area',
             'role'              => 'secretary',
             'type'              => 'Payments Entry',
             'description' => sprintf(
-                '<strong>Secretary %s</strong> from Manila Area added a new payment entry<br>
-                <span style="font-size: 12px; color: #6c757d;">In: Manila Area - [%s]</span><br>
+                '<strong>Secretary %s</strong> from Valenzuela Area added a new payment entry<br>
+                <span style="font-size: 12px; color: #6c757d;">In: Valenzuela Area - [%s]</span><br>
                 <span style="font-size: 12px; color: #6c757d;">With Reference No: %s</span>',
                 $secretaryFullname,
                 $areaName,
@@ -203,7 +203,7 @@ class ManilaAreaPaymentsController extends Controller
     }
 
 
-    public function ManilaClientUpdateCollection(Request $request, $id)
+    public function ValenzuelaClientUpdateCollection(Request $request, $id)
     {
         $request->validate([
             'collection' => 'required|numeric|min:0',
@@ -256,14 +256,14 @@ class ManilaAreaPaymentsController extends Controller
         ]);
     }
 
-    public function ManilaClientDailyPaymentsPage($referenceNumber)
+    public function ValenzuelaClientDailyPaymentsPage($referenceNumber)
     {
         $payments = DB::table('clients_payments')
             ->join('clients', 'clients.id', '=', 'clients_payments.client_id')
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
             ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->where('clients_payments.reference_number', $referenceNumber)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
             ->select(
                 'clients_payments.id',
                 'clients.fullname',
@@ -283,19 +283,19 @@ class ManilaAreaPaymentsController extends Controller
         }
 
         return view(
-            'secretary.manila.areas.payments.daily_payments',
+            'secretary.valenzuela.areas.payments.daily_payments',
             compact('payments', 'referenceNumber')
         );
     }
 
-    public function ManilaClientPrintDailyPayments($referenceNumber)
+    public function ValenzuelaClientPrintDailyPayments($referenceNumber)
     {
         $payments = DB::table('clients_payments')
             ->join('clients', 'clients.id', '=', 'clients_payments.client_id')
             ->join('clients_loans', 'clients_loans.id', '=', 'clients_payments.client_loans_id')
             ->join('areas', 'areas.id', '=', 'clients.area_id')
             ->where('clients_payments.reference_number', $referenceNumber)
-            ->where('areas.location_name', 'Manila Area')
+            ->where('areas.location_name', 'Valenzuela Area')
             ->select(
                 'clients_payments.id',
                 'clients.fullname',
@@ -321,12 +321,12 @@ class ManilaAreaPaymentsController extends Controller
         ];
 
         return view(
-            'secretary.manila.areas.payments.print.print_daily_payments',
+            'secretary.valenzuela.areas.payments.print.print_daily_payments',
             compact('payments', 'referenceNumber', 'area')
         );
     }
 
-    public function ManilaClientCollectPaymentRequest(Request $request, $id)
+    public function ValenzuelaClientCollectPaymentRequest(Request $request, $id)
     {
         $request->validate([
             'amount' => 'required|numeric|min:0.01',
@@ -396,11 +396,11 @@ class ManilaAreaPaymentsController extends Controller
             'role'              => 'secretary',
             'type'              => 'Collected Payments',
             'description'       => sprintf(
-                '<strong>Secretary %s</strong> from Manila Area collected a payment<br>
+                '<strong>Secretary %s</strong> from Valenzuela Area collected a payment<br>
                 <span style="font-size: 12px; color: #6c757d;">Date: %s</span><br>
                 <span style="font-size: 12px; color: #6c757d;">Collector: %s</span><br>
                 <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
-                <span style="font-size: 12px; color: #6c757d;">In: Manila Area - [%s]</span><br>
+                <span style="font-size: 12px; color: #6c757d;">In: Valenzuela Area - [%s]</span><br>
                 <span style="font-size: 12px; color: #6c757d;">Payment Type: %s</span><br>
                 <span style="font-size: 12px; color: #6c757d;">Amount Collected: ₱%s</span>',
                 $secretaryFullname,
@@ -455,7 +455,7 @@ class ManilaAreaPaymentsController extends Controller
         return redirect()->back()->with('success', "Payment collected successfully!");
     }
 
-    public function ManilaClientRemindPaymentRequest(Request $request, $id)
+    public function ValenzuelaClientRemindPaymentRequest(Request $request, $id)
     {
         $payment = DB::table('clients_payments')->where('id', $id)->first();
         if (!$payment) {
@@ -487,7 +487,7 @@ class ManilaAreaPaymentsController extends Controller
             'role'              => 'secretary',
             'type'              => 'Payments Reminder',
             'description'       => sprintf(
-                '<strong>Secretary %s</strong> from Manila Area sent a payment reminder<br>
+                '<strong>Secretary %s</strong> from Valenzuela Area sent a payment reminder<br>
             <span style="font-size:12px;color:#6c757d;">Client: %s</span><br>
             <span style="font-size:12px;color:#6c757d;">Daily Payment: ₱%s</span><br>
             <span style="font-size:12px;color:#6c757d;">Due Date: %s</span>',
@@ -541,7 +541,7 @@ class ManilaAreaPaymentsController extends Controller
         return redirect()->back()->with('success', 'Payment reminder sent successfully!');
     }
 
-    public function ManilaClientNoPaymentRequest(Request $request, $id)
+    public function ValenzuelaClientNoPaymentRequest(Request $request, $id)
     {
         $payment = DB::table('clients_payments')->where('id', $id)->first();
         if (!$payment) {
@@ -580,7 +580,7 @@ class ManilaAreaPaymentsController extends Controller
             'role'              => 'secretary',
             'type'              => 'No Payment',
             'description'       => sprintf(
-                '<strong>Secretary %s</strong> from Manila Area marked no payment for the client<br>
+                '<strong>Secretary %s</strong> from Valenzuela Area marked no payment for the client<br>
             <span style="font-size:12px;color:#6c757d;">Client: %s</span><br>
             <span style="font-size:12px;color:#6c757d;">Daily Payment: ₱%s</span><br>
             <span style="font-size:12px;color:#6c757d;">Due Date: %s</span>',

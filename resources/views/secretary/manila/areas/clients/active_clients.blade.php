@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="card-body p-4">
-                            <a href="{{ route('admin.area.manila.clients.page', $area->id) }}"
+                            <a href="{{ route('secretary.area.manila.clients.page', $area->id) }}"
                                 class="btn btn-sm btn-outline-primary mb-1">
                                 ALL ACCOUNTS [{{ $totalCount }}]
                             </a>
@@ -95,7 +95,7 @@
                                                 </td>
 
                                                 <td>
-                                                    <a href="{{ route('admin.area.manila.clients.profile.page', $client->id) }}"
+                                                    <a href="{{ route('secretary.area.manila.clients.profile.page', $client->id) }}"
                                                         class="btn btn-sm btn-outline-info">
                                                         View <i class="fas fa-eye"></i>
                                                     </a>

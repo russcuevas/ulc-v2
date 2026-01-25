@@ -383,11 +383,8 @@ class AdminAreaCaloocanPaymentsController extends Controller
 
         $adminFullname = Auth::user()->fullname ?? 'Admin';
         $adminId = Auth::id();
-
         $client = DB::table('clients')->where('id', $loan->client_id)->first();
         $phone_number = $client->phone ?? null;
-
-
         $clientFullname = $client->fullname ?? 'Unknown Client';
         $areaId = $payment->client_area ?? 0;
         $areaLocation = DB::table('areas')
@@ -396,21 +393,26 @@ class AdminAreaCaloocanPaymentsController extends Controller
         $areaName = DB::table('areas')
             ->where('id', $areaId)
             ->value('areas_name') ?? 'Unknown Area';
-
+        $collectorName = $payment->collected_by ?? 'Unknown Collector';
         $type = $request->type;
+        $dueDate = Carbon::parse($payment->due_date)->format('F d, Y');
 
         DB::table('activities')->insert([
             'users_id'          => $adminId,
             'areas'             => $areaLocation,
             'role'              => 'admin',
             'type'              => 'Collected Payments',
-            'description'       => sprintf(
-                '<strong>Admin %s</strong> collected a payment<br>
-            <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
-            <span style="font-size: 12px; color: #6c757d;">In: Caloocan Area - [%s]</span><br>
-            <span style="font-size: 12px; color: #6c757d;">Payment Type: %s</span><br>
-            <span style="font-size: 12px; color: #6c757d;">Amount Collected: ₱%s</span>',
+            'description' => sprintf(
+                '<strong>Admin %s</strong> recorded a payment<br>
+                <span style="font-size: 12px; color: #6c757d;">Date: %s</span><br>
+                <span style="font-size: 12px; color: #6c757d;">Collector: %s</span><br>
+                <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
+                <span style="font-size: 12px; color: #6c757d;">In: Caloocan Area - [%s]</span><br>
+                <span style="font-size: 12px; color: #6c757d;">Payment Type: %s</span><br>
+                <span style="font-size: 12px; color: #6c757d;">Amount Collected: ₱%s</span>',
                 $adminFullname,
+                $dueDate,
+                $collectorName,
                 $clientFullname,
                 $areaName,
                 ucfirst($type),
@@ -432,11 +434,13 @@ class AdminAreaCaloocanPaymentsController extends Controller
                 $phone_number = '63' . substr($phone_number, 1);
             }
 
-            $message = "Magandang araw {$client->fullname}! Ang bayad mo ngayong araw na nagkakahalaga ng ₱"
+            $message = "Magandang araw {$client->fullname}! Ang iyong payment na halagang ₱"
                 . number_format($request->amount, 2)
-                . " gamit ang {$type} ay natanggap na ngayon. Natitirang balance: ₱"
+                . " ay natanggap ni {$collectorName} - {$dueDate}. Natitirang balanse: ₱"
                 . number_format(max(0, $remainingBalance), 2)
                 . ". Maraming salamat po!";
+
+
 
             $ch = curl_init();
 
@@ -546,6 +550,7 @@ class AdminAreaCaloocanPaymentsController extends Controller
 
         return redirect()->back()->with('success', 'Payment reminder sent successfully!');
     }
+
 
 
     public function AdminAreaCaloocanClientNoPaymentRequest(Request $request, $id)

@@ -17,20 +17,19 @@
 </head>
 
 <body>
-    @include('secretary.manila.components.navbar')
+    @include('secretary.valenzuela.components.navbar')
 
     <div class="main-content">
         <div class="container-fluid">
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('secretary.manila.dashboard.page') }}"
+                    <li class="breadcrumb-item"><a href="{{ route('secretary.valenzuela.dashboard.page') }}"
                             class="text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('secretary.manila.area.page') }}"
-                            class="text-decoration-none"><i class="fas fa-location-dot me-1"></i> Manila</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('secretary.valenzuela.area.page') }}"
+                            class="text-decoration-none"><i class="fas fa-location-dot me-1"></i> Valenzuela</a></li>
                     <li class="breadcrumb-item active">
-                        <i class="fas fa-exclamation-triangle"></i> Lapsed Accounts
+                        <i class="fas fa-check-circle"></i> Active Accounts
                     </li>
-
                 </ol>
             </nav>
             <div class="row">
@@ -38,36 +37,37 @@
                     <div class="card shadow-sm border-1">
                         <div class="d-flex justify-content-between align-items-center m-4">
                             <h5 class="card-title mb-0">
-                                <span class="badge bg-danger">
-                                    [{{ $area->areas_name }}] - LAPSED CLIENTS ({{ count($clients) }})
+                                <span class="badge bg-success">
+                                    [{{ $area->areas_name }}] - ACTIVE CLIENTS ({{ count($clients) }})
                                 </span>
                             </h5>
                         </div>
 
                         <div class="card-body p-4">
-                            <a href="{{ route('secretary.area.manila.clients.page', $area->id) }}"
+                            <a href="{{ route('secretary.area.valenzuela.clients.page', $area->id) }}"
                                 class="btn btn-sm btn-outline-primary mb-1">
                                 ALL ACCOUNTS [{{ $totalCount }}]
                             </a>
 
-                            <a href="{{ route('secretary.area.manila.clients.renewal.page', $area->id) }}"
+                            <a href="{{ route('secretary.area.valenzuela.clients.renewal.page', $area->id) }}"
                                 class="btn btn-sm btn-outline-info mb-1">
                                 FOR RENEWAL [{{ $renewalCount }}]
                             </a>
 
-                            <a href="{{ route('secretary.area.manila.clients.active.page', $area->id) }}"
-                                class="btn btn-sm btn-outline-success mb-1">
+                            <a href="{{ route('secretary.area.valenzuela.clients.active.page', $area->id) }}"
+                                class="btn btn-sm btn-success mb-1">
                                 ACTIVE ACCOUNTS [{{ $activeCount }}]
                             </a>
 
-                            <a href="{{ route('secretary.area.manila.clients.lapsed.page', $area->id) }}"
-                                class="btn btn-sm btn-danger mb-1">
+                            <a href="{{ route('secretary.area.valenzuela.clients.lapsed.page', $area->id) }}"
+                                class="btn btn-sm btn-outline-danger mb-1">
                                 LAPSED ACCOUNTS [{{ $lapsedCount }}]
                             </a>
 
+
                             <div class="table-responsive">
                                 <table id="clientsTable"
-                                    class="table table-hover table-danger dataTable js-basic-example"
+                                    class="table table-hover table-striped dataTable js-basic-example"
                                     style="min-width: 1000px; border: 2px solid rgba(0,0,0,0.175) !important;">
                                     <thead class="table-light">
                                         <tr>
@@ -82,17 +82,20 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($clients as $client)
-                                            <tr class="table-danger">
+                                            <tr class="{{ $client->is_lapsed ? 'table-danger' : '' }}">
                                                 <td>{{ $client->fullname }}</td>
                                                 <td>{{ $client->phone }}</td>
                                                 <td>{{ $client->address }}</td>
                                                 <td>{{ $client->gender }}</td>
-                                                <td><span class="badge bg-danger">LAPSED</span></td>
+                                                <td>
+                                                    <span class="badge bg-success">ACTIVE</span>
+                                                </td>
+
                                                 <td>{{ \Carbon\Carbon::parse($client->created_at)->format('F j, Y - h:i A') }}
                                                 </td>
 
                                                 <td>
-                                                    <a href="{{ route('secretary.area.manila.clients.profile.page', $client->id) }}"
+                                                    <a href="{{ route('secretary.area.valenzuela.clients.profile.page', $client->id) }}"
                                                         class="btn btn-sm btn-outline-info">
                                                         View <i class="fas fa-eye"></i>
                                                     </a>

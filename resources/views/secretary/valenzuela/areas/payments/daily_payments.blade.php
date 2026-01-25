@@ -16,12 +16,12 @@
 </head>
 
 <body>
-    @include('secretary.manila.components.navbar')
+    @include('secretary.valenzuela.components.navbar')
     <div class="main-content">
         <div class="container-fluid">
             <nav aria-label="breadcrumb" class="mb-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('secretary.manila.dashboard.page') }}"
+                    <li class="breadcrumb-item"><a href="{{ route('secretary.valenzuela.dashboard.page') }}"
                             class="text-decoration-none"><i class="fas fa-home me-1"></i> Dashboard</a></li>
                     <li class="breadcrumb-item">
                         <a href="{{ url()->previous() }}" class="text-decoration-none">
@@ -58,7 +58,7 @@
                             </div>
                         </div>
                         <div class="m-4 text-end" style="margin-top: 0px !important;">
-                            <a href="{{ route('secretary.area.manila.payments.print', $referenceNumber) }}"
+                            <a href="{{ route('secretary.area.valenzuela.payments.print', $referenceNumber) }}"
                                 target="_blank" class="btn btn-sm btn-primary">
                                 <i class="fas fa-print me-1"></i> PRINT SUMMARY
                             </a>
@@ -328,7 +328,7 @@
 
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/secretary/manila/collect-payment/${paymentId}`;
+                    form.action = `/secretary/valenzuela/collect-payment/${paymentId}`;
 
                     const csrf = document.createElement('input');
                     csrf.type = 'hidden';
@@ -375,7 +375,7 @@
 
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/secretary/manila/remind-payment/${paymentId}`;
+                    form.action = `/secretary/valenzuela/remind-payment/${paymentId}`;
 
                     const csrf = document.createElement('input');
                     csrf.type = 'hidden';
@@ -410,7 +410,7 @@
 
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = `/secretary/manila/no-payment/${paymentId}`;
+                    form.action = `/secretary/valenzuela/no-payment/${paymentId}`;
 
                     const csrf = document.createElement('input');
                     csrf.type = 'hidden';
@@ -466,7 +466,7 @@
             }).then((result) => {
                 if (!result.isConfirmed) return;
 
-                fetch(`/secretary/manila/payments/${paymentId}/update-collection`, {
+                fetch(`/secretary/valenzuela/payments/${paymentId}/update-collection`, {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
