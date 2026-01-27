@@ -84,7 +84,7 @@
         <div
             class="col-12 col-md-8 col-xl-9 d-flex justify-content-center align-items-center p-3 p-sm-5 position-relative">
             <div class="w-100" style="max-width: 450px;">
-                <h2 class="fs-3 fw-semibold mb-5 text-center text-dark">
+                <h2 class="fs-3 fw-semibold mb-5 text-left text-dark">
                     Login to ULC System
                 </h2>
 
@@ -136,15 +136,81 @@
                 <!-- Utility Links -->
                 <div class="d-flex justify-content-between mt-3 fs-6">
                     <a href="#" class="text-primary text-decoration-none fw-medium"></a>
-                    <a href="" class="text-primary text-decoration-none fw-medium">Forgot password?</a>
+                    <a href="#" class="text-primary text-decoration-none fw-medium" data-bs-toggle="modal"
+                        data-bs-target="#forgotPasswordModal">
+                        Forgot password?
+                    </a>
+                </div>
+
+                <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordLabel"
+                    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                    <div class="modal-dialog modal-dialog">
+                        <div class="modal-content rounded-4 shadow">
+                            <div class="modal-header border-0">
+                                <h5 class="modal-title fw-semibold" id="forgotPasswordLabel">
+                                    Forgot Password
+                                    <br>
+                                    <span class="text-muted mb-4" style="font-size: 12px;">
+                                        Enter your email address and we’ll send you a password reset link.
+                                    </span>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <form method="POST" action="{{ route('password.send.code') }}" class="needs-validation"
+                                novalidate>
+                                @csrf
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="reset-email" class="form-label fw-medium">
+                                            Email Address <span style="color:red">*</span>
+                                        </label>
+                                        <input type="email" id="reset-email" name="email"
+                                            class="form-control rounded-3 shadow-sm"
+                                            placeholder="Enter your email address" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid email address.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer border-0">
+                                    <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+                                    <button type="submit"
+                                        class="btn btn-primary rounded-3 fw-medium d-flex align-items-center justify-content-center"
+                                        id="sendResetBtn">
+                                        <span class="btn-text">Send Reset Link</span>
+                                        <span class="spinner-border spinner-border-sm ms-2 d-none"
+                                            role="status"></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap Bundle JS (includes Popper) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $('#forgotPasswordModal form').on('submit', function() {
+            if (!this.checkValidity()) {
+                return;
+            }
+            let btn = $('#sendResetBtn');
+            btn.prop('disabled', true);
+            btn.find('.btn-text').text('Sending...');
+            btn.find('.spinner-border').removeClass('d-none');
+            $('#forgotPasswordModal .btn-close').prop('disabled', true);
+        });
     </script>
     <script>
         (() => {
@@ -163,8 +229,7 @@
             })
         })();
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <script>
         toastr.options = {
             closeButton: true,
@@ -181,8 +246,6 @@
     <script>
         window.addEventListener("load", function() {
             const loader = document.getElementById("preloader");
-
-            // Add a slight delay for a smoother transition
             setTimeout(() => {
                 loader.classList.add("loader-hidden");
             }, 500);

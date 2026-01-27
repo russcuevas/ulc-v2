@@ -29,6 +29,7 @@ use App\Http\Controllers\admin\fc\AdminAreaFCClientsHistoryController;
 use App\Http\Controllers\admin\fc\AdminAreaFCPaymentsController;
 
 use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\auth\ForgotPasswordController;
 use App\Http\Controllers\secretary\manila\ManilaAreaClientsController;
 use App\Http\Controllers\secretary\manila\ManilaAreaClientsHistoryController;
 use App\Http\Controllers\secretary\manila\ManilaAreaController;
@@ -76,6 +77,19 @@ Route::get('/', [AuthController::class, 'LoginPage']);
 Route::get('/login', [AuthController::class, 'LoginPage'])->name('auth.login.page');
 Route::post('/login', [AuthController::class, 'LoginRequest'])->name('auth.login.request');
 Route::post('/logout', [AuthController::class, 'Logout'])->name('auth.logout.request');
+
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetCode'])
+    ->name('password.send.code');
+
+Route::get('/reset-password', [ForgotPasswordController::class, 'showResetForm'])
+    ->name('password.reset.form');
+
+Route::post('/verify-reset-code', [ForgotPasswordController::class, 'verifyCode'])
+    ->name('password.verify.code');
+
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'])
+    ->name('password.reset');
+
 
 Route::middleware(['auth', 'admin'])->group(
     function () {
