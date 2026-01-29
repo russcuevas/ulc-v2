@@ -218,7 +218,6 @@
                 didOpen: () => {
                     flatpickr("#dueDateInput", {
                         dateFormat: "Y-m-d",
-                        minDate: new Date() // disable past dates
                     });
                 },
                 showCancelButton: true,

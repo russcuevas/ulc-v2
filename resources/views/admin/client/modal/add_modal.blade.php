@@ -146,6 +146,15 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 mb-3">
+                                    <label for="balance" class="form-label">Balance <span
+                                            style="color: rgb(126, 30, 30)">*</span></label>
+                                    <input type="number" class="form-control" id="balance" name="balance"
+                                        required min="0" step="0.01">
+                                    <div class="invalid-feedback">
+                                        Please enter balance.
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 mb-3">
                                     <label for="daily" class="form-label">Daily
                                         Payment <span style="color: rgb(126, 30, 30)">*</span></label>
                                     <input type="number" class="form-control" id="daily" name="daily"
