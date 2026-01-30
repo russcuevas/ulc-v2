@@ -45,6 +45,7 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th>Fullname</th>
+                                            <th>Email</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -52,6 +53,7 @@
                                         @foreach ($collectors as $collector)
                                             <tr>
                                                 <td>{{ $collector->fullname }}</td>
+                                                <td>{{ $collector->email }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-outline-warning"
                                                         data-bs-toggle="modal"

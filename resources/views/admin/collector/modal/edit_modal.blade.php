@@ -20,6 +20,12 @@
                                 value="{{ $collector->fullname }}" required>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Email <span style="color: red">*</span></label>
+                            <input type="email" name="email" class="form-control" value="{{ $collector->email }}"
+                                required>
+                        </div>
+
                     </div>
                 </div>
 

@@ -72,7 +72,7 @@
                                     <tr>
                                         <th>Reference #</th>
                                         <th>Collector</th>
-                                        <th>Due Date</th>
+                                        <th>Collections Date</th>
                                         <th>Total Collectibles</th>
                                         <th>Total Collections</th>
                                         <th>Action</th>

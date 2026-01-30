@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class AdminCollectorController extends Controller
 {
@@ -29,18 +30,22 @@ class AdminCollectorController extends Controller
     {
         $request->validate([
             'fullname' => 'required|string',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('collectors', 'email')->ignore($id),
+            ],
         ]);
-
-        $data = [
-            'fullname' => $request->fullname,
-            'updated_by' => 'Admin',
-            'updated_at' => now(),
-        ];
 
         DB::table('collectors')
             ->where('id', $id)
-            ->update($data);
+            ->update([
+                'fullname'   => $request->fullname,
+                'email'      => $request->email,
+                'updated_by' => 'Admin',
+                'updated_at' => now(),
+            ]);
 
-        return redirect()->back()->with('success', 'Secretary updated successfully.');
+        return redirect()->back()->with('success', 'Collector updated successfully.');
     }
 }

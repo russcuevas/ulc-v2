@@ -70,6 +70,9 @@ use App\Http\Controllers\secretary\fc\FCDashboardController;
 use App\Http\Controllers\secretary\fc\FCNotificationsController;
 use App\Http\Controllers\secretary\fc\FCProfileController;
 
+
+use App\Http\Controllers\collector\manila\ManilaCollectorDashboardController;
+use App\Http\Controllers\collector\valenzuela\ValenzuelaCollectorDashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -455,4 +458,18 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::post('/fc/collect-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientCollectPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.fc.payments.clients.collect');
     Route::post('/fc/remind-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientRemindPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.fc.payments.clients.remind');
     Route::post('/fc/no-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientNoPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.clients.not.paid');
+});
+
+
+
+// Collector Route
+Route::middleware(['auth:collector'])->group(function () {
+
+    Route::get('/collector/manila', [ManilaCollectorDashboardController::class, 'ManilaCollectorDashboardPage'])->middleware('collector.area:manila')->name('collector.manila.dashboard.page');
+
+    Route::get('/collector/valenzuela', [ValenzuelaCollectorDashboardController::class, 'ValenzuelaCollectorDashboardPage'])->middleware('collector.area:valenzuela')->name('collector.valenzuela.dashboard.page');
+
+    Route::get('/collector/caloocan', [ManilaCollectorDashboardController::class, 'caloocan'])
+        ->middleware('collector.area:caloocan')
+        ->name('collector.caloocan.dashboard.page');
 });

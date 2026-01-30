@@ -40,7 +40,13 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'collector' => [
+            'driver' => 'session',
+            'provider' => 'collector',
+        ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -65,10 +71,10 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'collector' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Collector::class,
+        ],
     ],
 
     /*

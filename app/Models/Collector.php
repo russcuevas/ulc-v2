@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Collector extends Model
+class Collector extends Authenticatable
 {
     use HasFactory;
 
     protected $fillable = [
         'fullname',
+        'email',
+        'password',
+        'role',
         'created_by',
         'updated_by',
     ];
