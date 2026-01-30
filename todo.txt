@@ -1,14 +1,6 @@
-RECENT ACTIVITY
+admin/secretary
+is_collected => for secretary and admin
+collect
+remind payment => one button
+no payment => one button
 
-CREATE TABLE LOGS
-'users_id' -> foreign to table users id
-
-CREATE TABLE ACTIVITY
-      'users_id' -> foreign to table users id
-      'role',
-      'description',
-      'color',
-      'is_read_secretary',
-      'is_read_admin',
-
-      areas add column

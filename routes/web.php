@@ -72,6 +72,7 @@ use App\Http\Controllers\secretary\fc\FCProfileController;
 
 
 use App\Http\Controllers\collector\manila\ManilaCollectorDashboardController;
+use App\Http\Controllers\collector\manila\ManilaCollectorPaymentController;
 use App\Http\Controllers\collector\valenzuela\ValenzuelaCollectorDashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -464,8 +465,13 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
 
 // Collector Route
 Route::middleware(['auth:collector'])->group(function () {
-
     Route::get('/collector/manila', [ManilaCollectorDashboardController::class, 'ManilaCollectorDashboardPage'])->middleware('collector.area:manila')->name('collector.manila.dashboard.page');
+    Route::get('/collector/manila/collections/{area}', [ManilaCollectorPaymentController::class, 'ManilaCollectorCollectionsPage'])->middleware('collector.area:manila')->name('collector.manila.collections.page');
+    Route::get('/collector/manila/collections/reference/{referenceNumber}', [ManilaCollectorPaymentController::class, 'ManilaCollectorClientPaymentPage'])->middleware('collector.area:manila')->name('collector.manila.collections.payments');
+    Route::post('/collector/manila/collections/collect-payment/{clientPaymendId}', [ManilaCollectorPaymentController::class, 'ManilaCollectorCollectRequest'])->middleware('collector.area:manila')->name('collector.manila.collections.payments.collect.request');
+
+
+
 
     Route::get('/collector/valenzuela', [ValenzuelaCollectorDashboardController::class, 'ValenzuelaCollectorDashboardPage'])->middleware('collector.area:valenzuela')->name('collector.valenzuela.dashboard.page');
 
