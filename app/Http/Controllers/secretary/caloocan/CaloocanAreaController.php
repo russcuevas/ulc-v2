@@ -20,9 +20,29 @@ class CaloocanAreaController extends Controller
                 DB::raw('COUNT(clients.id) as clients_count')
             )
             ->groupBy('areas.id', 'areas.areas_name')
-            ->get();
+            ->get()
+            ->map(function ($area) {
+                $area->lapsedCount = $this->getClientAccountCounts($area->id)['lapsedCount'];
+                return $area;
+            });
 
         return view('secretary.caloocan.areas.index', compact('areas'));
+    }
+
+    private function getClientAccountCounts($areaId)
+    {
+        return [
+            'lapsedCount' => DB::table('clients')
+                ->where('clients.area_id', $areaId)
+                ->whereExists(function ($query) {
+                    $query->from('clients_loans')
+                        ->whereColumn('clients_loans.client_id', 'clients.id')
+                        ->where('payment_status', 'unpaid')
+                        ->where('balance', '>', 0)
+                        ->whereDate('loan_to', '<', now());
+                })
+                ->count(),
+        ];
     }
 
     public function CaloocanAreaPrintSalesReports(Request $request)

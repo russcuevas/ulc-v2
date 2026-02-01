@@ -43,25 +43,32 @@
                                     [{{ $area->areas_name }}] - LAPSED CLIENTS ({{ count($clients) }})
                                 </span>
                             </h5>
+
+                            <!-- RIGHT: Buttons -->
+                            <div class="d-flex flex-column align-items-end">
+                                <a href="javascript:void(0)" id="printDataAccounts" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-print me-1"></i> PRINT SUMMARY DATA
+                                </a>
+                            </div>
                         </div>
 
                         <div class="card-body p-4">
-                            <a href="{{ route('admin.area.valenzuela.clients.page', $area->id) }}"
+                            <a href="{{ route('admin.area.fc.clients.page', $area->id) }}"
                                 class="btn btn-sm btn-outline-primary mb-1">
                                 ALL ACCOUNTS [{{ $totalCount }}]
                             </a>
 
-                            <a href="{{ route('admin.area.valenzuela.clients.renewal.page', $area->id) }}"
+                            <a href="{{ route('admin.area.fc.clients.renewal.page', $area->id) }}"
                                 class="btn btn-sm btn-outline-info mb-1">
                                 FOR RENEWAL [{{ $renewalCount }}]
                             </a>
 
-                            <a href="{{ route('admin.area.valenzuela.clients.active.page', $area->id) }}"
+                            <a href="{{ route('admin.area.fc.clients.active.page', $area->id) }}"
                                 class="btn btn-sm btn-outline-success mb-1">
                                 ACTIVE ACCOUNTS [{{ $activeCount }}]
                             </a>
 
-                            <a href="{{ route('admin.area.valenzuela.clients.lapsed.page', $area->id) }}"
+                            <a href="{{ route('admin.area.fc.clients.lapsed.page', $area->id) }}"
                                 class="btn btn-sm btn-danger mb-1">
                                 LAPSED ACCOUNTS [{{ $lapsedCount }}]
                             </a>
@@ -93,7 +100,7 @@
                                                 </td>
 
                                                 <td>
-                                                    <a href="{{ route('admin.area.valenzuela.clients.profile.page', $client->id) }}"
+                                                    <a href="{{ route('admin.area.fc.clients.profile.page', $client->id) }}"
                                                         class="btn btn-sm btn-outline-info">
                                                         View <i class="fas fa-eye"></i>
                                                     </a>
@@ -155,6 +162,52 @@
         };
 
         // TOASTR NOTIFICATIONS
+    </script>
+
+    {{-- PRINT CLEINTS --}}
+    <script>
+        document.getElementById('printDataAccounts').addEventListener('click', function() {
+            Swal.fire({
+                title: '<i class="fas fa-print me-1"></i> Print Summary Data',
+                html: `
+                <div class="row g-2 text-start">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">
+                            <i class="fa fa-calendar me-1 text-muted"></i>SELECT MONTH
+                        </label>
+                        <input type="month" id="month" class="form-control">
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-3">
+                    <button id="print-lapsed" class="btn btn-primary">PRINT LAPSED PAYMENTS ACCOUNTS</button>
+                </div>
+            `,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                didOpen: () => {
+
+                    const areaId = {{ $area->id }};
+
+                    document.getElementById('month').value =
+                        new Date().toISOString().slice(0, 7);
+
+                    document.getElementById('print-lapsed').addEventListener('click', function() {
+                        const month = document.getElementById('month').value;
+                        if (!month) {
+                            Swal.showValidationMessage('Please select a month');
+                            return;
+                        }
+
+                        window.open(
+                            `/admin/areas/fc/${areaId}/clients/lapsed/print?month=${month}`,
+                            '_blank'
+                        );
+                    });
+                }
+            });
+        });
     </script>
 
 </body>

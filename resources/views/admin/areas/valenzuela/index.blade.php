@@ -80,6 +80,12 @@
                                                         class="btn btn-sm btn-outline-info">
                                                         View Clients <i class="fas fa-eye"></i>
                                                     </a>
+
+                                                    <a href="{{ route('admin.area.valenzuela.clients.lapsed.page', $area->id) }}"
+                                                        class="btn btn-sm btn-outline-danger">
+                                                        Lapsed Clients [{{ $area->lapsedCount }}]
+                                                    </a>
+
                                                     <a href="{{ route('admin.area.valenzuela.payments', $area->id) }}"
                                                         class="btn btn-sm btn-outline-primary">
                                                         Payments <i class="fa fa-coins"></i>

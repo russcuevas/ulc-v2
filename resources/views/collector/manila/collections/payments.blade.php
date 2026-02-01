@@ -142,14 +142,6 @@
                                                     @if (is_numeric($payment->collection) && $payment->collection > 0)
                                                         <div class="d-flex align-items-center gap-2">
                                                             <span>₱{{ number_format($payment->collection, 2) }}</span>
-
-                                                            <button
-                                                                class="btn btn-sm btn-outline-secondary edit-collection-btn"
-                                                                data-id="{{ $payment->id }}"
-                                                                data-amount="{{ $payment->collection }}">
-                                                                <i class="fas fa-pen"></i>
-                                                            </button>
-
                                                         </div>
                                                     @else
                                                         -
@@ -329,58 +321,6 @@
                     document.body.appendChild(form);
                     form.submit();
                 }
-            });
-        });
-    </script>
-
-
-    {{-- EDIT COLLECTION --}}
-    <script>
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('.edit-collection-btn');
-            if (!btn) return;
-
-            const paymentId = btn.dataset.id;
-            const currentAmount = btn.dataset.amount ?? 0;
-
-            Swal.fire({
-                title: 'Edit Collection Amount',
-                input: 'number',
-                inputLabel: 'Collection',
-                inputValue: currentAmount,
-                inputAttributes: {
-                    min: 0,
-                    step: 0.01
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Save',
-                preConfirm: (value) => {
-                    if (value === '' || value < 0) {
-                        Swal.showValidationMessage('Please enter a valid amount');
-                    }
-                    return value;
-                }
-            }).then((result) => {
-                if (!result.isConfirmed) return;
-
-                fetch(`/admin/areas/manila/${paymentId}/update-collection`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            collection: result.value
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        Swal.fire('Updated!', 'Collection has been updated.', 'success')
-                            .then(() => location.reload());
-                    })
-                    .catch(() => {
-                        Swal.fire('Error', 'Something went wrong.', 'error');
-                    });
             });
         });
     </script>

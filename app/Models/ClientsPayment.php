@@ -20,6 +20,7 @@ class ClientsPayment extends Model
         'collection',
         'type',
         'is_lapsed',
+        'is_collected',
         'created_by'
     ];
 }

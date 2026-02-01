@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('collection', 12, 2)->nullable();
             $table->string('type')->nullable();
             $table->boolean('is_lapsed')->default(0);
+            $table->boolean('is_collected')->default(0);
             $table->string('created_by')->nullable();
             $table->timestamps();
         });
