@@ -17,6 +17,7 @@ class ClientsPayment extends Model
         'client_loans_id',
         'client_area',
         'daily',
+        'old_balance',
         'collection',
         'type',
         'is_lapsed',

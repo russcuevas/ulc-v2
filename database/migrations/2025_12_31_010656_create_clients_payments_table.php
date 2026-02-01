@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('client_loans_id')->constrained('clients_loans')->onDelete('cascade');
             $table->foreignId('client_area')->constrained('areas')->onDelete('cascade');
             $table->decimal('daily', 12, 2)->nullable();
+            $table->decimal('old_balance', 12, 2)->nullable();
             $table->decimal('collection', 12, 2)->nullable();
             $table->string('type')->nullable();
             $table->boolean('is_lapsed')->default(0);

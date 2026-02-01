@@ -65,8 +65,6 @@
                         </div>
 
 
-
-
                         <div class="card-body p-4">
                             @php
                                 $totalCollectibles = $payments->sum('daily');
@@ -122,6 +120,79 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                @php
+                                    $totalCollectedAmount = $payments
+                                        ->where('is_collected', 1)
+                                        ->sum(fn($p) => $p->collection ?? 0);
+                                    $totalPendingAmount = $payments
+                                        ->where('is_collected', 0)
+                                        ->sum(fn($p) => $p->collection ?? 0);
+                                @endphp
+
+                                <div class="d-flex flex-column align-items-end gap-2 mb-3 mt-5">
+
+                                    <div class="d-flex gap-2 flex-wrap">
+
+                                        {{-- Collect All --}}
+                                        <form method="POST"
+                                            action="{{ route('admin.fc.collect.all', $referenceNumber) }}"
+                                            class="d-inline collect-all-form" data-amount="{{ $totalPendingAmount }}">
+                                            @csrf
+                                            <input type="hidden" name="type" value="CASH">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-coins me-1"></i> COLLECT PAYMENT
+                                            </button>
+                                        </form>
+
+                                        {{-- Remind Payment --}}
+                                        <form method="POST"
+                                            action="{{ route('admin.fc.payments.remind.by.reference', $referenceNumber) }}"
+                                            class="d-inline remind-all-form">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-bell me-1"></i> REMIND PAYMENT
+                                            </button>
+                                        </form>
+
+                                        {{-- No Payment --}}
+                                        <form method="POST"
+                                            action="{{ route('admin.fc.no-payment.all', $referenceNumber) }}"
+                                            class="d-inline no-payment-all-form">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-times-circle me-1"></i> NO PAYMENT
+                                            </button>
+                                        </form>
+
+                                    </div>
+
+
+
+
+                                    {{-- Totals below buttons --}}
+                                    <table class="table table-bordered table-sm w-auto text-end mb-3">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-muted small">TOTAL COLLECTED</th>
+                                                <th class="text-muted small">FOR COLLECT</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="fw-bold text-success fs-6">
+                                                    ₱{{ number_format($totalCollectedAmount, 2) }}
+                                                </td>
+                                                <td class="fw-bold text-info fs-6">
+                                                    ₱{{ number_format($totalPendingAmount, 2) }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+
                             </div>
 
 
@@ -129,22 +200,25 @@
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped js-basic-example dataTable"
                                     style="border: 2px solid rgba(0, 0, 0, 0.175) !important;;">
-                                    <thead>
+                                    <thead style="font-size: 12px">
                                         <tr>
                                             <th>Client Name</th>
                                             <th>Loan Amount</th>
-                                            <th>Balance</th>
+                                            <th>Old balance</th>
+                                            <th>New Balance</th>
                                             <th>Daily</th>
                                             <th>Collection</th>
                                             <th>Type</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody style="font-size: 12px;">
                                         @foreach ($payments as $payment)
                                             <tr>
                                                 <td>{{ $payment->fullname }}</td>
                                                 <td>₱{{ number_format($payment->loan_amount, 2) }}</td>
+                                                <td>₱{{ number_format($payment->old_balance, 2) }}</td>
+
                                                 <td>₱{{ number_format($payment->balance, 2) }}</td>
                                                 <td>₱{{ number_format($payment->daily, 2) }}</td>
                                                 <td>
@@ -160,42 +234,27 @@
                                                             </button>
 
                                                         </div>
+                                                    @elseif ($payment->type === 'NO PAYMENT')
+                                                        <span style="color: red">₱0.00</span>
                                                     @else
                                                         -
                                                     @endif
                                                 </td>
+
                                                 <td>{{ $payment->type ?? '-' }}</td>
                                                 <td>
-                                                    @if ($payment->collection > 0 && $payment->type)
-                                                        <!-- Paid for this day -->
-                                                        <span class="badge bg-success">PAID FOR THIS DAY</span>
-                                                    @elseif(($payment->collection == 0 || $payment->collection === null) && $payment->type == 'NO PAYMENT')
-                                                        <!-- No payment for this day -->
-                                                        <span class="badge bg-danger">NO PAYMENT FOR THIS DAY</span>
+                                                    @if ($payment->is_collected == 1)
+                                                        <span class="badge bg-success">COLLECTED</span>
+                                                    @elseif ($payment->collection != 0 && $payment->is_collected == 0)
+                                                        <span class="badge bg-info text-white">FOR COLLECT</span>
+                                                    @elseif ($payment->type == null && $payment->is_collected == 0)
+                                                        <span class="badge bg-warning text-dark">WAIT FOR
+                                                            COLLECTOR</span>
                                                     @else
-                                                        <!-- Not yet collected, show buttons -->
-                                                        <button
-                                                            class="btn btn-sm btn-outline-primary mb-1 collect-payment-btn"
-                                                            data-client="{{ $payment->fullname }}"
-                                                            data-id="{{ $payment->id }}"
-                                                            data-balance="{{ $payment->balance }}">
-                                                            Collect payment
-                                                        </button>
-
-                                                        <button
-                                                            class="btn btn-sm btn-outline-primary mb-1 remind-payment-btn"
-                                                            data-id="{{ $payment->id }}">
-                                                            Remind payment
-                                                        </button>
-
-                                                        <button
-                                                            class="btn btn-sm btn-outline-primary mb-1 no-payment-btn"
-                                                            data-id="{{ $payment->id }}">
-                                                            No payment
-                                                        </button>
+                                                        <span class="badge bg-danger text-white">NO PAYMENT</span>
                                                     @endif
-                                                </td>
 
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -261,181 +320,8 @@
         @endif
     </script>
 
-    {{-- COLLECT PAYMENT --}}
-    <script>
-        $(document).on('click', '.collect-payment-btn', function() {
-            const clientName = $(this).data('client');
-            const paymentId = $(this).data('id');
-            const balance = parseFloat($(this).data('balance'));
 
-            Swal.fire({
-                title: 'Collect Payment',
-                html: `
-        <div class="text-start">
-            <div class="mb-3">
-                <label class="form-label fw-semibold"><i class="fa fa-user me-1 text-muted"></i> Client</label>
-                <input type="text" class="form-control" value="${clientName}" disabled>
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold"><i class="fa fa-money-bill-wave me-1 text-muted"></i> Payment Type</label>
-                <select id="paymentType" class="form-select">
-                    <option value="">Select type</option>
-                    <option value="CASH">CASH</option>
-                    <option value="GCASH">GCASH</option>
-                    <option value="CHEQUE">CHEQUE</option>
-                    <option value="ADVANCE">ADVANCE</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold"><i class="fa fa-coins me-1 text-muted"></i> Amount (≤ ₱${balance.toFixed(2)})</label>
-                <input id="paymentAmount" type="number" class="form-control" min="0.01" step="0.01" placeholder="Enter amount">
-            </div>
-        </div>
-        `,
-                showCancelButton: true,
-                confirmButtonText: 'Save',
-                cancelButtonText: 'Cancel',
-                focusConfirm: false,
-                preConfirm: () => {
-                    const amount = parseFloat(document.getElementById('paymentAmount').value);
-                    const type = document.getElementById('paymentType').value;
 
-                    if (!amount || amount <= 0) {
-                        Swal.showValidationMessage('Please enter a valid amount');
-                        return false;
-                    }
-                    if (amount > balance) {
-                        Swal.showValidationMessage(
-                            `Amount cannot exceed balance: ₱${balance.toFixed(2)}`);
-                        return false;
-                    }
-                    if (!type) {
-                        Swal.showValidationMessage('Please select a payment type');
-                        return false;
-                    }
-                    return {
-                        amount,
-                        type
-                    };
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Please wait...',
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
-
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/admin/areas/fc/collect-payment/${paymentId}`;
-
-                    const csrf = document.createElement('input');
-                    csrf.type = 'hidden';
-                    csrf.name = '_token';
-                    csrf.value = '{{ csrf_token() }}';
-                    form.appendChild(csrf);
-
-                    const inputAmount = document.createElement('input');
-                    inputAmount.type = 'hidden';
-                    inputAmount.name = 'amount';
-                    inputAmount.value = result.value.amount;
-                    form.appendChild(inputAmount);
-
-                    const inputType = document.createElement('input');
-                    inputType.type = 'hidden';
-                    inputType.name = 'type';
-                    inputType.value = result.value.type;
-                    form.appendChild(inputType);
-
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        });
-
-        // Remind payment
-        $(document).on('click', '.remind-payment-btn', function() {
-            const paymentId = $(this).data('id');
-
-            Swal.fire({
-                title: 'Remind Payment',
-                text: 'Would you like to remind the client about this payment?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, remind',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Please wait...',
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
-
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/admin/areas/fc/remind-payment/${paymentId}`;
-
-                    const csrf = document.createElement('input');
-                    csrf.type = 'hidden';
-                    csrf.name = '_token';
-                    csrf.value = '{{ csrf_token() }}';
-                    form.appendChild(csrf);
-
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        });
-
-        // No payment
-        $(document).on('click', '.no-payment-btn', function() {
-            const paymentId = $(this).data('id');
-
-            Swal.fire({
-                title: 'Mark as No Payment',
-                text: 'Are you sure you want to mark this payment as "No payment"?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, mark it',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Please wait...',
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
-
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/admin/areas/fc/no-payment/${paymentId}`;
-
-                    const csrf = document.createElement('input');
-                    csrf.type = 'hidden';
-                    csrf.name = '_token';
-                    csrf.value = '{{ csrf_token() }}';
-                    form.appendChild(csrf);
-
-                    const collectionInput = document.createElement('input');
-                    collectionInput.type = 'hidden';
-                    collectionInput.name = 'amount';
-                    collectionInput.value = 0;
-                    form.appendChild(collectionInput);
-
-                    const typeInput = document.createElement('input');
-                    typeInput.type = 'hidden';
-                    typeInput.name = 'type';
-                    typeInput.value = 'No payment';
-                    form.appendChild(typeInput);
-
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        });
-    </script>
 
     {{-- EDIT COLLECTION --}}
     <script>
@@ -487,6 +373,78 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // COLLECT ALL
+            document.querySelectorAll('.collect-all-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const amount = parseFloat(this.dataset.amount || 0)
+                        .toLocaleString(undefined, {
+                            minimumFractionDigits: 2
+                        });
+
+                    Swal.fire({
+                        title: 'Confirm Collection',
+                        text: `Are you sure you want to collect ₱${amount}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, collect',
+                        cancelButtonText: 'Cancel'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // REMIND ALL
+            document.querySelectorAll('.remind-all-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Send Reminder?',
+                        text: 'Are you sure you want to remind all clients?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, remind',
+                        cancelButtonText: 'Cancel'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+            // NO PAYMENT ALL
+            document.querySelectorAll('.no-payment-all-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Mark No Payment',
+                        text: 'Are you sure you want to mark NO PAYMENT for all no payment clients?',
+                        icon: 'error',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, proceed',
+                        cancelButtonText: 'Cancel'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
+
 </body>
 
 </html>

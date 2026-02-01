@@ -157,10 +157,14 @@ Route::middleware(['auth', 'admin'])->group(
 
         Route::get('/admin/areas/manila/payments/{referenceNumber}/clients', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientDailyPaymentsPage'])->name('admin.area.manila.payments.clients');
         Route::get('/admin/areas/manila/payments/{referenceNumber}/print', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientPrintDailyPayments'])->name('admin.area.manila.payments.print');
+
         // SMS
-        Route::post('/admin/areas/manila/collect-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientCollectPaymentRequest'])->name('admin.manila.payments.clients.collect');
-        Route::post('/admin/areas/manila/remind-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientRemindPaymentRequest'])->name('admin.manila.payments.clients.remind');
-        Route::post('/admin/areas/manila/no-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientNoPaymentRequest'])->name('admin.manila.payments.clients.not.paid');
+        Route::post('/admin/areas/manila/payments/{reference}/collect-all', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaCollectAllPayments'])->name('admin.manila.collect.all');
+        Route::post('/admin/manila/no-payment-all/{reference}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaNoPaymentAll'])->name('admin.manila.no-payment.all');
+        Route::post('/admin/areas/manila/remind-payments/{reference}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaRemindPaymentsByReference'])->name('admin.manila.payments.remind.by.reference');
+
+        // Route::post('/admin/areas/manila/collect-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientCollectPaymentRequest'])->name('admin.manila.payments.clients.collect');
+        // Route::post('/admin/areas/manila/no-payment/{clientPaymentId}', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaClientNoPaymentRequest'])->name('admin.manila.payments.clients.not.paid');
 
         Route::get('/admin/areas/manila/payments/{area}/summary/collections/print', [AdminAreaManilaPaymentsController::class, 'AdminAreaManilaPrintSummaryCollections'])->name('admin.area.manila.payments.print.summary.collections');
 
@@ -189,9 +193,13 @@ Route::middleware(['auth', 'admin'])->group(
         Route::get('/admin/areas/valenzuela/payments/{referenceNumber}/clients', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientDailyPaymentsPage'])->name('admin.area.valenzuela.payments.clients');
         Route::get('/admin/areas/valenzuela/payments/{referenceNumber}/print', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientPrintDailyPayments'])->name('admin.area.valenzuela.payments.print');
         // SMS
-        Route::post('/admin/areas/valenzuela/collect-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientCollectPaymentRequest'])->name('admin.valenzuela.payments.clients.collect');
-        Route::post('/admin/areas/valenzuela/remind-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientRemindPaymentRequest'])->name('admin.valenzuela.payments.clients.remind');
-        Route::post('/admin/areas/valenzuela/no-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientNoPaymentRequest'])->name('admin.valenzuela.payments.clients.not.paid');
+        Route::post('/admin/areas/valenzuela/payments/{reference}/collect-all', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaCollectAllPayments'])->name('admin.valenzuela.collect.all');
+        Route::post('/admin/valenzuela/no-payment-all/{reference}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaNoPaymentAll'])->name('admin.valenzuela.no-payment.all');
+        Route::post('/admin/areas/valenzuela/remind-payments/{reference}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaRemindPaymentsByReference'])->name('admin.valenzuela.payments.remind.by.reference');
+
+        // Route::post('/admin/areas/valenzuela/collect-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientCollectPaymentRequest'])->name('admin.valenzuela.payments.clients.collect');
+        // Route::post('/admin/areas/valenzuela/remind-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientRemindPaymentRequest'])->name('admin.valenzuela.payments.clients.remind');
+        // Route::post('/admin/areas/valenzuela/no-payment/{clientPaymentId}', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaClientNoPaymentRequest'])->name('admin.valenzuela.payments.clients.not.paid');
         Route::get('/admin/areas/valenzuela/payments/{area}/summary/collections/print', [AdminAreaValenzuelaPaymentsController::class, 'AdminAreaValenzuelaPrintSummaryCollections'])->name('admin.area.valenzuela.payments.print.summary.collections');
 
         // Caloocan Route
@@ -219,9 +227,14 @@ Route::middleware(['auth', 'admin'])->group(
         Route::get('/admin/areas/caloocan/payments/{referenceNumber}/clients', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientDailyPaymentsPage'])->name('admin.area.caloocan.payments.clients');
         Route::get('/admin/areas/caloocan/payments/{referenceNumber}/print', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientPrintDailyPayments'])->name('admin.area.caloocan.payments.print');
         // SMS
-        Route::post('/admin/areas/caloocan/collect-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientCollectPaymentRequest'])->name('admin.caloocan.payments.clients.collect');
-        Route::post('/admin/areas/caloocan/remind-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientRemindPaymentRequest'])->name('admin.caloocan.payments.clients.remind');
-        Route::post('/admin/areas/caloocan/no-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientNoPaymentRequest'])->name('admin.caloocan.payments.clients.not.paid');
+        Route::post('/admin/areas/caloocan/payments/{reference}/collect-all', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanCollectAllPayments'])->name('admin.caloocan.collect.all');
+        Route::post('/admin/caloocan/no-payment-all/{reference}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanNoPaymentAll'])->name('admin.caloocan.no-payment.all');
+        Route::post('/admin/areas/caloocan/remind-payments/{reference}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanRemindPaymentsByReference'])->name('admin.caloocan.payments.remind.by.reference');
+
+        // Route::post('/admin/areas/caloocan/collect-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientCollectPaymentRequest'])->name('admin.caloocan.payments.clients.collect');
+        // Route::post('/admin/areas/caloocan/remind-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientRemindPaymentRequest'])->name('admin.caloocan.payments.clients.remind');
+        // Route::post('/admin/areas/caloocan/no-payment/{clientPaymentId}', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanClientNoPaymentRequest'])->name('admin.caloocan.payments.clients.not.paid');
+
         Route::get('/admin/areas/caloocan/payments/{area}/summary/collections/print', [AdminAreaCaloocanPaymentsController::class, 'AdminAreaCaloocanPrintSummaryCollections'])->name('admin.area.caloocan.payments.print.summary.collections');
 
         // FC Route
@@ -249,9 +262,14 @@ Route::middleware(['auth', 'admin'])->group(
         Route::get('/admin/areas/fc/payments/{referenceNumber}/clients', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientDailyPaymentsPage'])->name('admin.area.fc.payments.clients');
         Route::get('/admin/areas/fc/payments/{referenceNumber}/print', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientPrintDailyPayments'])->name('admin.area.fc.payments.print');
         // SMS
-        Route::post('/admin/areas/fc/collect-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientCollectPaymentRequest'])->name('admin.fc.payments.clients.collect');
-        Route::post('/admin/areas/fc/remind-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientRemindPaymentRequest'])->name('admin.fc.payments.clients.remind');
-        Route::post('/admin/areas/fc/no-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientNoPaymentRequest'])->name('admin.fc.payments.clients.not.paid');
+        Route::post('/admin/areas/fc/payments/{reference}/collect-all', [AdminAreaFCPaymentsController::class, 'AdminAreaFCCollectAllPayments'])->name('admin.fc.collect.all');
+        Route::post('/admin/fc/no-payment-all/{reference}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCNoPaymentAll'])->name('admin.fc.no-payment.all');
+        Route::post('/admin/areas/fc/remind-payments/{reference}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCRemindPaymentsByReference'])->name('admin.fc.payments.remind.by.reference');
+
+        // Route::post('/admin/areas/fc/collect-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientCollectPaymentRequest'])->name('admin.fc.payments.clients.collect');
+        // Route::post('/admin/areas/fc/remind-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientRemindPaymentRequest'])->name('admin.fc.payments.clients.remind');
+        // Route::post('/admin/areas/fc/no-payment/{clientPaymentId}', [AdminAreaFCPaymentsController::class, 'AdminAreaFCClientNoPaymentRequest'])->name('admin.fc.payments.clients.not.paid');
+
         Route::get('/admin/areas/fc/payments/{area}/summary/collections/print', [AdminAreaFCPaymentsController::class, 'AdminAreaFCPrintSummaryCollections'])->name('admin.area.fc.payments.print.summary.collections');
     }
 );
