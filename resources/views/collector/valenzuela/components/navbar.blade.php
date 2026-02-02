@@ -66,14 +66,14 @@
                 Ultraritz Lending<br>Corporation <i class="fa-solid fa-coins"></i>
             </div>
             <div class="nav flex-column nav-pills px-3 mt-2">
-                <a href="{{ route('collector.manila.dashboard.page') }}"
-                    class="nav-link {{ request()->routeIs('collector.manila.dashboard.page') ? 'active' : '' }}">
+                <a href="{{ route('collector.valenzuela.dashboard.page') }}"
+                    class="nav-link {{ request()->routeIs('collector.valenzuela.dashboard.page') ? 'active' : '' }}">
                     <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>
 
-                <a href="{{ route('collector.manila.collections.page', $area->id) }}"
-                    class="nav-link {{ request()->routeIs('collector.manila.collections.page', 'collector.manila.collections.payments') ? 'active' : '' }}">
+                <a href="{{ route('collector.valenzuela.collections.page', $area->id) }}"
+                    class="nav-link {{ request()->routeIs('collector.valenzuela.collections.page', 'collector.valenzuela.collections.payments') ? 'active' : '' }}">
                     <i class="fa-solid fa-hand-holding-dollar"></i>
                     Collections
                 </a>

@@ -97,6 +97,7 @@
                     <tr class="summary-header">
                         <td>Client Name</td>
                         <td>Loan Amount</td>
+                        <td>Old Balance</td>
                         <td>Balance</td>
                         <td>Daily</td>
                         <td>Collection</td>
@@ -109,6 +110,7 @@
                         <tr>
                             <td>{{ $payment->fullname }}</td>
                             <td>₱{{ number_format($payment->loan_amount, 2) }}</td>
+                            <td>₱{{ number_format($payment->old_balance, 2) }}</td>
                             <td>₱{{ number_format($payment->balance, 2) }}</td>
                             <td>₱{{ number_format($payment->daily, 2) }}</td>
                             <td>

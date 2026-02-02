@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\collector\valenzuela;
+namespace App\Http\Controllers\collector\fc;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class ValenzuelaCollectorDashboardController extends Controller
+class FCCollectorDashboardController extends Controller
 {
-    public function ValenzuelaCollectorDashboardPage()
+    public function FCCollectorDashboardPage()
     {
         $collectorId = Auth::guard('collector')->id();
         $area = DB::table('areas')
             ->where('collector_id', $collectorId)
-            ->where('location_name', 'Valenzuela Area')
+            ->where('location_name', 'Financial Counselor')
             ->select('id', 'areas_name as area_name')
             ->first();
 
@@ -26,6 +26,6 @@ class ValenzuelaCollectorDashboardController extends Controller
             ->where('collector_id', $collectorId)
             ->get();
 
-        return view('collector.valenzuela.dashboard.index', compact('areas', 'area'));
+        return view('collector.fc.dashboard.index', compact('areas', 'area'));
     }
 }

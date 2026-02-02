@@ -134,6 +134,7 @@ class CaloocanAreaPaymentsController extends Controller
                 'clients.area_id as client_area',
                 'clients.fullname',
                 'clients_loans.payment_status',
+                'clients_loans.balance',
                 'clients_loans.daily',
                 'clients_loans.loan_from',
                 'clients_loans.loan_to'
@@ -163,6 +164,7 @@ class CaloocanAreaPaymentsController extends Controller
                 'client_id'        => $client->client_id,
                 'client_loans_id'  => $client->client_loans_id,
                 'client_area'      => $client->client_area,
+                'old_balance'      => $client->balance,
                 'daily'            => $client->daily,
                 'collection'       => null,
                 'type'             => null,
@@ -268,8 +270,10 @@ class CaloocanAreaPaymentsController extends Controller
                 'clients_payments.id',
                 'clients.fullname',
                 'clients_payments.daily',
+                'clients_payments.old_balance',
                 'clients_payments.collection',
                 'clients_payments.due_date',
+                'clients_payments.is_collected',
                 'clients_payments.collected_by',
                 'clients_payments.type',
                 'clients_loans.loan_amount',
@@ -300,6 +304,7 @@ class CaloocanAreaPaymentsController extends Controller
                 'clients_payments.id',
                 'clients.fullname',
                 'clients_payments.daily',
+                'clients_payments.old_balance',
                 'clients_payments.collection',
                 'clients_payments.due_date',
                 'clients_payments.collected_by',
@@ -326,171 +331,154 @@ class CaloocanAreaPaymentsController extends Controller
         );
     }
 
-    public function CaloocanClientCollectPaymentRequest(Request $request, $id)
-    {
-        $request->validate([
-            'amount' => 'required|numeric|min:0.01',
-            'type' => 'required|string',
-        ]);
+    
 
-        $payment = DB::table('clients_payments')->where('id', $id)->first();
+    public function CaloocanSecretaryCollectAllPayments(Request $request, $reference)
+{
+    $request->validate([
+        'type' => 'required|string',
+    ]);
 
-        if (!$payment) {
-            return redirect()->back()->with('error', 'Payment record not found!');
-        }
+    $payments = DB::table('clients_payments')
+        ->where('reference_number', $reference)
+        ->where('is_collected', 0)
+        ->get();
 
-        $loan = DB::table('clients_loans')->where('id', $payment->client_loans_id)->first();
-
-        if (!$loan) {
-            return redirect()->back()->with('error', 'Loan record not found!');
-        }
-
-        $currentCollection = $payment->collection ?? 0;
-        $newCollection = $currentCollection + $request->amount;
-
-        $remainingBalance = $loan->balance - $request->amount;
-
-        if ($remainingBalance < 0) {
-            return redirect()->back()->with('error', 'Amount exceeds remaining balance!');
-        }
-
-        DB::table('clients_payments')
-            ->where('id', $id)
-            ->update([
-                'collection' => $newCollection,
-                'type' => $request->type,
-                'updated_at' => now(),
-            ]);
-
-        DB::table('clients_loans')
-            ->where('id', $loan->id)
-            ->update([
-                'balance' => $remainingBalance,
-                'updated_at' => now(),
-                'payment_status' => $remainingBalance <= 0 ? 'paid' : $loan->payment_status,
-            ]);
-
-        if (Carbon::parse($loan->loan_to)->lt(now())) {
-            DB::table('clients_loans')
-                ->where('id', $loan->id)
-                ->update(['is_lapsed' => 1]);
-        }
-        $secretaryFullname = Auth::user()->fullname ?? 'Secretary';
-        $secretaryId = Auth::id();
-        $client = DB::table('clients')->where('id', $loan->client_id)->first();
-        $phone_number = $client->phone ?? null;
-        $clientFullname = $client->fullname ?? 'Unknown Client';
-        $areaId = $payment->client_area ?? 0;
-        $areaLocation = DB::table('areas')
-            ->where('id', $areaId)
-            ->value('location_name') ?? 'Unknown Location';
-        $areaName = DB::table('areas')
-            ->where('id', $areaId)
-            ->value('areas_name') ?? 'Unknown Area';
-        $collectorName = $payment->collected_by ?? 'Unknown Collector';
-        $type = $request->type;
-        $dueDate = Carbon::parse($payment->due_date)->format('F d, Y');
-        DB::table('activities')->insert([
-            'users_id'          => $secretaryId,
-            'areas'             => $areaLocation,
-            'role'              => 'secretary',
-            'type'              => 'Collected Payments',
-            'description'       => sprintf(
-                '<strong>Secretary %s</strong> from Caloocan Area collected a payment<br>
-                <span style="font-size: 12px; color: #6c757d;">Date: %s</span><br>
-                <span style="font-size: 12px; color: #6c757d;">Collector: %s</span><br>
-                <span style="font-size: 12px; color: #6c757d;">Client: %s</span><br>
-                <span style="font-size: 12px; color: #6c757d;">In: Caloocan Area - [%s]</span><br>
-                <span style="font-size: 12px; color: #6c757d;">Payment Type: %s</span><br>
-                <span style="font-size: 12px; color: #6c757d;">Amount Collected: ₱%s</span>',
-                $secretaryFullname,
-                $dueDate,
-                $collectorName,
-                $clientFullname,
-                $areaName,
-                ucfirst($type),
-                number_format($request->amount, 2)
-            ),
-            'color'             => 'success',
-            'is_read_secretary' => 0,
-            'is_read_admin'     => 0,
-            'created_at'        => now(),
-            'updated_at'        => now(),
-        ]);
-
-        if (!empty($client->phone)) {
-
-            $phone_number = preg_replace('/[^0-9]/', '', $client->phone);
-
-            if (preg_match('/^09\d{9}$/', $phone_number)) {
-                $phone_number = '63' . substr($phone_number, 1);
-            }
-
-            $message = "Magandang araw {$clientFullname}! Ang iyong payment na halagang ₱"
-                . number_format($request->amount, 2)
-                . " ay natanggap ni {$collectorName} - {$dueDate}. Natitirang balanse: ₱"
-                . number_format(max(0, $remainingBalance), 2)
-                . ". Maraming salamat po!";
-
-            $ch = curl_init();
-
-            $parameters = [
-                'apikey'     => 'b2a42d09e5cd42585fcc90bf1eeff24e',
-                'number'     => $phone_number,
-                'message'    => $message,
-                'sendername' => 'BPTOCEANUS'
-            ];
-
-            curl_setopt_array($ch, [
-                CURLOPT_URL => 'https://semaphore.co/api/v4/messages',
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => http_build_query($parameters),
-                CURLOPT_RETURNTRANSFER => true,
-            ]);
-
-            curl_exec($ch);
-            curl_close($ch);
-        }
-
-        return redirect()->back()->with('success', "Payment collected successfully!");
+    if ($payments->isEmpty()) {
+        return redirect()->back()->with('error', 'No pending payments found for this reference.');
     }
 
-    public function CaloocanClientRemindPaymentRequest(Request $request, $id)
-    {
-        $payment = DB::table('clients_payments')->where('id', $id)->first();
-        if (!$payment) {
-            return redirect()->back()->with('error', 'Payment record not found!');
+    $secretaryFullname = Auth::user()->fullname ?? 'Secretary';
+    $secretaryId = Auth::id();
+
+    $collectorName = $payments->first()->collected_by ?? 'Unknown Collector';
+    $dueDate = Carbon::parse($payments->first()->due_date)->format('F d, Y');
+    $areaId = $payments->first()->client_area ?? 0;
+
+    $areaLocation = DB::table('areas')
+        ->where('id', $areaId)
+        ->value('location_name') ?? 'Unknown Location';
+
+    $areaName = DB::table('areas')
+        ->where('id', $areaId)
+        ->value('areas_name') ?? 'Unknown Area';
+
+    $totalCollected = 0;
+    $totalClients = 0;
+
+    foreach ($payments as $payment) {
+
+        if (is_null($payment->collection) || $payment->collection <= 0) {
+            continue;
         }
 
-        $loan = DB::table('clients_loans')->where('id', $payment->client_loans_id)->first();
-        if (!$loan) {
-            return redirect()->back()->with('error', 'Loan record not found!');
+        // ✅ ONLY MARK AS COLLECTED (NO LOAN UPDATE)
+        DB::table('clients_payments')
+            ->where('id', $payment->id)
+            ->update([
+                'type'         => $request->type,
+                'is_collected' => 1,
+                'updated_at'   => now(),
+            ]);
+
+        // OPTIONAL SMS (no balance mentioned)
+        $loan = DB::table('clients_loans')
+            ->where('id', $payment->client_loans_id)
+            ->first();
+
+        $totalCollected += $payment->collection;
+        $totalClients++;
+    }
+
+    // Activity Log
+    DB::table('activities')->insert([
+        'users_id'          => $secretaryId,
+        'areas'             => $areaLocation,
+        'role'              => 'secretary',
+        'type'              => 'Collected Payments',
+        'description'       => sprintf(
+            '<strong>Secretary %s</strong> collected payments<br>
+            <span style="font-size:12px;color:#6c757d;">Reference No: %s</span><br>
+            <span style="font-size:12px;color:#6c757d;">Date: %s</span><br>
+            <span style="font-size:12px;color:#6c757d;">Collector: %s</span><br>
+            <span style="font-size:12px;color:#6c757d;">Area: Caloocan Area - [%s]</span><br>
+            <span style="font-size:12px;color:#6c757d;">Clients Collected: %d</span><br>
+            <span style="font-size:12px;color:#6c757d;">Total Collected: ₱%s</span>',
+            $secretaryFullname,
+            $reference,
+            $dueDate,
+            $collectorName,
+            $areaName,
+            $totalClients,
+            number_format($totalCollected, 2)
+        ),
+        'color'             => 'success',
+        'is_read_secretary' => 0,
+        'is_read_admin'     => 0,
+        'created_at'        => now(),
+        'updated_at'        => now(),
+    ]);
+
+    return redirect()->back()->with(
+        'success',
+        "All payments for reference {$reference} collected successfully!"
+    );
+}
+
+
+
+public function CaloocanSecretaryRemindPaymentsByReference(Request $request, $reference)
+{
+    $payments = DB::table('clients_payments')
+        ->where('reference_number', $reference)
+        ->where('is_collected', 0)
+        ->get();
+
+    if ($payments->isEmpty()) {
+        return redirect()->back()->with('error', 'No pending payments found for this reference.');
+    }
+
+    $secretaryId = Auth::id();
+    $secretaryFullname = Auth::user()->fullname ?? 'Secretary';
+    $sentCount = 0;
+
+    foreach ($payments as $payment) {
+
+        $loan = DB::table('clients_loans')
+            ->where('id', $payment->client_loans_id)
+            ->first();
+        if (!$loan) continue;
+
+        $client = DB::table('clients')
+            ->where('id', $loan->client_id)
+            ->first();
+        if (!$client) continue;
+
+        // ❗ Same skip logic as admin
+        if ($payment->type === 'NO PAYMENT'
+            || (!is_null($payment->collection) && !is_null($payment->type))) {
+            continue;
         }
 
-        $client = DB::table('clients')->where('id', $loan->client_id)->first();
-        if (!$client) {
-            return redirect()->back()->with('error', 'Client not found!');
-        }
-
-        $secretaryId = Auth::id();
-        $secretaryFullname = Auth::user()->fullname ?? 'Secretary';
         $areaId = $payment->client_area ?? 0;
         $areaLocation = DB::table('areas')
             ->where('id', $areaId)
             ->value('location_name') ?? 'Unknown Location';
+
         $daily_payment = $loan->daily ?? 0;
         $dueDate = Carbon::parse($payment->due_date)->format('F d, Y');
 
+        // Activity log
         DB::table('activities')->insert([
             'users_id'          => $secretaryId,
             'areas'             => $areaLocation,
             'role'              => 'secretary',
-            'type'              => 'Payments Reminder',
+            'type'              => 'Payment Reminder',
             'description'       => sprintf(
                 '<strong>Secretary %s</strong> from Caloocan Area sent a payment reminder<br>
-            <span style="font-size:12px;color:#6c757d;">Client: %s</span><br>
-            <span style="font-size:12px;color:#6c757d;">Daily Payment: ₱%s</span><br>
-            <span style="font-size:12px;color:#6c757d;">Due Date: %s</span>',
+                <span style="font-size:12px;color:#6c757d;">Client: %s</span><br>
+                <span style="font-size:12px;color:#6c757d;">Daily Payment: ₱%s</span><br>
+                <span style="font-size:12px;color:#6c757d;">Due Date: %s</span>',
                 $secretaryFullname,
                 $client->fullname,
                 number_format($daily_payment, 2),
@@ -503,14 +491,15 @@ class CaloocanAreaPaymentsController extends Controller
             'updated_at'        => now(),
         ]);
 
-        /* =======================
-       SEND SMS REMINDER
-    ======================= */
+        // Send SMS
         if (!empty($client->phone)) {
 
             $phone_number = preg_replace('/[^0-9]/', '', $client->phone);
+
             if (preg_match('/^09\d{9}$/', $phone_number)) {
                 $phone_number = '63' . substr($phone_number, 1);
+            } else {
+                continue;
             }
 
             $message = "Magandang araw {$client->fullname}! "
@@ -519,18 +508,15 @@ class CaloocanAreaPaymentsController extends Controller
                 . "Due date: {$dueDate}. Maraming salamat po.";
 
             $ch = curl_init();
-
-            $parameters = [
-                'apikey'     => 'b2a42d09e5cd42585fcc90bf1eeff24e',
-                'number'     => $phone_number,
-                'message'    => $message,
-                'sendername' => 'BPTOCEANUS'
-            ];
-
             curl_setopt_array($ch, [
                 CURLOPT_URL => 'https://semaphore.co/api/v4/messages',
                 CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => http_build_query($parameters),
+                CURLOPT_POSTFIELDS => http_build_query([
+                    'apikey'     => 'b2a42d09e5cd42585fcc90bf1eeff24e',
+                    'number'     => $phone_number,
+                    'message'    => $message,
+                    'sendername' => 'BPTOCEANUS'
+                ]),
                 CURLOPT_RETURNTRANSFER => true,
             ]);
 
@@ -538,42 +524,72 @@ class CaloocanAreaPaymentsController extends Controller
             curl_close($ch);
         }
 
-        return redirect()->back()->with('success', 'Payment reminder sent successfully!');
+        $sentCount++;
     }
 
-    public function CaloocanClientNoPaymentRequest(Request $request, $id)
-    {
-        $payment = DB::table('clients_payments')->where('id', $id)->first();
-        if (!$payment) {
-            return redirect()->back()->with('error', 'Payment record not found!');
-        }
-        $loan = DB::table('clients_loans')->where('id', $payment->client_loans_id)->first();
-        if (!$loan) {
-            return redirect()->back()->with('error', 'Loan record not found!');
+    if ($sentCount === 0) {
+        return redirect()->back()->with(
+            'error',
+            'No reminders were sent. All payments are either NO PAYMENT or already processed.'
+        );
+    }
+
+    return redirect()->back()->with(
+        'success',
+        "{$sentCount} payment reminder(s) sent successfully for reference {$reference}!"
+    );
+}
+
+
+    public function CaloocanSecretaryNoPaymentAll(Request $request, $reference)
+{
+    $payments = DB::table('clients_payments')
+        ->where('reference_number', $reference)
+        ->where('is_collected', 0)
+        ->get();
+
+    if ($payments->isEmpty()) {
+        return redirect()->back()->with('error', 'No pending payments found for this reference.');
+    }
+
+    $secretaryId = Auth::id();
+    $secretaryFullname = Auth::user()->fullname ?? 'Secretary';
+
+    foreach ($payments as $payment) {
+
+        // Skip already marked as NO PAYMENT
+        if ($payment->type === 'NO PAYMENT') {
+            continue;
         }
 
-        $client = DB::table('clients')->where('id', $loan->client_id)->first();
-        if (!$client) {
-            return redirect()->back()->with('error', 'Client not found!');
-        }
+        $loan = DB::table('clients_loans')
+            ->where('id', $payment->client_loans_id)
+            ->first();
+        if (!$loan) continue;
 
+        $client = DB::table('clients')
+            ->where('id', $loan->client_id)
+            ->first();
+        if (!$client) continue;
+
+        $daily_payment = $loan->daily ?? 0;
+        $dueDate = Carbon::parse($payment->due_date)->format('F d, Y');
+
+        $areaId = $payment->client_area ?? 0;
+        $areaLocation = DB::table('areas')
+            ->where('id', $areaId)
+            ->value('location_name') ?? 'Unknown Location';
+
+        // ✅ Mark as NO PAYMENT
         DB::table('clients_payments')
-            ->where('id', $id)
+            ->where('id', $payment->id)
             ->update([
                 'collection' => 0,
                 'type'       => 'NO PAYMENT',
                 'updated_at' => now(),
             ]);
 
-        $secretaryId = Auth::id();
-        $secretaryFullname = Auth::user()->fullname ?? 'Secretary';
-        $areaId = $payment->client_area ?? 0;
-        $areaLocation = DB::table('areas')
-            ->where('id', $areaId)
-            ->value('location_name') ?? 'Unknown Location';
-        $daily_payment = $loan->daily ?? 0;
-        $dueDate = Carbon::parse($payment->due_date)->format('F d, Y');
-
+        // Activity log
         DB::table('activities')->insert([
             'users_id'          => $secretaryId,
             'areas'             => $areaLocation,
@@ -581,9 +597,9 @@ class CaloocanAreaPaymentsController extends Controller
             'type'              => 'No Payment',
             'description'       => sprintf(
                 '<strong>Secretary %s</strong> from Caloocan Area marked no payment for the client<br>
-            <span style="font-size:12px;color:#6c757d;">Client: %s</span><br>
-            <span style="font-size:12px;color:#6c757d;">Daily Payment: ₱%s</span><br>
-            <span style="font-size:12px;color:#6c757d;">Due Date: %s</span>',
+                <span style="font-size:12px;color:#6c757d;">Client: %s</span><br>
+                <span style="font-size:12px;color:#6c757d;">Daily Payment: ₱%s</span><br>
+                <span style="font-size:12px;color:#6c757d;">Due Date: %s</span>',
                 $secretaryFullname,
                 $client->fullname,
                 number_format($daily_payment, 2),
@@ -596,39 +612,39 @@ class CaloocanAreaPaymentsController extends Controller
             'updated_at'        => now(),
         ]);
 
-        /* =======================
-       SEND SMS
-    ======================= */
+        // Optional SMS
         if (!empty($client->phone)) {
+
             $phone_number = preg_replace('/[^0-9]/', '', $client->phone);
             if (preg_match('/^09\d{9}$/', $phone_number)) {
                 $phone_number = '63' . substr($phone_number, 1);
             }
 
             $message = "Magandang araw {$client->fullname}! "
-                . "Wala po kaming natanggap na bayad ngayong araw ang iyong daily ay (₱" . number_format($daily_payment, 2) . "). "
+                . "Wala po kaming natanggap na bayad ngayong araw. "
+                . "Ang iyong daily payment ay ₱" . number_format($daily_payment, 2) . " "
                 . "para sa araw na {$dueDate}. Maraming salamat po!";
 
             $ch = curl_init();
-
-            $parameters = [
-                'apikey'     => 'b2a42d09e5cd42585fcc90bf1eeff24e',
-                'number'     => $phone_number,
-                'message'    => $message,
-                'sendername' => 'BPTOCEANUS'
-            ];
-
             curl_setopt_array($ch, [
                 CURLOPT_URL => 'https://semaphore.co/api/v4/messages',
                 CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => http_build_query($parameters),
+                CURLOPT_POSTFIELDS => http_build_query([
+                    'apikey'     => 'b2a42d09e5cd42585fcc90bf1eeff24e',
+                    'number'     => $phone_number,
+                    'message'    => $message,
+                    'sendername' => 'BPTOCEANUS'
+                ]),
                 CURLOPT_RETURNTRANSFER => true,
             ]);
-
             curl_exec($ch);
             curl_close($ch);
         }
-
-        return redirect()->back()->with('success', 'Client marked no payment for this day!');
     }
+
+    return redirect()->back()->with(
+        'success',
+        "All pending clients for reference {$reference} marked as NO PAYMENT!"
+    );
+}
 }

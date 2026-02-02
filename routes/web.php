@@ -30,6 +30,10 @@ use App\Http\Controllers\admin\fc\AdminAreaFCPaymentsController;
 
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\auth\ForgotPasswordController;
+use App\Http\Controllers\collector\caloocan\CaloocanCollectorDashboardController;
+use App\Http\Controllers\collector\caloocan\CaloocanCollectorPaymentController;
+use App\Http\Controllers\collector\fc\FCCollectorDashboardController;
+use App\Http\Controllers\collector\fc\FCCollectorPaymentController;
 use App\Http\Controllers\secretary\manila\ManilaAreaClientsController;
 use App\Http\Controllers\secretary\manila\ManilaAreaClientsHistoryController;
 use App\Http\Controllers\secretary\manila\ManilaAreaController;
@@ -74,6 +78,7 @@ use App\Http\Controllers\secretary\fc\FCProfileController;
 use App\Http\Controllers\collector\manila\ManilaCollectorDashboardController;
 use App\Http\Controllers\collector\manila\ManilaCollectorPaymentController;
 use App\Http\Controllers\collector\valenzuela\ValenzuelaCollectorDashboardController;
+use App\Http\Controllers\collector\valenzuela\ValenzuelaCollectorPaymentController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -323,9 +328,13 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::get('/manila/payments/{referenceNumber}/print', [ManilaAreaPaymentsController::class, 'ManilaClientPrintDailyPayments'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.print');
 
     // SMS
-    Route::post('/manila/collect-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientCollectPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.manila.payments.clients.collect');
-    Route::post('/manila/remind-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientRemindPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.manila.payments.clients.remind');
-    Route::post('/manila/no-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientNoPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.clients.not.paid');
+    Route::post('/manila/collect-all-payments/{reference}',[ManilaAreaPaymentsController::class, 'ManilaSecretaryCollectAllPayments'])->middleware('secretary.area:manila')->name('secretary.manila.payments.collect.all');
+    Route::post('/manila/remind-payments/{reference}',[ManilaAreaPaymentsController::class, 'ManilaSecretaryRemindPaymentsByReference'])->middleware('secretary.area:manila')->name('secretary.manila.payments.remind.reference');
+    Route::post('/manila/no-payment/{reference}',[ManilaAreaPaymentsController::class, 'ManilaSecretaryNoPaymentAll'])->middleware('secretary.area:manila')->name('secretary.manila.payments.no-payment.all');
+
+    // Route::post('/manila/collect-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientCollectPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.manila.payments.clients.collect');
+    // Route::post('/manila/remind-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientRemindPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.manila.payments.clients.remind');
+    // Route::post('/manila/no-payment/{clientPaymentId}', [ManilaAreaPaymentsController::class, 'ManilaClientNoPaymentRequest'])->middleware('secretary.area:manila')->name('secretary.area.manila.payments.clients.not.paid');
 
     // Secretary Valenzuela Area Route
     // Secretary Valenzuela Dashboard Route
@@ -373,9 +382,13 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::get('/valenzuela/payments/{referenceNumber}/print', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientPrintDailyPayments'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.print');
 
     // SMS
-    Route::post('/valenzuela/collect-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientCollectPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.clients.collect');
-    Route::post('/valenzuela/remind-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientRemindPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.clients.remind');
-    Route::post('/valenzuela/no-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientNoPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.clients.not.paid');
+    Route::post('/valenzuela/collect-all-payments/{reference}',[ValenzuelaAreaPaymentsController::class, 'ValenzuelaSecretaryCollectAllPayments'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.collect.all');
+    Route::post('/valenzuela/remind-payments/{reference}',[ValenzuelaAreaPaymentsController::class, 'ValenzuelaSecretaryRemindPaymentsByReference'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.remind.reference');
+    Route::post('/valenzuela/no-payment/{reference}',[ValenzuelaAreaPaymentsController::class, 'ValenzuelaSecretaryNoPaymentAll'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.no-payment.all');
+
+    // Route::post('/valenzuela/collect-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientCollectPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.clients.collect');
+    // Route::post('/valenzuela/remind-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientRemindPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.valenzuela.payments.clients.remind');
+    // Route::post('/valenzuela/no-payment/{clientPaymentId}', [ValenzuelaAreaPaymentsController::class, 'ValenzuelaClientNoPaymentRequest'])->middleware('secretary.area:valenzuela')->name('secretary.area.valenzuela.payments.clients.not.paid');
 
 
     // Secretary Caloocan Area Route
@@ -424,9 +437,14 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::get('/caloocan/payments/{referenceNumber}/print', [CaloocanAreaPaymentsController::class, 'CaloocanClientPrintDailyPayments'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.print');
 
     // SMS
-    Route::post('/caloocan/collect-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientCollectPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.clients.collect');
-    Route::post('/caloocan/remind-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientRemindPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.clients.remind');
-    Route::post('/caloocan/no-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientNoPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.clients.not.paid');
+    Route::post('/caloocan/collect-all-payments/{reference}',[CaloocanAreaPaymentsController::class, 'CaloocanSecretaryCollectAllPayments'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.collect.all');
+    Route::post('/caloocan/remind-payments/{reference}',[CaloocanAreaPaymentsController::class, 'CaloocanSecretaryRemindPaymentsByReference'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.remind.reference');
+    Route::post('/caloocan/no-payment/{reference}',[CaloocanAreaPaymentsController::class, 'CaloocanSecretaryNoPaymentAll'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.no-payment.all');
+
+    
+    // Route::post('/caloocan/collect-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientCollectPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.clients.collect');
+    // Route::post('/caloocan/remind-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientRemindPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.caloocan.payments.clients.remind');
+    // Route::post('/caloocan/no-payment/{clientPaymentId}', [CaloocanAreaPaymentsController::class, 'CaloocanClientNoPaymentRequest'])->middleware('secretary.area:caloocan')->name('secretary.area.caloocan.payments.clients.not.paid');
 
     // Secretary FC Area Route
     // Secretary FC Dashboard Route
@@ -474,26 +492,38 @@ Route::prefix('secretary')->middleware(['auth'])->group(function () {
     Route::get('/fc/payments/{referenceNumber}/print', [FCAreaPaymentsController::class, 'FCClientPrintDailyPayments'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.print');
 
     // SMS
-    Route::post('/fc/collect-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientCollectPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.fc.payments.clients.collect');
-    Route::post('/fc/remind-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientRemindPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.fc.payments.clients.remind');
-    Route::post('/fc/no-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientNoPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.clients.not.paid');
+    Route::post('/fc/collect-all-payments/{reference}',[FCAreaPaymentsController::class, 'FCSecretaryCollectAllPayments'])->middleware('secretary.area:fc')->name('secretary.fc.payments.collect.all');
+    Route::post('/fc/remind-payments/{reference}',[FCAreaPaymentsController::class, 'FCSecretaryRemindPaymentsByReference'])->middleware('secretary.area:fc')->name('secretary.fc.payments.remind.reference');
+    Route::post('/fc/no-payment/{reference}',[FCAreaPaymentsController::class, 'FCSecretaryNoPaymentAll'])->middleware('secretary.area:fc')->name('secretary.fc.payments.no-payment.all');
+
+
+    // Route::post('/fc/collect-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientCollectPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.fc.payments.clients.collect');
+    // Route::post('/fc/remind-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientRemindPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.fc.payments.clients.remind');
+    // Route::post('/fc/no-payment/{clientPaymentId}', [FCAreaPaymentsController::class, 'FCClientNoPaymentRequest'])->middleware('secretary.area:fc')->name('secretary.area.fc.payments.clients.not.paid');
 });
 
 
 
 // Collector Route
 Route::middleware(['auth:collector'])->group(function () {
+
     Route::get('/collector/manila', [ManilaCollectorDashboardController::class, 'ManilaCollectorDashboardPage'])->middleware('collector.area:manila')->name('collector.manila.dashboard.page');
     Route::get('/collector/manila/collections/{area}', [ManilaCollectorPaymentController::class, 'ManilaCollectorCollectionsPage'])->middleware('collector.area:manila')->name('collector.manila.collections.page');
     Route::get('/collector/manila/collections/reference/{referenceNumber}', [ManilaCollectorPaymentController::class, 'ManilaCollectorClientPaymentPage'])->middleware('collector.area:manila')->name('collector.manila.collections.payments');
     Route::post('/collector/manila/collections/collect-payment/{clientPaymendId}', [ManilaCollectorPaymentController::class, 'ManilaCollectorCollectRequest'])->middleware('collector.area:manila')->name('collector.manila.collections.payments.collect.request');
 
-
-
-
     Route::get('/collector/valenzuela', [ValenzuelaCollectorDashboardController::class, 'ValenzuelaCollectorDashboardPage'])->middleware('collector.area:valenzuela')->name('collector.valenzuela.dashboard.page');
+    Route::get('/collector/valenzuela/collections/{area}', [ValenzuelaCollectorPaymentController::class, 'ValenzuelaCollectorCollectionsPage'])->middleware('collector.area:valenzuela')->name('collector.valenzuela.collections.page');
+    Route::get('/collector/valenzuela/collections/reference/{referenceNumber}', [ValenzuelaCollectorPaymentController::class, 'ValenzuelaCollectorClientPaymentPage'])->middleware('collector.area:valenzuela')->name('collector.valenzuela.collections.payments');
+    Route::post('/collector/valenzuela/collections/collect-payment/{clientPaymendId}', [ValenzuelaCollectorPaymentController::class, 'ValenzuelaCollectorCollectRequest'])->middleware('collector.area:valenzuela')->name('collector.valenzuela.collections.payments.collect.request');
 
-    Route::get('/collector/caloocan', [ManilaCollectorDashboardController::class, 'caloocan'])
-        ->middleware('collector.area:caloocan')
-        ->name('collector.caloocan.dashboard.page');
+    Route::get('/collector/caloocan', [CaloocanCollectorDashboardController::class, 'CaloocanCollectorDashboardPage'])->middleware('collector.area:caloocan')->name('collector.caloocan.dashboard.page');
+    Route::get('/collector/caloocan/collections/{area}', [CaloocanCollectorPaymentController::class, 'CaloocanCollectorCollectionsPage'])->middleware('collector.area:caloocan')->name('collector.caloocan.collections.page');
+    Route::get('/collector/caloocan/collections/reference/{referenceNumber}', [CaloocanCollectorPaymentController::class, 'CaloocanCollectorClientPaymentPage'])->middleware('collector.area:caloocan')->name('collector.caloocan.collections.payments');
+    Route::post('/collector/caloocan/collections/collect-payment/{clientPaymendId}', [CaloocanCollectorPaymentController::class, 'CaloocanCollectorCollectRequest'])->middleware('collector.area:caloocan')->name('collector.caloocan.collections.payments.collect.request');
+
+    Route::get('/collector/fc', [FCCollectorDashboardController::class, 'FCCollectorDashboardPage'])->middleware('collector.area:fc')->name('collector.fc.dashboard.page');
+    Route::get('/collector/fc/collections/{area}', [FCCollectorPaymentController::class, 'FCCollectorCollectionsPage'])->middleware('collector.area:fc')->name('collector.fc.collections.page');
+    Route::get('/collector/fc/collections/reference/{referenceNumber}', [FCCollectorPaymentController::class, 'FCCollectorClientPaymentPage'])->middleware('collector.area:fc')->name('collector.fc.collections.payments');
+    Route::post('/collector/fc/collections/collect-payment/{clientPaymendId}', [FCCollectorPaymentController::class, 'FCCollectorCollectRequest'])->middleware('collector.area:fc')->name('collector.fc.collections.payments.collect.request');
 });

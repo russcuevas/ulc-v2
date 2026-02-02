@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\collector\valenzuela;
+namespace App\Http\Controllers\collector\caloocan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class ValenzuelaCollectorDashboardController extends Controller
+class CaloocanCollectorDashboardController extends Controller
 {
-    public function ValenzuelaCollectorDashboardPage()
+    public function CaloocanCollectorDashboardPage()
     {
         $collectorId = Auth::guard('collector')->id();
         $area = DB::table('areas')
             ->where('collector_id', $collectorId)
-            ->where('location_name', 'Valenzuela Area')
+            ->where('location_name', 'Caloocan Area')
             ->select('id', 'areas_name as area_name')
             ->first();
 
@@ -26,6 +26,6 @@ class ValenzuelaCollectorDashboardController extends Controller
             ->where('collector_id', $collectorId)
             ->get();
 
-        return view('collector.valenzuela.dashboard.index', compact('areas', 'area'));
+        return view('collector.caloocan.dashboard.index', compact('areas', 'area'));
     }
 }

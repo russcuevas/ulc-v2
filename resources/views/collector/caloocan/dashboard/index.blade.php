@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    @include('collector.valenzuela.components.navbar')
+    @include('collector.caloocan.components.navbar')
 
     <div class="main-content">
         <div class="row g-4">

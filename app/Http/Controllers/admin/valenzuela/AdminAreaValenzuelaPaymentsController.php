@@ -342,112 +342,87 @@ class AdminAreaValenzuelaPaymentsController extends Controller
     public function AdminAreaValenzuelaCollectAllPayments(Request $request, $reference)
     {
         $request->validate([
-            'type' => 'required|string',
-        ]);
+        'type' => 'required|string',
+    ]);
 
-        $payments = DB::table('clients_payments')
-            ->where('reference_number', $reference)
-            ->where('is_collected', 0)
-            ->get();
+    $payments = DB::table('clients_payments')
+        ->where('reference_number', $reference)
+        ->where('is_collected', 0)
+        ->get();
 
-        if ($payments->isEmpty()) {
-            return redirect()->back()->with('error', 'No pending payments found for this reference.');
+    if ($payments->isEmpty()) {
+        return redirect()->back()->with('error', 'No pending payments found for this reference.');
+    }
+
+    $adminFullname = Auth::user()->fullname ?? 'Admin';
+    $adminId = Auth::id();
+
+    $collectorName = $payments->first()->collected_by ?? 'Unknown Collector';
+    $dueDate = Carbon::parse($payments->first()->due_date)->format('F d, Y');
+    $areaId = $payments->first()->client_area ?? 0;
+
+    $areaLocation = DB::table('areas')
+        ->where('id', $areaId)
+        ->value('location_name') ?? 'Unknown Location';
+
+    $areaName = DB::table('areas')
+        ->where('id', $areaId)
+        ->value('areas_name') ?? 'Unknown Area';
+
+    $totalCollected = 0;
+    $totalClients = 0;
+
+    foreach ($payments as $payment) {
+
+        if (is_null($payment->collection) || $payment->collection <= 0) {
+            continue;
         }
 
-        $adminFullname = Auth::user()->fullname ?? 'Admin';
-        $adminId = Auth::id();
-        $collectorName = $payments->first()->collected_by ?? 'Unknown Collector';
-        $dueDate = Carbon::parse($payments->first()->due_date)->format('F d, Y');
-        $areaId = $payments->first()->client_area ?? 0;
+        // ✅ ONLY MARK PAYMENT AS COLLECTED
+        DB::table('clients_payments')
+            ->where('id', $payment->id)
+            ->update([
+                'type'         => $request->type,
+                'is_collected' => 1,
+                'updated_at'   => now(),
+            ]);
 
-        $areaLocation = DB::table('areas')
-            ->where('id', $areaId)
-            ->value('location_name') ?? 'Unknown Location';
+        $totalCollected += $payment->collection;
+        $totalClients++;
+    }
 
-        $areaName = DB::table('areas')
-            ->where('id', $areaId)
-            ->value('areas_name') ?? 'Unknown Area';
+    DB::table('activities')->insert([
+        'users_id'          => $adminId,
+        'areas'             => $areaLocation,
+        'role'              => 'admin',
+        'type'              => 'Collected Payments',
+        'description'       => sprintf(
+            '<strong>Admin %s</strong> collected payments<br>
+            <span style="font-size:12px;color:#6c757d;">Reference No: %s</span><br>
+            <span style="font-size:12px;color:#6c757d;">Date: %s</span><br>
+            <span style="font-size:12px;color:#6c757d;">Collector: %s</span><br>
+            <span style="font-size:12px;color:#6c757d;">Area: Valenzuela Area - [%s]</span><br>
+            <span style="font-size:12px;color:#6c757d;">Clients Collected: %d</span><br>
+            <span style="font-size:12px;color:#6c757d;">Total Collected: ₱%s</span>',
+            $adminFullname,
+            $reference,
+            $dueDate,
+            $collectorName,
+            $areaName,
+            $totalClients,
+            number_format($totalCollected, 2)
+        ),
+        'color'             => 'success',
+        'is_read_secretary' => 0,
+        'is_read_admin'     => 0,
+        'created_at'        => now(),
+        'updated_at'        => now(),
+    ]);
 
-        $totalCollected = 0;
-        $totalClients = 0;
-
-        foreach ($payments as $payment) {
-
-            if (is_null($payment->collection) || $payment->collection <= 0) {
-                continue;
-            }
-
-            $loan = DB::table('clients_loans')
-                ->where('id', $payment->client_loans_id)
-                ->first();
-
-            if (!$loan || $loan->balance <= 0) {
-                continue;
-            }
-
-            $amount = min($payment->collection, $loan->balance);
-            $remainingBalance = $loan->balance - $amount;
-
-            DB::table('clients_payments')
-                ->where('id', $payment->id)
-                ->update([
-                    'type'         => $request->type,
-                    'is_collected' => 1,
-                    'updated_at'   => now(),
-                ]);
-
-            // Update loan balance
-            DB::table('clients_loans')
-                ->where('id', $loan->id)
-                ->update([
-                    'balance'        => $remainingBalance,
-                    'payment_status' => $remainingBalance <= 0 ? 'paid' : 'unpaid',
-                    'updated_at'     => now(),
-                ]);
-
-            // Mark lapsed if overdue
-            if (Carbon::parse($loan->loan_to)->lt(now())) {
-                DB::table('clients_loans')
-                    ->where('id', $loan->id)
-                    ->update(['is_lapsed' => 1]);
-            }
-
-            $totalCollected += $amount;
-            $totalClients++;
-        }
-
-        DB::table('activities')->insert([
-            'users_id'          => $adminId,
-            'areas'             => $areaLocation,
-            'role'              => 'admin',
-            'type'              => 'Collected Payments',
-            'description' => sprintf(
-                '<strong>Admin %s</strong> collected payments<br>
-            <span style="font-size: 12px; color: #6c757d;">Reference No: %s</span><br>
-            <span style="font-size: 12px; color: #6c757d;">Date: %s</span><br>
-            <span style="font-size: 12px; color: #6c757d;">Collector: %s</span><br>
-            <span style="font-size: 12px; color: #6c757d;">Area: Valenzuela Area - [%s]</span><br>
-            <span style="font-size: 12px; color: #6c757d;">Clients Collected: %d</span><br>
-            <span style="font-size: 12px; color: #6c757d;">Total Collected: ₱%s</span>',
-                $adminFullname,
-                $reference,
-                $dueDate,
-                $collectorName,
-                $areaName,
-                $totalClients,
-                number_format($totalCollected, 2)
-            ),
-            'color'             => 'success',
-            'is_read_secretary' => 0,
-            'is_read_admin'     => 0,
-            'created_at'        => now(),
-            'updated_at'        => now(),
-        ]);
-
-        return redirect()->back()->with(
-            'success',
-            "All payments for reference {$reference} collected successfully!"
-        );
+    return redirect()->back()->with(
+        'success',
+        "All payments for reference {$reference} collected successfully!"
+    );
     }
 
     public function AdminAreaValenzuelaRemindPaymentsByReference(Request $request, $reference)
