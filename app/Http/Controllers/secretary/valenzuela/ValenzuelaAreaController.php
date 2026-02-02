@@ -12,19 +12,25 @@ class ValenzuelaAreaController extends Controller
     public function ValenzuelaAreaPage()
     {
         $areas = DB::table('areas')
-            ->leftJoin('clients', 'clients.area_id', '=', 'areas.id')
-            ->where('areas.location_name', 'Valenzuela Area')
-            ->select(
-                'areas.id',
-                'areas.areas_name',
-                DB::raw('COUNT(clients.id) as clients_count')
-            )
-            ->groupBy('areas.id', 'areas.areas_name')
-            ->get()
-            ->map(function ($area) {
-                $area->lapsedCount = $this->getClientAccountCounts($area->id)['lapsedCount'];
-                return $area;
-            });
+        ->leftJoin('clients', 'clients.area_id', '=', 'areas.id')
+        ->leftJoin('collectors', 'collectors.id', '=', 'areas.collector_id')
+        ->where('areas.location_name', 'Valenzuela Area')
+        ->select(
+            'areas.id',
+            'areas.areas_name',
+            'collectors.fullname as collector_name',
+            DB::raw('COUNT(clients.id) as clients_count')
+        )
+        ->groupBy(
+            'areas.id',
+            'areas.areas_name',
+            'collectors.fullname'
+        )
+        ->get()
+        ->map(function ($area) {
+            $area->lapsedCount = $this->getClientAccountCounts($area->id)['lapsedCount'];
+            return $area;
+        });
 
         return view('secretary.valenzuela.areas.index', compact('areas'));
     }

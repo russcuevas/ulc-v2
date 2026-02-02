@@ -64,6 +64,7 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th>Areas</th>
+                                            <th>Collector</th>
                                             <th>Number of Clients</th>
                                             <th>Actions</th>
                                         </tr>
@@ -72,6 +73,11 @@
                                         @foreach ($areas as $area)
                                             <tr>
                                                 <td>{{ $area->areas_name }}</td>
+                                                    <td>
+                                                        <span class="badge bg-info text-dark">
+                                                            {{ $area->collector_name ?? 'Not Assigned' }}
+                                                        </span>
+                                                    </td>
                                                 <td>{{ $area->clients_count }}</td>
                                                 <td>
                                                     <a href="{{ route('secretary.area.valenzuela.clients.page', $area->id) }}"
